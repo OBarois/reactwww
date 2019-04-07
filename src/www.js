@@ -2,14 +2,54 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import WorldWind from "webworldwind-esa";
 //import { useClock } from "./useClock";
 import { useGlobal } from 'reactn';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 
 export default function Map(props) {
   //const [wwd, setWwd] = useState([]);
   //const [date, setDate] = useState(0);
-  const [date, setAppdate ] = useGlobal('appdate');
+  const [date, setAppdate ] = useGlobal('appdate')
   const wwd = useRef(null)
   
+  
+  // toogle projection
+  useHotkeys("p",toggleProjection)  
+  const [projection, setProjection] = useState("3D")
+  function toggleProjection() {
+    setProjection( prevProj => {
+      console.log("prevProjection: "+prevProj)
+      let supportedProjections = [ "3D", "Equirectangular", "Mercator"];
+      let newProj = (supportedProjections.indexOf(prevProj) + 1)%supportedProjections.length
+      console.log("newProjection: "+supportedProjections[newProj])
+      switch (supportedProjections[newProj]) {
+        case "3D":
+            wwd.current.globe.projection = new WorldWind.ProjectionWgs84();
+            break;
+        case "Equirectangular":
+            wwd.current.globe.projection = new WorldWind.ProjectionEquirectangular();
+            break;
+        case "Mercator":
+            wwd.current.globe.projection = new WorldWind.ProjectionMercator();
+            break;
+        case "North Polar":
+            wwd.current.globe.projection = new WorldWind.ProjectionPolarEquidistant("North");
+            break;
+        case "South Polar":
+            wwd.current.globe.projection = new WorldWind.ProjectionPolarEquidistant("South");
+            break;
+        default:
+        wwd.current.globe.projection = new WorldWind.ProjectionWgs84();
+        }
+      wwd.current.redraw();
+      return supportedProjections[newProj]
+      })      
+  }
+  
+  //toggle atmosphere
+  useHotkeys("a",toggleAtmosphere)  
+  function toggleAtmosphere() {
+    wwd.current.layers[1].enabled = !wwd.current.layers[1].enabled
+  }
 
   useEffect(() => {
     console.log("Init Globe")
@@ -27,7 +67,7 @@ export default function Map(props) {
     };
 
     //var starFieldLayer = new WorldWind.StarFieldLayer();
-    var atmosphereLayer = new WorldWind.AtmosphereLayer();
+    var atmosphereLayer = new WorldWind.AtmosphereLayer("atmosphere");
 
     var layers = [
       { layer: new WorldWind.WmsLayer(wmsConfig, ""), enabled: true },
@@ -49,6 +89,7 @@ export default function Map(props) {
     wwd.current.layers[1].time = new Date(date)
     wwd.current.redraw();
   },[date]);
+
 
 
   var globeStyle = {

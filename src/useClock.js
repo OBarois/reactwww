@@ -6,7 +6,7 @@ export function useClock(settings) {
   
     const [date, setDate] = useState((new Date()).getTime());
 
-    const step = 60000
+
 
     function incrementDate(step) {
         setDate(prevDate => { return prevDate + step  });
@@ -17,10 +17,18 @@ export function useClock(settings) {
 
       // Control functions
     const intervalRef = useRef();
+    const step = useRef(10);
+
+    function increaseSpeed() {
+        step.current *= 2
+    }
+    function decreaseSpeed() {
+        step.current = (step.current > 10)?step.current /= 2:step.current
+     }
 
     function start() {
         if (!intervalRef.current) {
-            intervalRef.current = setInterval(() => incrementDate(step), 10);
+            intervalRef.current = setInterval(() => incrementDate(step.current), 10);
         }
     }
 
@@ -51,5 +59,5 @@ export function useClock(settings) {
     }, []);
 
   
-  return { date, start, pause, reset };
+  return { date, start, pause, reset, increaseSpeed, decreaseSpeed };
 }

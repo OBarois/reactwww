@@ -2,6 +2,7 @@
   font-family: sans-serif;
   text-align: center;
   background: red;
+  text-shadow: 2px 2px rgba(17, 109, 210, 0.2);
   color: blue;
 }
 

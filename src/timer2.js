@@ -9,7 +9,9 @@ function Timer({ expiryTimestamp, count }) {
         date,
         start,
         pause,
-        reset
+        reset,
+        increaseSpeed,
+        decreaseSpeed
     } = useClock({
         autoStart: true,
         count: count
@@ -18,12 +20,15 @@ function Timer({ expiryTimestamp, count }) {
     //const [ appdate, setAppdate ] = useGlobal('appdate');
     setGlobal({appdate: date})
 
-    useHotkeys("p",pause)
+    useHotkeys("t",pause)
+    useHotkeys("r",reset)
+    useHotkeys(".",increaseSpeed)
+    useHotkeys(",",decreaseSpeed)
 
-    const dateLabel = (new Date(date) ).toTimeString()
+    const dateLabel = (new Date(date) ).toUTCString()
     return (
         <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "100px", fontKerning: "none" }}>
+            <div style={{ fontSize: "50px", fontKerning: "none" }}>
                 <span>{dateLabel}</span>
             </div>
         </div>
