@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import { useClock } from "./useClock";
 import { setGlobal } from 'reactn';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 
 function Timer({ expiryTimestamp, count }) {
@@ -16,6 +17,8 @@ function Timer({ expiryTimestamp, count }) {
 
     //const [ appdate, setAppdate ] = useGlobal('appdate');
     setGlobal({appdate: date})
+
+    useHotkeys("p",pause)
 
     const dateLabel = (new Date(date) ).toTimeString()
     return (

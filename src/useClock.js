@@ -28,7 +28,7 @@ export function useClock(settings) {
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = undefined;
-        }
+        } else start()
     }
 
     function reset() {
