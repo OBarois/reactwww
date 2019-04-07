@@ -43,9 +43,14 @@ const App = () => {
   return (
     <div className="App">
       <div className="Time">
-      <Timer expiryTimestamp={t} count="1500" />
+        <Timer expiryTimestamp={t} count="1500" />
       </div>
-      <Map id="globe1" width="100%" height="100%" />
+      <div className="Globe">
+        <Map id="globe" />
+      </div>
+      <div className="Miniglobe">
+      <Map id="miniglobe" />
+      </div>
     </div>
   );
 };

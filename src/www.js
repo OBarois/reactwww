@@ -66,12 +66,12 @@ export default function Map(props) {
       levelZeroDelta: new WorldWind.Location(90, 90)
     };
 
-    //var starFieldLayer = new WorldWind.StarFieldLayer();
+    var starFieldLayer = new WorldWind.StarFieldLayer();
     var atmosphereLayer = new WorldWind.AtmosphereLayer("atmosphere");
 
     var layers = [
       { layer: new WorldWind.WmsLayer(wmsConfig, ""), enabled: true },
-    //  { layer: starFieldLayer, enabled: true },
+      { layer: starFieldLayer, enabled: true },
       { layer: atmosphereLayer, enabled: true }
     ];
 
@@ -80,32 +80,29 @@ export default function Map(props) {
       wwd.current.addLayer(layers[l].layer);
     }
     //var date = new Date();
-    //starFieldLayer.time = date;
+    starFieldLayer.time = new Date(date);
     atmosphereLayer.time = new Date(date);
     wwd.current.redraw();
   }, []); // effect runs only once
 
   useEffect(() => {
-    wwd.current.layers[1].time = new Date(date)
+    wwd.current.layers[1].time = wwd.current.layers[2].time = new Date(date)
     wwd.current.redraw();
   },[date]);
 
 
 
   var globeStyle = {
-    background:  "linear-gradient(rgb(67, 124, 199), #111) repeat scroll 0 0 #222",
-    width: props.width,
-    height: props.height,
+    //background:  "linear-gradient(rgb(67, 124, 199), #111) repeat scroll 0 0 #222",
+    background: 'inherit',
     position: "fixed",
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0
+    //width: props.width,
+    //height: props.height
+    width: 'inherit',
+    height: 'inherit'
   };
 
   return (
-    <div>
       <canvas id={props.id} style={globeStyle} />
-    </div>
   );
 }
