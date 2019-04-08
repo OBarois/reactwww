@@ -11,6 +11,13 @@
   width: 100%;
   z-index: 2000;
 }
+.TimeSwipe {
+  position: fixed;
+  bottom: 1px;
+  background: red;
+  width: 100%;
+  z-index: 2001;
+}
 .Globe {
   position: fixed;
   background: black;

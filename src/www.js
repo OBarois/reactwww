@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import WorldWind from "webworldwind-esa";
 //import { useClock } from "./useClock";
 import { useGlobal } from 'reactn';
@@ -14,7 +14,7 @@ export default function Map(props) {
   
   // toogle projection
   useHotkeys("p",toggleProjection)  
-  const [projection, setProjection] = useState("3D")
+    const [, setProjection] = useState("3D")
   function toggleProjection() {
     setProjection( prevProj => {
       console.log("prevProjection: "+prevProj)
@@ -48,11 +48,16 @@ export default function Map(props) {
   //toggle atmosphere
   useHotkeys("a",toggleAtmosphere)  
   function toggleAtmosphere() {
+    wwd.current.layers[2].enabled = !wwd.current.layers[2].enabled
+  }
+  //toggle starField
+  useHotkeys("s",toggleStarField)  
+  function toggleStarField() {
     wwd.current.layers[1].enabled = !wwd.current.layers[1].enabled
   }
 
   useEffect(() => {
-    console.log("Init Globe")
+    console.log("Init Globe:"+props.starfield)
     var elevationModel = new WorldWind.EarthElevationModel();
     wwd.current = new WorldWind.WorldWindow(props.id, elevationModel);
     //setWwd(wwd);
@@ -71,7 +76,7 @@ export default function Map(props) {
 
     var layers = [
       { layer: new WorldWind.WmsLayer(wmsConfig, ""), enabled: true },
-      { layer: starFieldLayer, enabled: true },
+      { layer: starFieldLayer, enabled: props.starfield },
       { layer: atmosphereLayer, enabled: true }
     ];
 
@@ -80,7 +85,7 @@ export default function Map(props) {
       wwd.current.addLayer(layers[l].layer);
     }
     //var date = new Date();
-    starFieldLayer.time = new Date(date);
+    //starFieldLayer.time = new Date(date);
     atmosphereLayer.time = new Date(date);
     wwd.current.redraw();
   }, []); // effect runs only once

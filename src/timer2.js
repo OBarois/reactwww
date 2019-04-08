@@ -1,26 +1,25 @@
-import React, {useEffect} from "react";
+import React from "react";
 import { useClock } from "./useClock";
 import { setGlobal } from 'reactn';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 
-function Timer({ expiryTimestamp, count }) {
+function Timer({ duration }) {
     const {
         date,
-        start,
-        pause,
+        togglePause,
         reset,
         increaseSpeed,
         decreaseSpeed
     } = useClock({
         autoStart: true,
-        count: count
+        duration: duration
     })
 
     //const [ appdate, setAppdate ] = useGlobal('appdate');
     setGlobal({appdate: date})
 
-    useHotkeys("t",pause)
+    useHotkeys("t",togglePause)
     useHotkeys("r",reset)
     useHotkeys(".",increaseSpeed)
     useHotkeys(",",decreaseSpeed)
