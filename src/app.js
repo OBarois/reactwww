@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Timer from "./timer2";
+import Swiper from "./swipe"
 import Map from "./www";
 //import './App.css';
 //import ReactDOM from "react-dom";
@@ -17,7 +18,7 @@ const mockApi = () => {
 };
 
 const App = () => {
-  const [count, setCount] = useState(1000);
+  //const [count, setCount] = useState(1000);
   const [hasFetched, setFetch] = useState(false);
 
   useEffect(() => {
@@ -28,28 +29,26 @@ const App = () => {
     if (!hasFetched) {
       const apiResponse = await mockApi();
       setFetch(true);
-      setCount(apiResponse);
+      //setCount(apiResponse);
     }
   }
 
-  useEffect(() => {
-    //document.title = "Count: " + count;
-  });
 
   var t = new Date();
   //var count =1000
-  t.setSeconds(t.getSeconds() + 600); // 10 minutes timer
+  t.setSeconds(t.getSeconds() + 10); // 10 minutes timer
 
   return (
     <div className="App">
+    <Swiper></Swiper>
       <div className="Time">
-        <Timer expiryTimestamp={t} count="1500" />
+        <Timer duration="100000"/>
       </div>
       <div className="Globe">
-        <Map id="globe" />
+        <Map id="globe" starfield="true"/>
       </div>
       <div className="Miniglobe">
-      <Map id="miniglobe" />
+      <Map id="miniglobe" starfield="false"/>
       </div>
     </div>
   );
