@@ -45,7 +45,7 @@ const App = () => {
     <div className="App">
       <Fullscreen enabled={isFull} onChange={isFull => setIsfull({isFull})} >
         <div className="Time">
-          <Timer duration="5000"/>
+          <Timer duration="60000"/>
         </div>
         <div className="Globe">
           <Map id="globe" starfield="true"/>
