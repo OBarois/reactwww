@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Timer from "./timer2";
-import Swiper from "./swipe"
+import Timer from "./timer";
 import Map from "./www";
-//import './App.css';
-//import ReactDOM from "react-dom";
+import Fullscreen from "react-full-screen";
+import { useHotkeys } from 'react-hotkeys-hook';
 
 import "./styles.css";
+//import Swiper from "./swipe";
 
 
 const mockApi = () => {
@@ -34,24 +34,25 @@ const App = () => {
   }
 
 
-  var t = new Date();
-  //var count =1000
-  t.setSeconds(t.getSeconds() + 10); // 10 minutes timer
+
+  const [isFull,setIsfull] = useState(false)
+  const goFull = () => {
+    setIsfull(true)
+  }
+  useHotkeys("f",goFull)  
 
   return (
     <div className="App">
-    <Swiper></Swiper>
-      <div className="Time">
-        <Timer duration="100000"/>
-      </div>
-      <div className="Globe">
-        <Map id="globe" starfield="true"/>
-      </div>
-      <div className="Miniglobe">
-      <Map id="miniglobe" starfield="false"/>
-      </div>
-    </div>
+      <Fullscreen enabled={isFull} onChange={isFull => setIsfull({isFull})} >
+        <div className="Time">
+          <Timer duration="5000"/>
+        </div>
+        <div className="Globe">
+          <Map id="globe" starfield="true"/>
+        </div>
+      </Fullscreen>
+   </div>
   );
-};
+}
 
 export default App;
