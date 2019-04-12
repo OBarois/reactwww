@@ -4,8 +4,6 @@ import { setGlobal } from 'reactn';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSwipeable } from 'react-swipeable'
 
-//import {useSpring, animated} from 'react-spring'
-//import { useGesture } from 'react-with-gesture'
 
 
 
