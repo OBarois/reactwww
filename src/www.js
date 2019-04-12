@@ -49,11 +49,13 @@ export default function Map(props) {
   useHotkeys("a",toggleAtmosphere)  
   function toggleAtmosphere() {
     wwd.current.layers[2].enabled = !wwd.current.layers[2].enabled
+    wwd.current.redraw();
   }
   //toggle starField
   useHotkeys("s",toggleStarField)  
   function toggleStarField() {
     wwd.current.layers[1].enabled = !wwd.current.layers[1].enabled
+    wwd.current.redraw();
   }
 
   useEffect(() => {

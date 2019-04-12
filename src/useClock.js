@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import Easing from "easing"
 
 
 export function useClock(settings) {
@@ -36,10 +37,8 @@ export function useClock(settings) {
         }
         timeoutRef.current = setTimeout(() => {
             reset()
-            start()
+            //start()
           }, duration);
-
-              
     }
 
     function togglePause() {
@@ -60,17 +59,25 @@ export function useClock(settings) {
         setDate(initDate.getTime())
     }
 
+    function swipe(velocity,direction) {
+        const x = Easing.event(Math.round(velocity*20),'sinusoidal',{endToEnd:true,duration:Math.round(velocity*1000)})
+        x.on('data', (data) => { 
+            //console.log(step.current*10*data )
+            incrementDate(1000000*data*direction)
+        })
+    }
+
 
     // didMount effect
     useEffect(() => {
         setDate((new Date()).getTime())
         if (autoStart) {
-            console.log("starting Timer... ("+duration+" msec)")
+            console.log("starting Timer... ("+duration/1000+" sec)")
             start();
         }
         return reset;
     }, []);
 
   
-  return { date, togglePause, reset, increaseSpeed, decreaseSpeed };
+  return { date, togglePause, reset, increaseSpeed, decreaseSpeed, swipe };
 }

@@ -3,18 +3,32 @@
   background: red;
   text-shadow: 2px 2px rgba(0, 0, 0, 0.2);
   color: rgb(32, 151, 167);
+  user-select: none;
 }
 
 .Time {
   position: fixed;
-  bottom: 1px;
-  width: 100%;
+  margin: auto;
+  background:rgba(77, 91, 129, 0.3);
+  bottom: 0px;
+  width: 400px;
+  height: 80px;
+  z-index: 2000;
+  fontSize: 20px; 
+  fontKerning: none;
+  left: 50%;
+  margin-left: -200px;
+}
+.Fullscreen {
+  position: fixed;
+  top: 1px;
+  width: 50px;
   z-index: 2000;
 }
 .TimeSwipe {
   position: fixed;
   bottom: 1px;
-  background: red;
+  background: rgb(77, 91, 129);
   width: 100%;
   z-index: 2001;
 }
