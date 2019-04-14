@@ -53,9 +53,12 @@ const App = () => {
   return (
     <div className="App">
       <Fullscreen enabled={isFull} onChange={isFull => setIsfull({isFull})} >
-        <div className="TimeLabel">
-          <TimeLabel duration="3000"/>
+      <div className="TimeLabel">
+          <TimeLabel />
         </div>
+        <div className="Timer">
+          <Timer duration="600000"/>
+        </div> 
         <div className="Globe">
           <Map id="globe" starfield="true"/>
         </div>
