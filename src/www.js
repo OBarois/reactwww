@@ -74,7 +74,7 @@ export default function Map(props) {
     };
 
     var starFieldLayer = new WorldWind.StarFieldLayer();
-    var atmosphereLayer = new WorldWind.AtmosphereLayer("atmosphere");
+    var atmosphereLayer = new WorldWind.AtmosphereLayer();
 
     var layers = [
       { layer: new WorldWind.WmsLayer(wmsConfig, ""), enabled: true },

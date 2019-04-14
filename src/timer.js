@@ -43,11 +43,13 @@ function Timer({ duration }) {
         swipe(e.velocity,(e.dir == "Left")?-1:1)
     }
 
-
     return (
+/*
         <div {...handlers} style={{display: "flex", justifyContent: "center", alignItems: "center", width:"100%", height: "100%"}}>
             {(new Date(date) ).toUTCString()}
         </div>
+*/
+    <div />
     );
 }
 

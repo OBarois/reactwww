@@ -8,8 +8,9 @@
 
 .Timer {
   position: fixed;
+  visibility: hidden;
   margin: auto;
-  background:rgba(77, 91, 129, 0.3);
+  background:rgba(120, 77, 129, 0.829);
   bottom: 0px;
   width: 400px;
   height: 80px;

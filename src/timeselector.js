@@ -36,6 +36,7 @@ function TimeSelector(props)  {
             const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[1]+height/2)*factor)}
             const setFinalTime = () => {setFinalposition(min+(-dest+height/2)*factor)}                
             set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: { mass: 1, tension: 120 , friction: 14, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
+            //set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
         } else {    
             let pos = target.getBoundingClientRect().left
             let leftOrigin = target.parentNode.getBoundingClientRect().left
@@ -48,6 +49,7 @@ function TimeSelector(props)  {
             const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[0]+width/2)*factor)}
             const setFinalTime = () => {setFinalposition(min+(-dest+width/2)*factor)}                
             set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: { mass: 1, tension: 120 , friction: 14, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
+            //set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
         }
         return temp    
     })

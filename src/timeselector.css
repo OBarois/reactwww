@@ -15,6 +15,7 @@
 
 .TimeScaleLabel {
     position: absolute;
+    display: hidden;
     font-kerning: none;
     bottom: 3px;
     left: 50%;
