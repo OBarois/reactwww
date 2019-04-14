@@ -1,0 +1,25 @@
+.TimeContainer {
+    position: relative;
+    background: rgba(26, 60, 99, 0.274);
+    overflow: hidden;
+}
+
+.TimeScale {
+    position: relative;
+    white-space: nowrap;
+    font-kerning: none;
+    background: rgba(26, 60, 99, 0);
+    top: 0px;
+    left: 0px;
+}
+
+.TimeScaleLabel {
+    position: absolute;
+    font-kerning: none;
+    bottom: 3px;
+    left: 50%;
+    margin-left: -200px;
+    width: 400px;
+    height: 40px;
+    background: rgba(165, 151, 63, 0.5);
+}

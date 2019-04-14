@@ -6,7 +6,7 @@
   user-select: none;
 }
 
-.Time {
+.Timer {
   position: fixed;
   margin: auto;
   background:rgba(77, 91, 129, 0.3);
@@ -14,8 +14,21 @@
   width: 400px;
   height: 80px;
   z-index: 2000;
-  fontSize: 20px; 
-  fontKerning: none;
+  font-size: 20px; 
+  font-kerning: none;
+  left: 50%;
+  margin-left: -200px;
+}
+.TimeLabel {
+  position: fixed;
+  margin: auto;
+  background:rgba(77, 91, 129, 0);
+  top: 0px;
+  width: 400px;
+  height: 80px;
+  z-index: 2000;
+  font-size: 20px; 
+  font-kerning: none;
   left: 50%;
   margin-left: -200px;
 }
@@ -32,6 +45,25 @@
   width: 100%;
   z-index: 2001;
 }
+.TimeSelectorh {
+  position: fixed;
+  bottom: 0px;
+  left: 50%;
+  margin-left: -250px;
+  width: 550px;
+  height: 100px;
+  z-index: 2001;
+}
+.TimeSelectorv {
+  position: fixed;
+  top: 50%;
+  right: 0px;
+  margin-top: -250px;
+  width: 100px;
+  height: 200px;
+  z-index: 2001;
+}
+
 .Globe {
   position: fixed;
   background: black;
