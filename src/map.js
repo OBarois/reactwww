@@ -8,7 +8,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 export default function Map(props) {
   //const [wwd, setWwd] = useState([]);
   //const [date, setDate] = useState(0);
-  const [date, setAppdate ] = useGlobal('appdate')
+  const [appdate, setAppdate ] = useGlobal('appdate')
   const wwd = useRef(null)
   
   
@@ -59,7 +59,7 @@ export default function Map(props) {
   }
 
   useEffect(() => {
-    console.log("Init Globe:"+props.starfield)
+    console.log("useEffect (mount) in Map")
     var elevationModel = new WorldWind.EarthElevationModel();
     wwd.current = new WorldWind.WorldWindow(props.id, elevationModel);
     //setWwd(wwd);
@@ -71,7 +71,7 @@ export default function Map(props) {
       size: 256,
       sector: WorldWind.Sector.FULL_SPHERE,
       levelZeroDelta: new WorldWind.Location(90, 90)
-    };
+    }
 
     var starFieldLayer = new WorldWind.StarFieldLayer();
     var atmosphereLayer = new WorldWind.AtmosphereLayer();
@@ -87,15 +87,16 @@ export default function Map(props) {
       wwd.current.addLayer(layers[l].layer);
     }
     //var date = new Date();
-    //starFieldLayer.time = new Date(date);
-    atmosphereLayer.time = new Date(date);
+    starFieldLayer.time = new Date(appdate);
+    atmosphereLayer.time = new Date(appdate);
     wwd.current.redraw();
   }, []); // effect runs only once
 
   useEffect(() => {
-    wwd.current.layers[1].time = wwd.current.layers[2].time = new Date(date)
+    //console.log("useEffect (appdate) in Map")
+    wwd.current.layers[1].time = wwd.current.layers[2].time = new Date(appdate)
     wwd.current.redraw();
-  },[date]);
+  },[appdate]);
 
 
 

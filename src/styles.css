@@ -6,19 +6,19 @@
   user-select: none;
 }
 
-.Timer {
+.ClockController {
   position: fixed;
-  visibility: hidden;
+  
   margin: auto;
-  background:rgba(120, 77, 129, 0.829);
-  bottom: 0px;
-  width: 400px;
-  height: 80px;
-  z-index: 2000;
+  background:rgba(192, 28, 224, 0.829);
+  top: 0px;
+  width: 20px;
+  height: 20px;
+  z-index: 2003;
   font-size: 20px; 
   font-kerning: none;
   left: 50%;
-  margin-left: -200px;
+  margin-left: -10px;
 }
 .TimeLabel {
   position: fixed;

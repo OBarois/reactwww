@@ -1,19 +1,22 @@
 import { useState, useEffect, useRef } from "react";
-import Easing from "easing"
 
 
-export function useClock(settings) {
-    const { autoStart, duration } = settings || {};
+export function useClock({ autoStart, duration }) {
+    //console.log('useClock renders')
+    //const { autoStart, duration } = settings || {};
   
-    const [date, setDate] = useState((new Date()).getTime());
+    let initDate = (new Date()).getTime()
+    const [date, setDate] = useState(initDate)
+    const ldate = useRef();
 
     // refresh rate in msec
-    const refreshRate = 10
+    const refreshRate = 50
 
     function incrementDate(step) {
-        setDate(prevDate => { return prevDate + step  });
-        //let newdate = date+120000
-        //setDate(date)
+        //setDate(prevDate => { return prevDate + step  });
+        ldate.current += step 
+        //setDate((new Date(ldate.current)).getTime());
+        setDate(ldate.current);
     }
       
 
@@ -21,6 +24,7 @@ export function useClock(settings) {
     const intervalRef = useRef();
     const step = useRef(refreshRate);
     const timeoutRef = useRef();
+    
 
     function increaseSpeed() {
         step.current = (step.current > 0)? step.current *= 2:step.current /= 2
@@ -33,15 +37,17 @@ export function useClock(settings) {
 
     function start() {
         if (!intervalRef.current) {
+            console.log('will start with step: '+step.current)
             intervalRef.current = setInterval(() => incrementDate(step.current), refreshRate);
         }
         timeoutRef.current = setTimeout(() => {
-            reset()
+            togglePause()
             //start()
           }, duration);
     }
 
     function togglePause() {
+        console.log('toggle')
         if(timeoutRef.current) clearTimeout(timeoutRef.current)
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
@@ -50,34 +56,39 @@ export function useClock(settings) {
     }
 
     function reset() {
+        console.log('reset')
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = undefined;
         }
-        let initDate = new Date()
+        let initDate = (new Date()).getTime()
         step.current = refreshRate
-        setDate(initDate.getTime())
+        setDate(initDate)
+        ldate.current = initDate
     }
 
-    function swipe(velocity,direction) {
-        const x = Easing.event(Math.round(velocity*20),'sinusoidal',{endToEnd:true,duration:Math.round(velocity*1000)})
-        x.on('data', (data) => { 
-            //console.log(step.current*10*data )
-            incrementDate(1000000*data*direction)
-        })
+     
+    function forceDate(newdate) {
+        ldate.current = newdate
     }
 
 
     // didMount effect
     useEffect(() => {
         setDate((new Date()).getTime())
+        console.log('date after setting: '+date)
+        ldate.current = date
+        console.log('init date to: '+ldate.current)
         if (autoStart) {
             console.log("starting Timer... ("+duration/1000+" sec)")
             start();
         }
-        return reset;
+        //return reset;
     }, []);
+    useEffect(() => {
+        //console.log('ldate changed to: '+ldate.current)
+    }, [ldate.current]);
 
   
-  return { date, togglePause, reset, increaseSpeed, decreaseSpeed, swipe };
+  return { date, togglePause, reset, increaseSpeed, decreaseSpeed, forceDate };
 }
