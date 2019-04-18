@@ -1,17 +1,21 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useEffect } from "react"
 import { useClock } from "./useClock";
-import { useGlobal, setGlobal } from 'reactn';
+import { useGlobal } from 'reactn';
 import { useHotkeys } from 'react-hotkeys-hook';
 import playImage from './images/play.png'
-//import pauseImage from './images/pause.png'
+import pauseImage from './images/pause.png'
 
 
 
 
 
 function ClockController({ duration }) {
+
+    const [ appdate, setAppdate ] = useGlobal('appdate');
+
     const {
         date,
+        playing,
         togglePause,
         reset,
         increaseSpeed,
@@ -19,10 +23,12 @@ function ClockController({ duration }) {
         forceDate
     } = useClock({
         autoStart: false,
-        duration: duration
+        duration: duration,
+        startdate: appdate
     })
 
-    const [ appdate, setAppdate ] = useGlobal('appdate');
+    //const [playing, setPlaying ] = useState(false);
+    //const [playpauseimage, setPlaypauseimage] = useState((playing?pauseImage:playImage))
     //setGlobal({appdate: date})
 
     useHotkeys("t",togglePause)
@@ -32,12 +38,18 @@ function ClockController({ duration }) {
 
     //const dateLabel = (new Date(date) ).toUTCString()
 
+
+    useEffect(() => {
+        console.log("playing: "+playing)
+    },[playing]);
+
     useEffect(() => {
         console.log("useEffect (date) in ClockController")
         setAppdate(date)
         //forceDate(date)
         //setAppdate({appdate: new Date(date)})
     },[date]);
+
     useEffect(() => {
         //console.log("useEffect (appdate) in ClockController")
         //setAppdate(date)
@@ -57,7 +69,7 @@ function ClockController({ duration }) {
             {(new Date(date) ).toUTCString()}
         </div>
 */
-    <div onClick={togglePause}><img src={playImage} /></div>
+    <div onClick={togglePause}><img className='Buttons' src={playing?pauseImage:playImage} /></div>
     );
 }
 

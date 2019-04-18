@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Timer from "./clockController";
+import ClockController from "./clockController";
 import Map from "./map";
 import Fullscreen from "react-full-screen";
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -60,7 +60,7 @@ const App = () => {
           <TimeLabel />
         </div>
         <div className="ClockController">
-          <Timer duration="600000"/>
+          <ClockController duration="600000"/>
         </div> 
 
         <div className="Globe">

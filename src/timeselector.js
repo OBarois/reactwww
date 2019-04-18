@@ -22,10 +22,9 @@ function TimeSelector(props)  {
     const vertical = props.direction=="vertical"?true:false
 
     const wid = max - min
-    console.log('min: '+min+' / wid: '+wid)
-    const [finalPosition, setFinalposition] = useState(0)
-    const [livePosition, setLiveposition] = useState(0)
     const [appdate, setAppdate] = useGlobal('appdate')
+    const [finalPosition, setFinalposition] = useState(appdate)
+    const [livePosition, setLiveposition] = useState(appdate)
 
     const [{ xy,pos }, set] = useSpring(() => ({ xy: [0, 0], pos: 0 }))
 
@@ -94,7 +93,7 @@ function TimeSelector(props)  {
     },[finalPosition])
 
     useEffect(() => {
-        console.log("Active changed to: "+active)   
+        //console.log("Active changed to: "+active)   
     },[active]);
 
     return (

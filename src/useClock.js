@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 
 
-export function useClock({ autoStart, duration }) {
+export function useClock({ autoStart, duration, startdate }) {
     //console.log('useClock renders')
     //const { autoStart, duration } = settings || {};
   
-    let initDate = (new Date()).getTime()
+    let initDate = startdate
     const [date, setDate] = useState(initDate)
+    const [playing, setPlaying] = useState(false)
     const ldate = useRef();
 
     // refresh rate in msec
@@ -39,6 +40,7 @@ export function useClock({ autoStart, duration }) {
         if (!intervalRef.current) {
             console.log('will start with step: '+step.current)
             intervalRef.current = setInterval(() => incrementDate(step.current), refreshRate);
+            setPlaying(true)
         }
         timeoutRef.current = setTimeout(() => {
             togglePause()
@@ -47,19 +49,21 @@ export function useClock({ autoStart, duration }) {
     }
 
     function togglePause() {
-        console.log('toggle')
+        console.log('toggle clock')
         if(timeoutRef.current) clearTimeout(timeoutRef.current)
         if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = undefined;
+            setPlaying(false)
+            clearInterval(intervalRef.current)
+            intervalRef.current = undefined
         } else start()
     }
 
     function reset() {
         console.log('reset')
         if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = undefined;
+            clearInterval(intervalRef.current)
+            intervalRef.current = undefined
+            setPlaying(false)
         }
         let initDate = (new Date()).getTime()
         step.current = refreshRate
@@ -86,9 +90,9 @@ export function useClock({ autoStart, duration }) {
         //return reset;
     }, []);
     useEffect(() => {
-        //console.log('ldate changed to: '+ldate.current)
-    }, [ldate.current]);
+        console.log('intervalRef.current changed to: '+intervalRef.current)
+    }, [intervalRef.current]);
 
   
-  return { date, togglePause, reset, increaseSpeed, decreaseSpeed, forceDate };
+  return { date, playing, togglePause, reset, increaseSpeed, decreaseSpeed, forceDate };
 }

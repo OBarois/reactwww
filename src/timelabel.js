@@ -4,7 +4,7 @@ import { useGlobal } from 'reactn';
 
 
 
-function TimerLabel() {
+function TimeLabel() {
 
     const [ appdate, setAppdate ] = useGlobal('appdate');
     //console.log("Render TimerLabel (appdate): "+appdate)
@@ -16,4 +16,4 @@ function TimerLabel() {
     );
 }
 
-export default TimerLabel;
+export default TimeLabel;
