@@ -56,7 +56,7 @@ const App = () => {
   return (
     <div className="App">
       <Fullscreen enabled={isFull} onChange={isFull => setIsfull({isFull})} >
-        <div className="TimeLabel" >
+        <div className="TimeLabel">
           <TimeLabel />
         </div>
         <div className="ClockController">
