@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react"
 import { useClock } from "./useClock";
 import { useGlobal, setGlobal } from 'reactn';
 import { useHotkeys } from 'react-hotkeys-hook';
+import playImage from './images/play.png'
+//import pauseImage from './images/pause.png'
+
 
 
 
@@ -54,7 +57,7 @@ function ClockController({ duration }) {
             {(new Date(date) ).toUTCString()}
         </div>
 */
-    <div onClick={togglePause}>start</div>
+    <div onClick={togglePause}><img src={playImage} /></div>
     );
 }
 
