@@ -16,7 +16,8 @@
     "react-touch": "^0.4.4",
     "react-with-gesture": "^4.0.8",
     "reactn": "^1.0.0",
-    "webworldwind-esa": "^0.10.0-alpha"
+    "webworldwind-esa": "^0.10.0-alpha",
+    "wellknown": "^0.5.0"
   },
   "devDependencies": {
     "gh-pages": "^2.0.1",

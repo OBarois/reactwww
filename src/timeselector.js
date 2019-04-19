@@ -23,6 +23,7 @@ function TimeSelector(props)  {
 
     const wid = max - min
     const [appdate, setAppdate] = useGlobal('appdate')
+    const [searchdate, setSearchdate] = useGlobal('searchdate')
     const [finalPosition, setFinalposition] = useState(appdate)
     const [livePosition, setLiveposition] = useState(appdate)
 
@@ -34,7 +35,7 @@ function TimeSelector(props)  {
         //setActive(true)
         //console.log('active: '+active)
 
-        const runBefore = () => {setActive(true)}        
+        const runBefore = () => {setActive(down)}        
         if(vertical) {    
             let pos = target.getBoundingClientRect().top
             let topOrigin = target.parentNode.getBoundingClientRect().top
@@ -44,7 +45,7 @@ function TimeSelector(props)  {
             //tbd: 400 is the height of widget
             dest = (pos+delta[1]+temp[1]<-scaleheight+height)?Math.max(-1*(max-min-height/2),delta[1]+temp[1]):dest
             const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-            const setFinalTime = () => {setFinalposition(min+(-dest+height/2)*zoomfactor);setActive(false)}                
+            const setFinalTime = () => {setFinalposition(min+(-dest+height/2)*zoomfactor);setActive(down)}                
             set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: { mass: 1, tension: 120 , friction: 14, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
             //set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
         } else {    
@@ -56,7 +57,7 @@ function TimeSelector(props)  {
             let dest = (pos+delta[0]+temp[0]>=leftOrigin+width)?Math.min(width/2,delta[0]+temp[0]):delta[0]+temp[0]
             dest = (pos+delta[0]+temp[0]<-scalewidth-width/2)?Math.max(-1*(max-min-width/2),delta[0]+temp[0]):dest
             const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[0]+width/2)*zoomfactor)}
-            const setFinalTime = () => {setFinalposition(min+(-dest+width/2)*zoomfactor);setActive(false)}                
+            const setFinalTime = () => {setFinalposition(min+(-dest+width/2)*zoomfactor);setActive(down)}                
             set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: { mass: 1, tension: 120 , friction: 14, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
             //set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: {  tension: 1200 , friction: 40, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
             //set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
@@ -75,7 +76,7 @@ function TimeSelector(props)  {
     }
 
     useEffect(() => {
-        console.log("useEffect (livePosition) in TimeSelector: "+livePosition)
+        //console.log("useEffect (livePosition) in TimeSelector: "+livePosition)
         if(active) setAppdate(livePosition)
     },[livePosition])
 
@@ -89,11 +90,11 @@ function TimeSelector(props)  {
 
     useEffect(() => {
         //console.log("useEffect (finalPosition) in TimeSelector: "+finalPosition)
-        setAppdate(finalPosition)
+        if(!active) setSearchdate(finalPosition)
     },[finalPosition])
 
     useEffect(() => {
-        //console.log("Active changed to: "+active)   
+        console.log("Active changed to: "+active)   
     },[active]);
 
     return (

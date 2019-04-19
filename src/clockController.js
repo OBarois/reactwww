@@ -27,9 +27,6 @@ function ClockController({ duration }) {
         startdate: appdate
     })
 
-    //const [playing, setPlaying ] = useState(false);
-    //const [playpauseimage, setPlaypauseimage] = useState((playing?pauseImage:playImage))
-    //setGlobal({appdate: date})
 
     useHotkeys("t",togglePause)
     useHotkeys("r",reset)
@@ -39,12 +36,9 @@ function ClockController({ duration }) {
     //const dateLabel = (new Date(date) ).toUTCString()
 
 
-    useEffect(() => {
-        console.log("playing: "+playing)
-    },[playing]);
 
     useEffect(() => {
-        console.log("useEffect (date) in ClockController")
+        //console.log("useEffect (date) in ClockController")
         setAppdate(date)
         //forceDate(date)
         //setAppdate({appdate: new Date(date)})
@@ -69,7 +63,7 @@ function ClockController({ duration }) {
             {(new Date(date) ).toUTCString()}
         </div>
 */
-    <div onClick={togglePause}><img className='Buttons' src={playing?pauseImage:playImage} /></div>
+    <div onClick={togglePause}><img className='Buttons' src={playing?pauseImage:playImage} alt=''/></div>
     );
 }
 

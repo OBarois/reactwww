@@ -38,7 +38,6 @@ export function useClock({ autoStart, duration, startdate }) {
 
     function start() {
         if (!intervalRef.current) {
-            console.log('will start with step: '+step.current)
             intervalRef.current = setInterval(() => incrementDate(step.current), refreshRate);
             setPlaying(true)
         }
@@ -89,9 +88,6 @@ export function useClock({ autoStart, duration, startdate }) {
         }
         //return reset;
     }, []);
-    useEffect(() => {
-        console.log('intervalRef.current changed to: '+intervalRef.current)
-    }, [intervalRef.current]);
 
   
   return { date, playing, togglePause, reset, increaseSpeed, decreaseSpeed, forceDate };

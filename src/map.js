@@ -3,6 +3,8 @@ import WorldWind from "webworldwind-esa";
 //import { useClock } from "./useClock";
 import { useGlobal } from 'reactn';
 import { useHotkeys } from 'react-hotkeys-hook';
+import useDatahub from "./useDatahub";
+
 
 
 export default function Map(props) {
@@ -15,7 +17,9 @@ export default function Map(props) {
   // toogle projection
   useHotkeys("p",toggleProjection)  
     const [, setProjection] = useState("3D")
-  function toggleProjection() {
+
+
+    function toggleProjection() {
     setProjection( prevProj => {
       console.log("prevProjection: "+prevProj)
       let supportedProjections = [ "3D", "Equirectangular", "Mercator"];
@@ -58,6 +62,54 @@ export default function Map(props) {
     wwd.current.redraw();
   }
 
+  function addGeoJson(url) {
+    function shapeConfigurationCallback(geometry, properties) {
+        var configuration = {};
+
+        var placemarkAttributes = new WorldWind.PlacemarkAttributes(null);
+        placemarkAttributes.imageScale = 10;
+        placemarkAttributes.imageColor = new WorldWind.Color(0, 1, 1, 0.2);
+        placemarkAttributes.labelAttributes.offset = new WorldWind.Offset(
+            WorldWind.OFFSET_FRACTION, 5,
+            WorldWind.OFFSET_FRACTION, 5);
+        //placemarkAttributes.imageSource = whiteDot;
+
+
+        if (geometry.isPointType() || geometry.isMultiPointType()) {
+            configuration.attributes = new WorldWind.PlacemarkAttributes(placemarkAttributes);
+            
+        } else if (geometry.isLineStringType() || geometry.isMultiLineStringType()) {
+            configuration.attributes.drawOutline = true;
+            configuration.attributes.outlineColor = new WorldWind.Color(
+              0.1 * configuration.attributes.interiorColor.red,
+              0.3 * configuration.attributes.interiorColor.green,
+              0.7 * configuration.attributes.interiorColor.blue,
+              1
+            );
+            configuration.attributes.outlineWidth = 1;
+        } else if (geometry.isPolygonType() || geometry.isMultiPolygonType()) {
+            configuration.attributes = new WorldWind.ShapeAttributes(null);
+            configuration.attributes.interiorColor = new WorldWind.Color(0, 1, 1, 0.2);
+            configuration.attributes.outlineColor = new WorldWind.Color(1, 1, 1, 1);
+        }
+
+        console.log(configuration.attributes);
+        return configuration;
+    }
+
+    function loadCompleteCallback() {
+        wwd.current.redraw();
+    }
+
+
+    let renderableLayer = new WorldWind.RenderableLayer("GeoJSON");
+    wwd.current.addLayer(renderableLayer);
+    let geoJson = new WorldWind.GeoJSONParser(url);
+    geoJson.load(loadCompleteCallback, shapeConfigurationCallback, renderableLayer);
+}
+
+
+
   useEffect(() => {
     console.log("useEffect (mount) in Map")
     var elevationModel = new WorldWind.EarthElevationModel();
@@ -98,6 +150,16 @@ export default function Map(props) {
     wwd.current.redraw();
   },[appdate]);
 
+  const searchURL = 'https://scihub.copernicus.eu/apihub/search?q=(%20%20platformname:Sentinel-1)&start=0&rows=50&sortedby=ingestiondate&order=desc&format=json'
+  const { data, loading } = useDatahub(searchURL);
+  useEffect(() => {
+    console.log('datahub in use')
+    if(!loading) {
+      console.log(data)
+      addGeoJson(data)
+    }
+
+  },[data,loading]);
 
 
   var globeStyle = {

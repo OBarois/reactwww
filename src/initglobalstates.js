@@ -6,4 +6,5 @@ export  function initGlobalStates() {
 
     // Set current time as global state
     setGlobal({appdate: ((new Date()).getTime())})
+    setGlobal({searchdate: ((new Date()).getTime())})
 }
