@@ -98,7 +98,7 @@ export default function dhusToGeojson(response) {
         console.log(response);
         console.log("Error: ");
         console.log(err);
-        return;
+        features = []
     }
     //console.log(JSON.stringify(features));
     let geojson = {   

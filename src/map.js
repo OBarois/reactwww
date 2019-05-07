@@ -10,8 +10,10 @@ import useDatahub from "./useDatahub";
 export default function Map(props) {
   //const [wwd, setWwd] = useState([]);
   //const [date, setDate] = useState(0);
-  const [appdate, setAppdate ] = useGlobal('appdate')
+
+
   const wwd = useRef(null)
+  const [geogsonlayer, setGeogsonlayer] = useState([])
   
   
   // toogle projection
@@ -93,7 +95,7 @@ export default function Map(props) {
             configuration.attributes.outlineColor = new WorldWind.Color(1, 1, 1, 1);
         }
 
-        console.log(configuration.attributes);
+        //console.log(configuration.attributes);
         return configuration;
     }
 
@@ -102,8 +104,10 @@ export default function Map(props) {
     }
 
 
-    let renderableLayer = new WorldWind.RenderableLayer("GeoJSON");
+    let renderableLayer = new WorldWind.RenderableLayer("GeoJSON")
+    wwd.current.removeLayer(geogsonlayer)
     wwd.current.addLayer(renderableLayer);
+    setGeogsonlayer(renderableLayer)
     let geoJson = new WorldWind.GeoJSONParser(url);
     geoJson.load(loadCompleteCallback, shapeConfigurationCallback, renderableLayer);
 }
@@ -144,21 +148,22 @@ export default function Map(props) {
     wwd.current.redraw();
   }, []); // effect runs only once
 
+  // The Map component reacts to changes of the global state 'appdate' (in ms since Epoch)
+  const [appdate, setAppdate ] = useGlobal('appdate')
   useEffect(() => {
     //console.log("useEffect (appdate) in Map")
     wwd.current.layers[1].time = wwd.current.layers[2].time = new Date(appdate)
     wwd.current.redraw();
   },[appdate]);
 
-  const searchURL = 'https://scihub.copernicus.eu/apihub/search?q=(%20%20platformname:Sentinel-1)&start=0&rows=50&sortedby=ingestiondate&order=desc&format=json'
-  const { data, loading } = useDatahub(searchURL);
+  // The Map component reacts to changes of geoJson data provided by the Copernicus Sentinel data hub
+  const { data, loading } = useDatahub();
   useEffect(() => {
     console.log('datahub in use')
     if(!loading) {
       console.log(data)
       addGeoJson(data)
     }
-
   },[data,loading]);
 
 

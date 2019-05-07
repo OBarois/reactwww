@@ -17,8 +17,8 @@ const App = () => {
 
 
   // Set boundaries of the time scale
-  const [min, setMin] = useState((new Date("2019-04-10")).getTime())
-  const [max, setMax] = useState((new Date()).getTime())
+  const [min, setMin] = useState((new Date("2014-04-10")).getTime())
+  const [max, setMax] = useState((new Date("2019-12-31")).getTime())
 
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const App = () => {
         <div className="Globe">
           <Map id="globe" starfield="true"/>
         </div>
-        <div className="TimeSelectorh">
+        <div className="TimeSelectorh-m">
           <TimeSelector min={min} max={max} direction="horizontal"/>
         </div>
         
