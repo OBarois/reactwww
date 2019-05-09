@@ -4,7 +4,7 @@
     overflow: hidden;
     font-family: verdana;
     text-shadow: 2px 2px  rgba(43, 48, 5, 0.226);
-    color: rgba(223, 235, 119, 0.5);
+    color: rgba(235, 38, 23, 0.5);
     font-kerning: none;
  
 
@@ -28,7 +28,7 @@
     margin-left: -200px;
     width: 400px;
     height: 40px;
-    background: rgba(165, 151, 63, 0.5);
+    background: rgba(214, 51, 45, 0.61);
 }
 
 .DayTic {

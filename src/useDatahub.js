@@ -8,6 +8,7 @@ import dateFormat from "dateformat"
 export default function useDatahub(baseurl) {
 
     const searchURL = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-1%20AND%20producttype:GRD)&start=0&rows=50&sortedby=ingestiondate&order=desc&format=json'
+    //const searchURL = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-2)&start=0&rows=50&sortedby=ingestiondate&order=desc&format=json'
     let url = searchURL
     // search time window size in ms
     const windowSize = 1000 * 60 * 60 * 3

@@ -54,12 +54,19 @@ export default function Map(props) {
   //toggle atmosphere
   useHotkeys("a",toggleAtmosphere)  
   function toggleAtmosphere() {
-    wwd.current.layers[2].enabled = !wwd.current.layers[2].enabled
+    wwd.current.layers[3].enabled = !wwd.current.layers[3].enabled
     wwd.current.redraw();
   }
   //toggle starField
   useHotkeys("s",toggleStarField)  
   function toggleStarField() {
+    wwd.current.layers[2].enabled = !wwd.current.layers[2].enabled
+    wwd.current.redraw();
+  }
+
+  //toggle names
+  useHotkeys("n",togglePlaceNames)  
+  function togglePlaceNames() {
     wwd.current.layers[1].enabled = !wwd.current.layers[1].enabled
     wwd.current.redraw();
   }
@@ -119,9 +126,18 @@ export default function Map(props) {
     var elevationModel = new WorldWind.EarthElevationModel();
     wwd.current = new WorldWind.WorldWindow(props.id, elevationModel);
     //setWwd(wwd);
-    var wmsConfig = {
+    var wmsConfig1 = {
       service: "https://tiles.maps.eox.at/wms",
       layerNames: "s2cloudless-2018",
+      numLevels: 19,
+      format: "image/png",
+      size: 256,
+      sector: WorldWind.Sector.FULL_SPHERE,
+      levelZeroDelta: new WorldWind.Location(90, 90)
+    }
+    var wmsConfig2 = {
+      service: "https://tiles.maps.eox.at/wms",
+      layerNames: "overlay",
       numLevels: 19,
       format: "image/png",
       size: 256,
@@ -133,7 +149,8 @@ export default function Map(props) {
     var atmosphereLayer = new WorldWind.AtmosphereLayer();
 
     var layers = [
-      { layer: new WorldWind.WmsLayer(wmsConfig, ""), enabled: true },
+      { layer: new WorldWind.WmsLayer(wmsConfig1, ""), enabled: true },
+      { layer: new WorldWind.WmsLayer(wmsConfig2, ""), enabled: true },
       { layer: starFieldLayer, enabled: props.starfield },
       { layer: atmosphereLayer, enabled: true }
     ];
@@ -152,7 +169,7 @@ export default function Map(props) {
   const [appdate, setAppdate ] = useGlobal('appdate')
   useEffect(() => {
     //console.log("useEffect (appdate) in Map")
-    wwd.current.layers[1].time = wwd.current.layers[2].time = new Date(appdate)
+    wwd.current.layers[2].time = wwd.current.layers[3].time = new Date(appdate)
     wwd.current.redraw();
   },[appdate]);
 
