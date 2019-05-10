@@ -13,15 +13,23 @@ export default function Map(props) {
 
 
   const wwd = useRef(null)
-  const [geogsonlayer, setGeogsonlayer] = useState([])
   
   
   // toogle projection
   useHotkeys("p",toggleProjection)  
-    const [, setProjection] = useState("3D")
+  const [, setProjection] = useState("3D")
+
+  // remove geojson layers
+  useHotkeys("c",removeGeoJson)  
+  const [geojsonlayers, setGeojsonlayers] = useState([])
+  useEffect(() => {
+    console.log('geojson changed')
+    console.log(geojsonlayers)
+  },[geojsonlayers]);
 
 
-    function toggleProjection() {
+
+  function toggleProjection() {
     setProjection( prevProj => {
       console.log("prevProjection: "+prevProj)
       let supportedProjections = [ "3D", "Equirectangular", "Mercator"];
@@ -111,15 +119,24 @@ export default function Map(props) {
     }
 
 
-    let renderableLayer = new WorldWind.RenderableLayer("GeoJSON")
-    wwd.current.removeLayer(geogsonlayer)
+    let renderableLayer = new WorldWind.RenderableLayer("GeoJSON_"+(new Date()))
+    removeGeoJson()
     wwd.current.addLayer(renderableLayer);
-    setGeogsonlayer(renderableLayer)
+    setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
     let geoJson = new WorldWind.GeoJSONParser(url);
     geoJson.load(loadCompleteCallback, shapeConfigurationCallback, renderableLayer);
 }
 
+  function removeGeoJson() {
+    console.log('removing json layers ')
 
+    for(let i=0;i<geojsonlayers.length;i++) {
+      wwd.current.removeLayer(geojsonlayers[i])
+      console.log(geojsonlayers[i])
+    }
+    setGeojsonlayers([])
+    wwd.current.redraw();
+  }
 
   useEffect(() => {
     console.log("useEffect (mount) in Map")
@@ -138,7 +155,7 @@ export default function Map(props) {
 
     var wmsConfigNames = {
       service: "https://tiles.maps.eox.at/wms",
-      layerNames: "overlay",
+      layerNames: "overlay_bright",
       numLevels: 19,
       format: "image/png",
       size: 256,

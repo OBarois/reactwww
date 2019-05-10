@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ClockController from "./clockController";
 import Map from "./map";
+import MissionSelector from "./missionselector";
 import Fullscreen from "react-full-screen";
 import { useFullscreen } from '@straw-hat/react-fullscreen';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -77,9 +78,9 @@ const App = () => {
           <Map id="globe" starfield="true"/>
         </div>
         <div className={vertical?"TimeSelectorv":"TimeSelectorh"}>
-        <TimeSelector min={min} max={max} vertical={vertical}/>
-      </div>
-      
+          <TimeSelector min={min} max={max} vertical={vertical}/>
+        </div>
+        <MissionSelector mission='S1'/>
       </Fullscreen>
    </div>
   );

@@ -66,7 +66,7 @@ function TimeSelector(props)  {
             //tbd: 400 is the height of widget
             dest = (pos+fardelta+temp[1]<= -scaleheight+height/2)?Math.max(-1*(max-min-height/2),fardelta+temp[1]):dest
             const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-            const setFinalTime = () => {setActive(down); setFinalposition(min+(-dest+height/2)*zoomfactor)}                
+            const setFinalTime = () => {console.log('final: '+down);setActive(down); setFinalposition(min+(-dest+height/2)*zoomfactor)}                
             set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
             //set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
         } else {    
@@ -168,9 +168,9 @@ function TimeSelector(props)  {
     },[appdate,timescale])
 
     useEffect(() => {
-        //console.log("useEffect (finalPosition) in TimeSelector: "+finalPosition+'  '+active)
+        console.log("useEffect (finalPosition) in TimeSelector: "+finalPosition+'  '+active)
         if(!active) setSearchdate(finalPosition)
-    },[finalPosition])
+    },[finalPosition,active])
 
     useEffect(() => {
         console.log("zoom changed to: "+props.zoom)
