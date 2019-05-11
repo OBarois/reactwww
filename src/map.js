@@ -72,15 +72,9 @@ export default function Map(props) {
     wwd.current.redraw();
   }
 
-<<<<<<< HEAD
-  //toggle names
-  useHotkeys("n",togglePlaceNames)  
-  function togglePlaceNames() {
-=======
   //toggle starField
   useHotkeys("n",toggleNames)  
   function toggleNames() {
->>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
     wwd.current.layers[1].enabled = !wwd.current.layers[1].enabled
     wwd.current.redraw();
   }
@@ -128,6 +122,7 @@ export default function Map(props) {
     let renderableLayer = new WorldWind.RenderableLayer("GeoJSON_"+(new Date()))
     removeGeoJson()
     wwd.current.addLayer(renderableLayer);
+    //setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
     setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
     let geoJson = new WorldWind.GeoJSONParser(url);
     geoJson.load(loadCompleteCallback, shapeConfigurationCallback, renderableLayer);
@@ -135,12 +130,13 @@ export default function Map(props) {
 
   function removeGeoJson() {
     console.log('removing json layers ')
-
+    console.log(geojsonlayers)
     for(let i=0;i<geojsonlayers.length;i++) {
       wwd.current.removeLayer(geojsonlayers[i])
       console.log(geojsonlayers[i])
     }
     setGeojsonlayers([])
+    console.log(geojsonlayers)
     wwd.current.redraw();
   }
 
@@ -149,11 +145,7 @@ export default function Map(props) {
     var elevationModel = new WorldWind.EarthElevationModel();
     wwd.current = new WorldWind.WorldWindow(props.id, elevationModel);
     //setWwd(wwd);
-<<<<<<< HEAD
-    var wmsConfig1 = {
-=======
     var wmsConfigBg = {
->>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
       service: "https://tiles.maps.eox.at/wms",
       layerNames: "s2cloudless-2018",
       numLevels: 19,
@@ -184,15 +176,11 @@ export default function Map(props) {
 
     var starFieldLayer = new WorldWind.StarFieldLayer();
     var atmosphereLayer = new WorldWind.AtmosphereLayer();
+    atmosphereLayer.minActiveAltitude = 5000000
 
     var layers = [
-<<<<<<< HEAD
-      { layer: new WorldWind.WmsLayer(wmsConfig1, ""), enabled: true },
-      { layer: new WorldWind.WmsLayer(wmsConfig2, ""), enabled: true },
-=======
       { layer: new WorldWind.WmsLayer(wmsConfigBg, ""), enabled: true },
       { layer: new WorldWind.WmsLayer(wmsConfigNames, ""), enabled: false },
->>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
       { layer: starFieldLayer, enabled: props.starfield },
       { layer: atmosphereLayer, enabled: true }
     ];

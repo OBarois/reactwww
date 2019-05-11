@@ -22,7 +22,7 @@ const App = () => {
   const [min, setMin] = useState((new Date("2014-04-10")).getTime())
   const [max, setMax] = useState((new Date("2019-12-31")).getTime())
   const [vertical, setVertical] = useState(true)
-  useHotkeys("=",() => {
+  useHotkeys("h",() => {
     setVertical(prevVertical => {
         return (!prevVertical)
       })
@@ -67,9 +67,11 @@ const App = () => {
   return (
     <div className="App">
       <Fullscreen enabled={isFull} onChange={() =>  {if(!isFull) setIsfull(false)} }>
+      
         <div className="TimeLabel">
           <TimeLabel />
         </div>
+        
         <div className="ClockController">
           <ClockController duration="600000"/>
         </div> 

@@ -2,34 +2,56 @@
     position: relative;
     background: rgba(26, 60, 99, 0.0);
     overflow: hidden;
-<<<<<<< HEAD
+    background: rgba(26, 60, 99, 0);
     font-family: verdana;
-    text-shadow: 2px 2px  rgba(43, 48, 5, 0.226);
-    color: rgba(235, 38, 23, 0.5);
-    font-kerning: none;
-=======
->>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
- 
+    text-shadow: 1px 1px 1px rgba(43, 48, 5, 0.9);
 
+}
+
+.Mask {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(47, 99, 26, 0);
+    -webkit-mask-image: linear-gradient(to right, rgba(42, 177, 42, 0), rgba(0,0,0,1), rgba(48, 139, 151, 0));
+    -mask-image: linear-gradient(to bottom, rgba(42, 177, 42, 0.514), rgba(0,0,0,1), rgba(0, 0, 0, 0.425));
+}
+.Mask-v {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(47, 99, 26, 0);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(42, 177, 42, 0), rgba(0,0,0,1), rgba(48, 139, 151, 0));
+    -mask-image: linear-gradient(to bottom, rgba(42, 177, 42, 0.514), rgba(0,0,0,1), rgba(0, 0, 0, 0.425));
+}
+
+.FixedLabel {
+    position: absolute;
+    left: 50%;
+    bottom: 30px;
+    margin-left: -1px;
+    width: 80px;
+    height: 60px;
+    background: rgba(181, 82, 219, 0);
+   
+}
+.FixedLabel-v {
+    position: absolute;
+    top: 50%;
+    right:0px;
+    margin-top: -30px;
+    width: 80px;
+    height: 60px;
+    background: rgba(180, 82, 219, 0)
 }
 
 .TimeScale {
     position: relative;
     white-space: nowrap;
-    background: rgba(26, 60, 99, 0);
-    font-family: verdana;
-    text-shadow: 2px 2px  rgba(43, 48, 5, 0.226);
-    font-kerning: none;
-<<<<<<< HEAD
-    bottom: 3px;
-    left: 50%;
-    margin-left: -200px;
-    width: 400px;
-    height: 40px;
-    background: rgba(214, 51, 45, 0.61);
-=======
 
->>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
+    font-kerning: none;
 }
 
 .DayTic {
@@ -38,10 +60,16 @@
     font-size: 12px; 
     bottom: 10px
 }
+.Time {
+    position: absolute;
+    pointer-events: none;
+    font-size: 12px; 
+    bottom: 50px
+}
 .MonthTic {
     position: absolute;
     pointer-events: none;
-    font-size: 15px; 
+    font-size: 25px; 
     bottom: 25px
 }
 .YearTic {
@@ -74,17 +102,24 @@
     font-size: 12px; 
     right: 10px
 }
+.Time-v {
+    position: absolute;
+    pointer-events: none;
+    font-size: 12px; 
+    top: 53px;
+    right: 30px;
+}
 .MonthTic-v {
     position: absolute;
     pointer-events: none;
-    font-size: 15px; 
+    font-size: 25px; 
     right: 30px
 }
 .YearTic-v {
     position: absolute;
     pointer-events: none;
     font-size: 20px; 
-    margin-top: 30px;
+    top: 30px;
     right: 30px
 }
 .HourTic-v {
@@ -97,10 +132,15 @@
 .Mire-v {
     position: absolute;
     top: 50%;
-    right:0px;
-    margin-top: 0px;
-    width: 40px;
-    height: 48px;
-    background: rgba(181, 82, 219, 1)
+    right:5px;
+    margin-top: -0px;
+    width: 20px;
+    height: 15px;
+    background: rgba(219, 82, 150, 0.0);
+    border-radius: 5px;
+    border-style: solid;
+    border-color: var(--color);
+    border-width: 1px;
+
 
 }

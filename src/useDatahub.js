@@ -7,11 +7,6 @@ import dateFormat from "dateformat"
 
 export default function useDatahub() {
 
-<<<<<<< HEAD
-    const searchURL = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-1%20AND%20producttype:GRD)&start=0&rows=50&sortedby=ingestiondate&order=desc&format=json'
-    //const searchURL = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-2)&start=0&rows=50&sortedby=ingestiondate&order=desc&format=json'
-    let url = searchURL
-=======
     let searchURLs = []
     searchURLs["S1"] = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-1%20AND%20producttype:GRD)&start=0&rows=100&sortedby=ingestiondate&order=desc&format=json'
     searchURLs["S2"] = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-2%20AND%20producttype:S2MSI1C)&start=0&rows=100&sortedby=ingestiondate&order=desc&format=json'
@@ -19,7 +14,6 @@ export default function useDatahub() {
     searchURLs["S5P"] = 'https://s5phub.copernicus.eu/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-5 precursor%20AND%20(producttype:L1B_RA_BD1%20OR%20(producttype:L2__NO2___%20AND%20processingmode:Near real time)))&start=0&rows=100&sortedby=ingestiondate&order=desc&format=json'
 
     
->>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
     // search time window size in ms
     const windowSize = 1000 * 60 * 60 * 3
 

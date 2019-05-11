@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react"
 import {useSpring, animated, config} from 'react-spring'
 import { useGesture } from 'react-with-gesture'
 import './timeselector.css'
 import { setGlobal, useGlobal } from 'reactn'
+import dateFormat from "dateformat"
+
 
 // to be split in a controller and a useTouchScale hook () => {<TouchScale>, scaleRenderer, size}
 
@@ -53,6 +55,8 @@ function TimeSelector(props)  {
         let springConfigDown = { mass: 1, tension: 1200 , friction: 40, precision: 1 }
         //let springConfigUp = { easing: easeeffect ,duration: 10+velocity*100, precision: 1 }
         //let springConfigDown = { easing: easeeffect ,duration: 10, precision: 1 }
+        console.log('velocity: '+velocity)
+        //console.log('velocity: '+velocity)
 
         const runBefore = () => {setActive(true)}  
         
@@ -61,12 +65,12 @@ function TimeSelector(props)  {
             let topOrigin = target.parentNode.getBoundingClientRect().top
             let height = timecontainer.current.parentElement.offsetHeight
             let scaleheight = target.getBoundingClientRect().height
-            let fardelta = delta[1] + delta[1] * Math.pow(velocity,2)
+            let fardelta = delta[1] + delta[1] * Math.pow(velocity,3)
             let dest = (pos+fardelta+temp[1]>=topOrigin+height/2)?Math.min(height/2,fardelta+temp[1]):fardelta+temp[1]
             //tbd: 400 is the height of widget
             dest = (pos+fardelta+temp[1]<= -scaleheight+height/2)?Math.max(-1*(max-min-height/2),fardelta+temp[1]):dest
-            const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-            const setFinalTime = () => {console.log('final: '+down);setActive(down); setFinalposition(min+(-dest+height/2)*zoomfactor)}                
+            const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
+            const setFinalTime = () => {if(!down) {setFinalposition(min+(-dest+height/2)*zoomfactor); setActive(false)}}   
             set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
             //set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
         } else {    
@@ -77,11 +81,11 @@ function TimeSelector(props)  {
             //console.log(leftOrigin+"/width: "+width+" /max-min: "+(max-min)+" /scalewidth: "+scalewidth+" /wid: "+wid)
             let fardelta = delta[0] + delta[0] * Math.pow(velocity,2)
             //console.log(swipefactor)
-            let dest = (pos+fardelta+temp[0]>=leftOrigin+width/2)?Math.min(width/2,fardelta+temp[0]):fardelta+temp[0]
-            //let dest = (pos+fardelta+temp[0]>=leftOrigin-width/2)?leftOrigin-width/2:fardelta+temp[0]
+            //let dest = (pos+fardelta+temp[0]>=leftOrigin+width/2)?Math.min(width/2,fardelta+temp[0]):fardelta+temp[0]
+            let dest = (pos+fardelta+temp[0]>=leftOrigin-width/2)?Math.min(width/2,fardelta+temp[0]):fardelta+temp[0]
             dest = (pos+fardelta+temp[0]<= -scalewidth-width/2)?Math.max(-1*(max-min-width/2),fardelta+temp[0]):dest
             const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[0]+width/2)*zoomfactor)}
-            const setFinalTime = () => {setActive(down); setFinalposition(min+(-dest+width/2)*zoomfactor)}                
+            const setFinalTime = () => {if(!down) {setFinalposition(min+(-dest+width/2)*zoomfactor); setActive(false)}}                
             set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
             //set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: {  tension: 1200 , friction: 40, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
             //set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
@@ -108,10 +112,12 @@ function TimeSelector(props)  {
             hour = (new Date(i)).getUTCHours()
             year = (new Date(i)).getUTCFullYear()
             if(day != lastday) tics.push({class:dayclass, pos: (i-props.min)/zoomfactor, label: day})
+            /*
             if(month != lastmonth) {
                 tics.push({class:monthclass, pos: (i-props.min)/zoomfactor, label: month})
                 tics.push({class:yearclass, pos: (i-props.min)/zoomfactor, label: year})
             }
+            */
             //if(year != lastyear) tics.push({class:'YearTic', pos: (i-props.min)/zoomfactor, label: year})
             //if(hour != lasthour) tics.push({class:'HourTic', pos: (i-props.min)/zoomfactor, label: '.'})
             lastday = day
@@ -133,19 +139,30 @@ function TimeSelector(props)  {
 
     const [timescale, setTimescale] = useState('')    
     //const [vertical, setVertical] = useState(props.vertical)    
-    useEffect(() => {
+    useLayoutEffect(() => {
         //console.log("useEffect (livePosition) in TimeSelector: "+livePosition)
         setTimescale(scaleText(props.vertical))
     
     },[props.vertical])
 
- 
+    const [year, setYear] = useState('') 
+    const [month, setMonth] = useState('') 
+    const [time, setTime] = useState('') 
+
+    useEffect(()=> {
+
+    },[])
     useEffect(() => {
-        //console.log("useEffect (livePosition) in TimeSelector: "+livePosition)
-        if(active) setAppdate(livePosition)
+        let date = new Date(livePosition)
+        setYear(date.getUTCFullYear())
+        setMonth(dateFormat(date,'UTC:mmm'))
+        setTime(dateFormat(date,'UTC:HH:MM:ss'))
+        
+        
+        setAppdate(livePosition)
     },[livePosition])
 
-    useEffect(() => {     
+    useLayoutEffect(() => {     
         let offset =0
         if(!active) {
             if(props.vertical) {
@@ -164,15 +181,22 @@ function TimeSelector(props)  {
             if(props.vertical)
             set({ xy: props.vertical?[0,offset]:[offset,0], config: { tension: 1200, friction: 40 }, onFrame: null }  )
             */
+           let date = new Date(appdate)
+           setYear(date.getUTCFullYear())
+           setMonth(dateFormat(date,'UTC:mmm'))
+           setTime(dateFormat(date,'UTC:HH:MM:ss'))
+   
+            
         }
     },[appdate,timescale])
 
     useEffect(() => {
         console.log("useEffect (finalPosition) in TimeSelector: "+finalPosition+'  '+active)
-        if(!active) setSearchdate(finalPosition)
-    },[finalPosition,active])
+        //if(!active) setSearchdate(finalPosition)
+        setSearchdate(finalPosition)
+    },[finalPosition])
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         console.log("zoom changed to: "+props.zoom)
     },[props.zoom])
 
@@ -182,12 +206,20 @@ function TimeSelector(props)  {
     },[active]);
 */
     return (
-    <div className="TimeContainer" ref={timecontainer}>
-        <div className={props.vertical?"Mire-v":"Mire"} ></div>
-        <animated.div className="TimeScale" {...bind()} style={{ width: wid,height: hei, transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`) }}>
-            {timescale}
-        </animated.div>
-    </div>
+        <div className={props.vertical?"Mask-v":"Mask"} >
+            <div className={props.vertical?"Mire-v":"Mire"} ></div>
+            <div className={props.vertical?"FixedLabel-v":"FixedLabel"} >
+                <div className='YearTic-v' key='year' >{year}</div>
+                <div className='MonthTic-v' key='month' >{month}</div>
+                <div className='Time-v' key='time' >{time}</div>
+            </div>
+            <div className="TimeContainer" ref={timecontainer}>
+                
+                <animated.div className="TimeScale" {...bind()} style={{ width: wid,height: hei, transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`) }}>
+                    {timescale}
+                </animated.div>
+            </div>
+        </div>
     )
 }
 
