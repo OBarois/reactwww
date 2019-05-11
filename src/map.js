@@ -13,15 +13,23 @@ export default function Map(props) {
 
 
   const wwd = useRef(null)
-  const [geogsonlayer, setGeogsonlayer] = useState([])
   
   
   // toogle projection
   useHotkeys("p",toggleProjection)  
-    const [, setProjection] = useState("3D")
+  const [, setProjection] = useState("3D")
+
+  // remove geojson layers
+  useHotkeys("c",removeGeoJson)  
+  const [geojsonlayers, setGeojsonlayers] = useState([])
+  useEffect(() => {
+    console.log('geojson changed')
+    console.log(geojsonlayers)
+  },[geojsonlayers]);
 
 
-    function toggleProjection() {
+
+  function toggleProjection() {
     setProjection( prevProj => {
       console.log("prevProjection: "+prevProj)
       let supportedProjections = [ "3D", "Equirectangular", "Mercator"];
@@ -64,9 +72,15 @@ export default function Map(props) {
     wwd.current.redraw();
   }
 
+<<<<<<< HEAD
   //toggle names
   useHotkeys("n",togglePlaceNames)  
   function togglePlaceNames() {
+=======
+  //toggle starField
+  useHotkeys("n",toggleNames)  
+  function toggleNames() {
+>>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
     wwd.current.layers[1].enabled = !wwd.current.layers[1].enabled
     wwd.current.redraw();
   }
@@ -111,22 +125,35 @@ export default function Map(props) {
     }
 
 
-    let renderableLayer = new WorldWind.RenderableLayer("GeoJSON")
-    wwd.current.removeLayer(geogsonlayer)
+    let renderableLayer = new WorldWind.RenderableLayer("GeoJSON_"+(new Date()))
+    removeGeoJson()
     wwd.current.addLayer(renderableLayer);
-    setGeogsonlayer(renderableLayer)
+    setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
     let geoJson = new WorldWind.GeoJSONParser(url);
     geoJson.load(loadCompleteCallback, shapeConfigurationCallback, renderableLayer);
 }
 
+  function removeGeoJson() {
+    console.log('removing json layers ')
 
+    for(let i=0;i<geojsonlayers.length;i++) {
+      wwd.current.removeLayer(geojsonlayers[i])
+      console.log(geojsonlayers[i])
+    }
+    setGeojsonlayers([])
+    wwd.current.redraw();
+  }
 
   useEffect(() => {
     console.log("useEffect (mount) in Map")
     var elevationModel = new WorldWind.EarthElevationModel();
     wwd.current = new WorldWind.WorldWindow(props.id, elevationModel);
     //setWwd(wwd);
+<<<<<<< HEAD
     var wmsConfig1 = {
+=======
+    var wmsConfigBg = {
+>>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
       service: "https://tiles.maps.eox.at/wms",
       layerNames: "s2cloudless-2018",
       numLevels: 19,
@@ -145,12 +172,27 @@ export default function Map(props) {
       levelZeroDelta: new WorldWind.Location(90, 90)
     }
 
+    var wmsConfigNames = {
+      service: "https://tiles.maps.eox.at/wms",
+      layerNames: "overlay_bright",
+      numLevels: 19,
+      format: "image/png",
+      size: 256,
+      sector: WorldWind.Sector.FULL_SPHERE,
+      levelZeroDelta: new WorldWind.Location(90, 90)
+    }
+
     var starFieldLayer = new WorldWind.StarFieldLayer();
     var atmosphereLayer = new WorldWind.AtmosphereLayer();
 
     var layers = [
+<<<<<<< HEAD
       { layer: new WorldWind.WmsLayer(wmsConfig1, ""), enabled: true },
       { layer: new WorldWind.WmsLayer(wmsConfig2, ""), enabled: true },
+=======
+      { layer: new WorldWind.WmsLayer(wmsConfigBg, ""), enabled: true },
+      { layer: new WorldWind.WmsLayer(wmsConfigNames, ""), enabled: false },
+>>>>>>> 72b06e915026d9e8897770a9b9c3ce5a2fa11f88
       { layer: starFieldLayer, enabled: props.starfield },
       { layer: atmosphereLayer, enabled: true }
     ];

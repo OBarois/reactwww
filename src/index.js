@@ -2,6 +2,7 @@ import React from "react";
 import { render } from "react-dom";
 import App from "./app";
 import {initGlobalStates} from "./initglobalstates"
+import registerServiceWorker from './registerServiceWorker';
 
 // if you're in create-react-app import the files as:
 // import store from "./js/store/index";
@@ -15,3 +16,4 @@ render(
   // document.getElementById("app")
   document.getElementById("root")
 );
+registerServiceWorker();

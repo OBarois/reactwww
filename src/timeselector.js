@@ -15,17 +15,25 @@ import { easeSinOut  as easeeffect} from 'd3-ease'
 
 function TimeSelector(props)  {
     //console.log("Render TimeSelector ")
-
-    const zoomfactor = 800000
+    const dayspace = 20
+    const zoomfactor = (props.max-props.min)/(dayspace*(props.max-props.min)/(1000*60*60*24))
     const min = props.min
     const max = min +((props.max - props.min) / zoomfactor)
 
     const timecontainer = useRef()
     
     
-    const vertical = props.direction=="vertical"?true:false
 
-    const wid = max - min
+    let wid, hei = 0
+    if(props.vertical) {
+        hei = max - min
+        wid = 100
+    } else {
+        wid = max - min
+        hei = 100
+
+    }
+
     const [appdate, setAppdate] = useGlobal('appdate')
     const [searchdate, setSearchdate] = useGlobal('searchdate')
     const [finalPosition, setFinalposition] = useState(appdate)
@@ -35,37 +43,36 @@ function TimeSelector(props)  {
 
     const [active, setActive] = useState(false); 
 
-    const bind = useGesture(({ down, delta, velocity, target , temp = xy.getValue()}) => {
-        //setActive(true)
-        if (!down) console.log('velocity: '+velocity+' delta: '+delta[0])
+    const myvertical = useRef()
+    myvertical.current = props.vertical
+
+    const bind = useGesture(({  down, delta, velocity, target , temp = xy.getValue()}) => {
+        
 
         let springConfigUp = { mass: 1, tension: 200 , friction: 40, precision: 1 }
         let springConfigDown = { mass: 1, tension: 1200 , friction: 40, precision: 1 }
         //let springConfigUp = { easing: easeeffect ,duration: 10+velocity*100, precision: 1 }
         //let springConfigDown = { easing: easeeffect ,duration: 10, precision: 1 }
-        //let swipefactor = (velocity<1?1:velocity*6)
-        let swipefactor = 1
 
-        //const runBefore = () => {setActive(active)}        
-        const runBefore = () => {setActive(true)}        
-        if(vertical) {    
+        const runBefore = () => {setActive(true)}  
+        
+        if(myvertical.current) {    
             let pos = target.getBoundingClientRect().top
             let topOrigin = target.parentNode.getBoundingClientRect().top
-            let height = target.parentNode.getBoundingClientRect().height
+            let height = timecontainer.current.parentElement.offsetHeight
             let scaleheight = target.getBoundingClientRect().height
             let fardelta = delta[1] + delta[1] * Math.pow(velocity,2)
-            let dest = (pos+delta[1]+temp[1]>=topOrigin+height)?Math.min(height/2,delta[1]+temp[1]):delta[1]+temp[1]
+            let dest = (pos+fardelta+temp[1]>=topOrigin+height/2)?Math.min(height/2,fardelta+temp[1]):fardelta+temp[1]
             //tbd: 400 is the height of widget
-            dest = (pos+delta[1]+temp[1]< -scaleheight+height)?Math.max(-1*(max-min-height/2),delta[1]+temp[1]):dest
+            dest = (pos+fardelta+temp[1]<= -scaleheight+height/2)?Math.max(-1*(max-min-height/2),fardelta+temp[1]):dest
             const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-            const setFinalTime = () => {setActive(down); setFinalposition(min+(-dest+height/2)*zoomfactor)}                
+            const setFinalTime = () => {console.log('final: '+down);setActive(down); setFinalposition(min+(-dest+height/2)*zoomfactor)}                
             set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
             //set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
         } else {    
             let pos = target.getBoundingClientRect().left
             let leftOrigin = target.parentNode.getBoundingClientRect().left
-            let width = target.parentNode.getBoundingClientRect().width
-            console.log('width: '+width)
+            let width = timecontainer.current.parentElement.offsetWidth
             let scalewidth = target.getBoundingClientRect().width
             //console.log(leftOrigin+"/width: "+width+" /max-min: "+(max-min)+" /scalewidth: "+scalewidth+" /wid: "+wid)
             let fardelta = delta[0] + delta[0] * Math.pow(velocity,2)
@@ -84,29 +91,26 @@ function TimeSelector(props)  {
 
     
 
-    const scaleTextold = (min,max) => {
-        let text = ''
-        for (let i=min;i<=max;i++) {
-            text += i +"   "
-        }
-        return text
-    }
-    const scaleText = (min,max) => {
+    const scaleText = () => {
+        
         let monthcode = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
         let day, month, hour, year = 0
         let lastday, lastmonth, lasthour, lastyear = 0
         let tics = []
-        let days = []
-        //console.log(day)
+        const dayclass = (!props.vertical)?'DayTic':'DayTic-v'
+        const monthclass = (!props.vertical)?'MonthTic':'MonthTic-v'
+        const yearclass = (!props.vertical)?'YearTic':'YearTic-v'
+        
+        
         for (let i=props.min;i<=props.max;i+=60000) {
             day = (new Date(i)).getUTCDate()
             month = monthcode[(new Date(i)).getUTCMonth()]
             hour = (new Date(i)).getUTCHours()
             year = (new Date(i)).getUTCFullYear()
-            if(day != lastday) tics.push({class:'DayTic', pos: (i-props.min)/zoomfactor, label: day})
+            if(day != lastday) tics.push({class:dayclass, pos: (i-props.min)/zoomfactor, label: day})
             if(month != lastmonth) {
-                tics.push({class:'MonthTic', pos: (i-props.min)/zoomfactor, label: month})
-                tics.push({class:'YearTic', pos: (i-props.min)/zoomfactor, label: year})
+                tics.push({class:monthclass, pos: (i-props.min)/zoomfactor, label: month})
+                tics.push({class:yearclass, pos: (i-props.min)/zoomfactor, label: year})
             }
             //if(year != lastyear) tics.push({class:'YearTic', pos: (i-props.min)/zoomfactor, label: year})
             //if(hour != lasthour) tics.push({class:'HourTic', pos: (i-props.min)/zoomfactor, label: '.'})
@@ -115,9 +119,9 @@ function TimeSelector(props)  {
             lasthour = hour
             lastyear = year
         }
-            console.log(tics.map(item => (            <div className={item.class} left={item.class+item.pos}>{item.label}</div>)))
-        return tics.map(item => (            <div className={item.class} key={item.class+item.pos} style={{left:item.pos}}>{item.label}</div>))
-        /*
+
+            return tics.map(item => (            <div className={item.class} key={item.class+item.pos} style={(!props.vertical)?{left:item.pos}:{top:item.pos}}>{item.label}</div>))
+            /*
         let text = ''
         for (let i=min;i<=max;i++) {
             text += i +"   "
@@ -128,10 +132,12 @@ function TimeSelector(props)  {
     }
 
     const [timescale, setTimescale] = useState('')    
+    //const [vertical, setVertical] = useState(props.vertical)    
     useEffect(() => {
         //console.log("useEffect (livePosition) in TimeSelector: "+livePosition)
-        setTimescale(scaleText(2000,3000))
-    },[])
+        setTimescale(scaleText(props.vertical))
+    
+    },[props.vertical])
 
  
     useEffect(() => {
@@ -140,19 +146,35 @@ function TimeSelector(props)  {
     },[livePosition])
 
     useEffect(() => {     
+        let offset =0
         if(!active) {
-            let offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetWidth/2
+            if(props.vertical) {
+                offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetHeight/2
+                set({ xy: [0,offset], config: { tension: 1200, friction: 40 }, onFrame: null }  )
+            } else {
+                offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetWidth/2
+                set({ xy: [offset,0], config: { tension: 1200, friction: 40 }, onFrame: null }  )
+
+            }
+/*
+            let offset = ((min - appdate)/zoomfactor)+(!props.vertical?timecontainer.current.parentElement.offsetWidth/2:timecontainer.current.parentElement.offsetHeight/2)
             //console.log('wid: ')
             //console.log(timecontainer.current.parentElement.offsetWidth)
             //set({ xy: vertical?[0,offset]:[offset,0], config: { mass: 1, tension: 120 , friction: 14, precision: 1 } } )
-            set({ xy: vertical?[0,offset]:[offset,0], config: { tension: 1200, friction: 40 }, onFrame: null }  )
+            if(props.vertical)
+            set({ xy: props.vertical?[0,offset]:[offset,0], config: { tension: 1200, friction: 40 }, onFrame: null }  )
+            */
         }
-    },[appdate])
+    },[appdate,timescale])
 
     useEffect(() => {
-        //console.log("useEffect (finalPosition) in TimeSelector: "+finalPosition+'  '+active)
+        console.log("useEffect (finalPosition) in TimeSelector: "+finalPosition+'  '+active)
         if(!active) setSearchdate(finalPosition)
-    },[finalPosition])
+    },[finalPosition,active])
+
+    useEffect(() => {
+        console.log("zoom changed to: "+props.zoom)
+    },[props.zoom])
 
     /*
     useEffect(() => {
@@ -161,8 +183,8 @@ function TimeSelector(props)  {
 */
     return (
     <div className="TimeContainer" ref={timecontainer}>
-        <div className="Mire" ></div>
-        <animated.div className="TimeScale" {...bind()} style={{ width: wid,height: wid, transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`) }}>
+        <div className={props.vertical?"Mire-v":"Mire"} ></div>
+        <animated.div className="TimeScale" {...bind()} style={{ width: wid,height: hei, transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`) }}>
             {timescale}
         </animated.div>
     </div>

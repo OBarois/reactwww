@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ClockController from "./clockController";
 import Map from "./map";
+import MissionSelector from "./missionselector";
 import Fullscreen from "react-full-screen";
+import { useFullscreen } from '@straw-hat/react-fullscreen';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useGlobal } from 'reactn';
 
@@ -16,9 +18,15 @@ const App = () => {
   const [hasFetched, setFetch] = useState(false)
 
 
-  // Set boundaries of the time scale
+  // Set boundaries and zoom factor of the time scale
   const [min, setMin] = useState((new Date("2014-04-10")).getTime())
   const [max, setMax] = useState((new Date("2019-12-31")).getTime())
+  const [vertical, setVertical] = useState(true)
+  useHotkeys("=",() => {
+    setVertical(prevVertical => {
+        return (!prevVertical)
+      })
+    })
 
 
   useEffect(() => {
@@ -48,14 +56,17 @@ const App = () => {
 
 
   const [isFull,setIsfull] = useState(false)
+  const { isFullscreen, toggleFullscreen } = useFullscreen(window.document.body);
+  console.log('isFullscreen: '+isFullscreen)
   //const goFull = () => { setIsfull(true) }
-  useHotkeys("f",() => {setIsfull(true)} )  
+  //useHotkeys("f",() =>  setIsfull(prevIsFull => !prevIsFull )  )
+  useHotkeys("f",toggleFullscreen )  
+  
   //const [ appdate, setAppdate ] = useGlobal('appdate');
-
 
   return (
     <div className="App">
-      <Fullscreen enabled={isFull} onChange={isFull => setIsfull({isFull})} >
+      <Fullscreen enabled={isFull} onChange={() =>  {if(!isFull) setIsfull(false)} }>
         <div className="TimeLabel">
           <TimeLabel />
         </div>
@@ -66,10 +77,10 @@ const App = () => {
         <div className="Globe">
           <Map id="globe" starfield="true"/>
         </div>
-        <div className="TimeSelectorh-m">
-          <TimeSelector min={min} max={max} direction="horizontal"/>
+        <div className={vertical?"TimeSelectorv":"TimeSelectorh"}>
+          <TimeSelector min={min} max={max} vertical={vertical}/>
         </div>
-        
+        <MissionSelector mission='S1'/>
       </Fullscreen>
    </div>
   );
