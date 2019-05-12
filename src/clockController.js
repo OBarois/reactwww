@@ -62,8 +62,11 @@ function ClockController({ duration }) {
         <div {...handlers} style={{display: "flex", justifyContent: "center", alignItems: "center", width:"100%", height: "100%"}}>
             {(new Date(date) ).toUTCString()}
         </div>
+
+<div onClick={togglePause}><img className='Buttons' src={playing?pauseImage:playImage} alt=''/></div>
 */
-    <div onClick={togglePause}><img className='Buttons' src={playing?pauseImage:playImage} alt=''/></div>
+
+    <div className= 'ClockController' onClick={togglePause} ></div>
     );
 }
 

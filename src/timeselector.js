@@ -147,6 +147,7 @@ function TimeSelector(props)  {
 
     const [year, setYear] = useState('') 
     const [month, setMonth] = useState('') 
+    const [day, setDay] = useState('') 
     const [time, setTime] = useState('') 
 
     useEffect(()=> {
@@ -156,6 +157,7 @@ function TimeSelector(props)  {
         let date = new Date(livePosition)
         setYear(date.getUTCFullYear())
         setMonth(dateFormat(date,'UTC:mmm'))
+        setDay(dateFormat(date,'UTC:dd'))
         setTime(dateFormat(date,'UTC:HH:MM:ss'))
         
         
@@ -184,6 +186,7 @@ function TimeSelector(props)  {
            let date = new Date(appdate)
            setYear(date.getUTCFullYear())
            setMonth(dateFormat(date,'UTC:mmm'))
+           setDay(dateFormat(date,'UTC:dd'))
            setTime(dateFormat(date,'UTC:HH:MM:ss'))
    
             
@@ -204,15 +207,19 @@ function TimeSelector(props)  {
     useEffect(() => {
         //console.log("Time selector Active: "+active)   
     },[active]);
+
+
+                <div className={props.vertical?"FixedLabel-v":"FixedLabel"} >
+                <div className='DayLabel' key='day' >{day}</div>
+                <div className='YearLabel' key='year' >{year}</div>
+                <div className='MonthLabel' key='month' >{month}</div>
+                <div className='TimeLabel' key='time' >{time}</div>
+            </div>
+
 */
     return (
         <div className={props.vertical?"Mask-v":"Mask"} >
             <div className={props.vertical?"Mire-v":"Mire"} ></div>
-            <div className={props.vertical?"FixedLabel-v":"FixedLabel"} >
-                <div className='YearTic-v' key='year' >{year}</div>
-                <div className='MonthTic-v' key='month' >{month}</div>
-                <div className='Time-v' key='time' >{time}</div>
-            </div>
             <div className="TimeContainer" ref={timecontainer}>
                 
                 <animated.div className="TimeScale" {...bind()} style={{ width: wid,height: hei, transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`) }}>

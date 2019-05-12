@@ -68,8 +68,8 @@ const App = () => {
     <div className="App">
       <Fullscreen enabled={isFull} onChange={() =>  {if(!isFull) setIsfull(false)} }>
       
-        <div className="TimeLabel">
-          <TimeLabel />
+        <div className="DateTimeLabel" >
+          <TimeLabel vertical={vertical}/>
         </div>
         
         <div className="ClockController">

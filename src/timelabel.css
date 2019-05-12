@@ -1,0 +1,47 @@
+.LabelCountainer {
+    position: absolute;
+    top: 0px;
+    left:0px;
+    width: 130px;
+    height: 100px;
+    background: rgba(157, 82, 219, 0);
+    border-radius: 8px;
+}
+.Line{
+    width: 100px;
+    height: 10px;
+    position: absolute;
+    font-size: 40px; 
+    top: 20px;
+    left: 18px;
+
+    }
+
+.DayLabel {
+    position: absolute;
+    pointer-events: none;
+    font-size: 58px; 
+    top: 0px;
+    left: 0px
+}
+.TimeLabel {
+    position: absolute;
+    pointer-events: none;
+    font-size: 25px;
+    top: 66px;
+    left: 12px;
+}
+.MonthLabel {
+    position: absolute;
+    pointer-events: none;
+    top: 6px;
+    font-size: 28px; 
+    left: 70px
+}
+.YearLabel {
+    position: absolute;
+    pointer-events: none;
+    font-size: 22px; 
+    top: 35px;
+    left: 70px
+}
