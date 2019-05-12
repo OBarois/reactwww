@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useClock } from "./useClock";
 import { useGlobal } from 'reactn';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -57,6 +57,18 @@ function ClockController({ duration }) {
         forceDate(appdate)
     },[]);
 
+    const [lastTap, setLasttap] = useState()
+    const handleDoubleTap = () => {
+        console.log('pressed')
+        const now = Date.now();
+        if (lastTap && (now - lastTap) < 300) {
+          reset();
+        } else {
+            setLasttap(now)
+            togglePause()
+        }
+      }
+    
     return (
 /*
         <div {...handlers} style={{display: "flex", justifyContent: "center", alignItems: "center", width:"100%", height: "100%"}}>
@@ -66,7 +78,7 @@ function ClockController({ duration }) {
 <div onClick={togglePause}><img className='Buttons' src={playing?pauseImage:playImage} alt=''/></div>
 */
 
-    <div className= 'ClockController' onClick={togglePause} ></div>
+    <div className= 'ClockController' onClick={handleDoubleTap} ></div>
     );
 }
 

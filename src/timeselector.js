@@ -41,38 +41,60 @@ function TimeSelector(props)  {
     const [finalPosition, setFinalposition] = useState(appdate)
     const [livePosition, setLiveposition] = useState(appdate)
 
-    const [{ xy,pos }, set] = useSpring(() => ({ xy: [0, 0], pos: 0 }))
+    const [{ xy,pos }, set] = useSpring(() => ({ xy: [0, 0] }))
 
     const [active, setActive] = useState(false); 
 
     const myvertical = useRef()
     myvertical.current = props.vertical
 
-    const bind = useGesture(({  down, delta, velocity, target , temp = xy.getValue()}) => {
+    const bind = useGesture(({  down, delta, velocity, target , time, first, last, temp = {xy: xy.getValue(), startTime: time}}) => {
         
 
         let springConfigUp = { mass: 1, tension: 200 , friction: 40, precision: 1 }
         let springConfigDown = { mass: 1, tension: 1200 , friction: 40, precision: 1 }
         //let springConfigUp = { easing: easeeffect ,duration: 10+velocity*100, precision: 1 }
         //let springConfigDown = { easing: easeeffect ,duration: 10, precision: 1 }
-        console.log('velocity: '+velocity)
         //console.log('velocity: '+velocity)
-
-        const runBefore = () => {setActive(true)}  
+        //console.log('velocity: '+velocity)
+        //velocity = (velocity<.1)?0:velocity
+        const runBefore = () => {setActive(true)} 
+        /*
+        console.log('time: '+(time - temp.startTime)  )     
+        if( down && time - temp.startTime  >3000 ) {
+            console.log('zoom!!') 
+            setTimescale(scaleText(props.vertical))     
+        }
+        */
+        if (down) console.log('delta: '+delta[0])
         
         if(myvertical.current) {    
             let pos = target.getBoundingClientRect().top
             let topOrigin = target.parentNode.getBoundingClientRect().top
             let height = timecontainer.current.parentElement.offsetHeight
             let scaleheight = target.getBoundingClientRect().height
-            let fardelta = delta[1] + delta[1] * Math.pow(velocity,3)
-            let dest = (pos+fardelta+temp[1]>=topOrigin+height/2)?Math.min(height/2,fardelta+temp[1]):fardelta+temp[1]
-            //tbd: 400 is the height of widget
-            dest = (pos+fardelta+temp[1]<= -scaleheight+height/2)?Math.max(-1*(max-min-height/2),fardelta+temp[1]):dest
+
+            //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
+            let step = 0
+            if (delta[0]<-100) step = (1000 * 60 * 60 * 24)  / zoomfactor
+            if (delta[0]<-200) step = (1000 * 60 * 60 * 24 * 30) / zoomfactor
+            console.log('step: '+step+' '+delta[1]+' velo: '+velocity)
+
+            let followDest = (delta[0]<-100)?Math.round(delta[1]/10)*step+temp.xy[1]:delta[1]+temp.xy[1]
+            console.log('followDest: '+followDest)
+            
+            let fardelta = (delta[0]<-100) ?  Math.round(delta[1]/10)*step + (step * Math.pow(velocity+1,3))*velocity  : delta[1] + (delta[1] * Math.pow(velocity+1,3))*velocity
+            console.log('fardelta: '+fardelta)
+            let dest = (pos+fardelta+temp.xy[1]>=topOrigin+height/2)?Math.min(height/2,fardelta+temp.xy[1]):fardelta+temp.xy[1]
+            dest = (pos+fardelta+temp.xy[1]<= -scaleheight+height/2)?Math.max(-1*(max-min-height/2),fardelta+temp.xy[1]):dest
+
+
+
+
             const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
             const setFinalTime = () => {if(!down) {setFinalposition(min+(-dest+height/2)*zoomfactor); setActive(false)}}   
-            set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
-            //set({ xy: down ? [0,delta[1]+temp[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
+            set({ xy: down ? [0,followDest] : [0,dest],  config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
+            //set({ xy: down ? [0,delta[1]+temp.xy[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
         } else {    
             let pos = target.getBoundingClientRect().left
             let leftOrigin = target.parentNode.getBoundingClientRect().left
@@ -81,14 +103,14 @@ function TimeSelector(props)  {
             //console.log(leftOrigin+"/width: "+width+" /max-min: "+(max-min)+" /scalewidth: "+scalewidth+" /wid: "+wid)
             let fardelta = delta[0] + delta[0] * Math.pow(velocity,2)
             //console.log(swipefactor)
-            //let dest = (pos+fardelta+temp[0]>=leftOrigin+width/2)?Math.min(width/2,fardelta+temp[0]):fardelta+temp[0]
-            let dest = (pos+fardelta+temp[0]>=leftOrigin-width/2)?Math.min(width/2,fardelta+temp[0]):fardelta+temp[0]
-            dest = (pos+fardelta+temp[0]<= -scalewidth-width/2)?Math.max(-1*(max-min-width/2),fardelta+temp[0]):dest
+            //let dest = (pos+fardelta+temp.xy[0]>=leftOrigin+width/2)?Math.min(width/2,fardelta+temp.xy[0]):fardelta+temp.xy[0]
+            let dest = (pos+fardelta+temp.xy[0]>=leftOrigin-width/2)?Math.min(width/2,fardelta+temp.xy[0]):fardelta+temp.xy[0]
+            dest = (pos+fardelta+temp.xy[0]<= -scalewidth-width/2)?Math.max(-1*(max-min-width/2),fardelta+temp.xy[0]):dest
             const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[0]+width/2)*zoomfactor)}
             const setFinalTime = () => {if(!down) {setFinalposition(min+(-dest+width/2)*zoomfactor); setActive(false)}}                
-            set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
-            //set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: {  tension: 1200 , friction: 40, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
-            //set({ xy: down ? [delta[0]+temp[0],0] : [dest,0], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
+            set({ xy: down ? [delta[0]+temp.xy[0],0] : [dest,0], config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
+            //set({ xy: down ? [delta[0]+temp.xy[0],0] : [dest,0], pos: pos, config: {  tension: 1200 , friction: 40, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
+            //set({ xy: down ? [delta[0]+temp.xy[0],0] : [dest,0], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
         }
         return temp    
     })
@@ -154,13 +176,16 @@ function TimeSelector(props)  {
 
     },[])
     useEffect(() => {
-        let date = new Date(livePosition)
+        let date
+        try {
+            date = new Date(livePosition)
+        } catch {
+            date = 0
+        }
         setYear(date.getUTCFullYear())
         setMonth(dateFormat(date,'UTC:mmm'))
         setDay(dateFormat(date,'UTC:dd'))
-        setTime(dateFormat(date,'UTC:HH:MM:ss'))
-        
-        
+        setTime(dateFormat(date,'UTC:HH:MM:ss'))        
         setAppdate(livePosition)
     },[livePosition])
 
