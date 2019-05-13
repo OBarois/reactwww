@@ -86,14 +86,14 @@ export default function dhusToGeojson(response) {
         
             return newItem;
         } catch (err) {
-            console.log("error: "+err.message);
-            return null;
+            console.log("error parsing item from dhus: "+err.message);
+            return {};
         }
     }
 
     let features = [];
     try {
-        features = response.feed.entry.map(function(a) {return mapFromHubOpenSearch(a)});
+        features = response.feed.entry.map( item =>  mapFromHubOpenSearch(item)).filter(item => item != {});
     } catch (err) {
         console.log(response);
         console.log("Error: ");

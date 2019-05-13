@@ -17,7 +17,7 @@ import { easeSinOut  as easeeffect} from 'd3-ease'
 
 function TimeSelector(props)  {
     //console.log("Render TimeSelector ")
-    const dayspace = 20
+    const dayspace = 40
     const zoomfactor = (props.max-props.min)/(dayspace*(props.max-props.min)/(1000*60*60*24))
     const min = props.min
     const max = min +((props.max - props.min) / zoomfactor)
@@ -45,10 +45,12 @@ function TimeSelector(props)  {
 
     const [active, setActive] = useState(false); 
 
+
+
     const myvertical = useRef()
     myvertical.current = props.vertical
 
-    const bind = useGesture(({  down, delta, velocity, target , time, first, last, temp = {xy: xy.getValue(), startTime: time}}) => {
+    const bind = useGesture(({  down, delta, velocity, target , time, first, last, temp = {xy: xy.getValue(), lastStep: 0, followOffset: 0 }}) => {
         
 
         let springConfigUp = { mass: 1, tension: 200 , friction: 40, precision: 1 }
@@ -57,7 +59,7 @@ function TimeSelector(props)  {
         //let springConfigDown = { easing: easeeffect ,duration: 10, precision: 1 }
         //console.log('velocity: '+velocity)
         //console.log('velocity: '+velocity)
-        //velocity = (velocity<.1)?0:velocity
+        velocity = (velocity<.15)?0:velocity
         const runBefore = () => {setActive(true)} 
         /*
         console.log('time: '+(time - temp.startTime)  )     
@@ -66,7 +68,7 @@ function TimeSelector(props)  {
             setTimescale(scaleText(props.vertical))     
         }
         */
-        if (down) console.log('delta: '+delta[0])
+        //if (down) console.log('delta: '+delta[0])
         
         if(myvertical.current) {    
             let pos = target.getBoundingClientRect().top
@@ -76,15 +78,41 @@ function TimeSelector(props)  {
 
             //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
             let step = 0
-            if (delta[0]<-100) step = (1000 * 60 * 60 * 24)  / zoomfactor
-            if (delta[0]<-200) step = (1000 * 60 * 60 * 24 * 30) / zoomfactor
-            console.log('step: '+step+' '+delta[1]+' velo: '+velocity)
+            if (delta[0]<-50) step = (1000 * 60 * 60 * 24)  / zoomfactor
+            if (delta[0]<-100) step = (1000 * 60 * 60 * 24 * 30) / zoomfactor
+            if (delta[0]<-150) step = (1000 * 60 * 60 * 24 * 365) / zoomfactor
 
-            let followDest = (delta[0]<-100)?Math.round(delta[1]/10)*step+temp.xy[1]:delta[1]+temp.xy[1]
-            console.log('followDest: '+followDest)
+            //console.log('step: '+step+' '+delta[1]+' velo: '+velocity)
+
+
+            if(step != temp.lastStep) {
+                console.log('Step changed from: '+temp.lastStep+' to: '+ step)
+                //temp.followOffset = delta[1]
+                console.log('followOffset: '+temp.followOffset+' delta: '+delta[1])
+            }
+
+
+
+            let followDest = (delta[0]<-50)?(Math.round((delta[1]-temp.followOffset)/10)*step+temp.xy[1]):delta[1]-temp.followOffset+temp.xy[1]
+            if(followDest > topOrigin+height*3/4) followDest = topOrigin+height*3/4
+            if(followDest < -scaleheight+height/4) followDest = -scaleheight+height/4
+            //followDest = followDest - temp.followOffset
+            /*
+            if(step != temp.step || Math.abs(delta[0])>Math.abs(delta[1])) {
+                console.log('followDest: '+followDest+ ' changed to: '+ temp.lastFollowDest)
+                followDest = temp.lastFollowDest
+                delta[1] = 0
+            } else {
+                followDest = (delta[0]<-50)?Math.round(delta[1]/10)*step+temp.xy[1]:delta[1]+temp.xy[1]
+            }
+            */
             
-            let fardelta = (delta[0]<-100) ?  Math.round(delta[1]/10)*step + (step * Math.pow(velocity+1,3))*velocity  : delta[1] + (delta[1] * Math.pow(velocity+1,3))*velocity
-            console.log('fardelta: '+fardelta)
+            //console.log('followDest: '+followDest)
+            //temp.lastFollowDest = followDest
+            temp.lastStep = step
+            
+            let fardelta = (delta[0]<-50) ?  Math.round(delta[1]/10)*step + (Math.round(delta[1]/10)*step * Math.pow(velocity+1,3))*velocity  : delta[1] + (delta[1] * Math.pow(velocity+1,3))*velocity
+            //console.log('fardelta: '+fardelta)
             let dest = (pos+fardelta+temp.xy[1]>=topOrigin+height/2)?Math.min(height/2,fardelta+temp.xy[1]):fardelta+temp.xy[1]
             dest = (pos+fardelta+temp.xy[1]<= -scaleheight+height/2)?Math.max(-1*(max-min-height/2),fardelta+temp.xy[1]):dest
 

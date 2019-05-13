@@ -10,6 +10,9 @@ import useDatahub from "./useDatahub";
 export default function Map(props) {
   //const [wwd, setWwd] = useState([]);
   //const [date, setDate] = useState(0);
+  let clon = (props.clon)?props.clon:15.5
+  let clat = (props.clat)?props.clat:48
+  let alt = (props.alt)?props.alt:10000000
 
 
   const wwd = useRef(null)
@@ -154,15 +157,6 @@ export default function Map(props) {
       sector: WorldWind.Sector.FULL_SPHERE,
       levelZeroDelta: new WorldWind.Location(90, 90)
     }
-    var wmsConfig2 = {
-      service: "https://tiles.maps.eox.at/wms",
-      layerNames: "overlay",
-      numLevels: 19,
-      format: "image/png",
-      size: 256,
-      sector: WorldWind.Sector.FULL_SPHERE,
-      levelZeroDelta: new WorldWind.Location(90, 90)
-    }
 
     var wmsConfigNames = {
       service: "https://tiles.maps.eox.at/wms",
@@ -174,7 +168,7 @@ export default function Map(props) {
       levelZeroDelta: new WorldWind.Location(90, 90)
     }
 
-    var starFieldLayer = new WorldWind.StarFieldLayer();
+    var starFieldLayer = new WorldWind.StarFieldLayer('images/stars.json');
     var atmosphereLayer = new WorldWind.AtmosphereLayer();
     atmosphereLayer.minActiveAltitude = 5000000
 
@@ -192,7 +186,14 @@ export default function Map(props) {
     //var date = new Date();
     starFieldLayer.time = new Date(appdate);
     atmosphereLayer.time = new Date(appdate);
+    setTimeout(() => {
+      wwd.current.goToAnimator.travelTime = 1000;
+      wwd.current.goTo(new WorldWind.Position(clat, clon, alt));
+      wwd.current.redraw();
+      }, 2000)
+
     wwd.current.redraw();
+    wwd.current.deepPicking = true;
   }, []); // effect runs only once
 
   // The Map component reacts to changes of the global state 'appdate' (in ms since Epoch)
@@ -209,7 +210,13 @@ export default function Map(props) {
     console.log('datahub in use')
     if(!loading) {
       console.log(data)
-      addGeoJson(data)
+      try {
+        addGeoJson(data)
+      } catch (err) {
+        console.log("error on geojson parsing")
+        console.log(err)
+      }
+      
     }
   },[data,loading]);
 

@@ -8,6 +8,7 @@ import dateFormat from "dateformat"
 export default function useDatahub() {
 
     let searchURLs = []
+    //http://131.176.236.55/dhus/
     searchURLs["S1"] = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-1%20AND%20producttype:GRD)&start=0&rows=100&sortedby=ingestiondate&order=desc&format=json'
     searchURLs["S2"] = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-2%20AND%20producttype:S2MSI1C)&start=0&rows=100&sortedby=ingestiondate&order=desc&format=json'
     searchURLs["S3"] = 'https://scihub.copernicus.eu/apihub/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-3%20AND%20(producttype:OL_1_ERR___%20OR%20producttype:SL_1_RBT___%20OR%20producttype:SR_1_SRA___))&start=0&rows=100&sortedby=ingestiondate&order=desc&format=json'
