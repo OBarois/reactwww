@@ -18,7 +18,7 @@
     "react-spring": "^8.0.19",
     "react-timer-hook": "1.1.4",
     "react-touch": "^0.4.4",
-    "react-with-gesture": "^4.0.8",
+    "react-use-gesture": "^5.0.1",
     "reactn": "^1.0.0",
     "webworldwind-esa": "^0.10.0-alpha",
     "wellknown": "^0.5.0"
