@@ -4,6 +4,7 @@ import { useGesture } from 'react-use-gesture'
 import './timeselector.css'
 import { setGlobal, useGlobal } from 'reactn'
 import dateFormat from "dateformat"
+import { add, scale } from 'vec-la'
 
 
 // to be split in a controller and a useTouchScale hook () => {<TouchScale>, scaleRenderer, size}
@@ -22,8 +23,6 @@ function TimeSelector(props)  {
     const min = props.min
     const max = min +((props.max - props.min) / zoomfactor)
 
-    const timecontainer = useRef()
-    //console.log('timecontainer: ')
     
 
     let wid, hei = 0
@@ -41,8 +40,6 @@ function TimeSelector(props)  {
     const [finalPosition, setFinalposition] = useState(appdate)
     const [livePosition, setLiveposition] = useState(appdate)
 
-    const [{ xy,pos }, set] = useSpring(() => ({ xy: [0, 0] }))
-
     const [active, setActive] = useState(false); 
 
 
@@ -50,18 +47,47 @@ function TimeSelector(props)  {
     const myvertical = useRef()
     myvertical.current = props.vertical
 
+
+    const timecontainer = useRef()
+    //console.log('timecontainer: ')
+
     //const bind = useGesture(({  down, delta, velocity, target , time, first, last, temp = {xy: xy.getValue(), lastStep: 0, followOffset: 0 }}) => {
 
     //Try this later: set({ xy: add(delta, temp), immediate: down, config: { velocity: scale(direction, velocity), decay: true } })
     // npm install --save vec-la
+
+    const [minPos, setMinpos] = useState(0)
+    const [maxPos, setMaxpos] = useState(0)
+    useEffect(() => {
+        setMinpos(timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2)
+        setMaxpos(- timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2)
+    },[]);
+
+
+    //let minPos = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
+    //let maxPos = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
+/*
+                let pos = timecontainer.current.offsetTop
+                let topOrigin = timecontainer.current.parentElement.offsetTop
+                let height = timecontainer.current.parentElement.offsetHeight
+                let scaleheight = timecontainer.current.offsetHeight
+
+                topOrigin+height/2
+                -scaleheight+height/2
+                */
+
+    const [{ xy }, set] = useSpring(() => ({ xy: [0, 0] }))
+
+
     const bind = useGesture({
-        onDrag: ({  down, delta, velocity, target , wheeling, time, first, last, temp = {xy: xy.getValue(), lastStep: 0, followOffset: 0 }}) => {
+        onDrag: ({  down, delta, velocity, target , direction, wheeling, time, first, last, temp = {xy: xy.getValue(), lastStep: 0, lastFollowDest: 0 }}) => {
             let springConfigUp = { mass: 1, tension: 200 , friction: 40, precision: 1 }
-            let springConfigDown = { mass: 1, tension: 1200 , friction: 40, precision: 1 }
+            let springConfigDown = { mass: 1, tension: 1200 , friction: 40, precision: 0.01 }
+            let config = { mass: 1, tension: 1200 , friction: 40, velocity: scale(direction, velocity), decay: true, precision: 1 }
             //let springConfigUp = { easing: easeeffect ,duration: 10+velocity*100, precision: 1 }
             //let springConfigDown = { easing: easeeffect ,duration: 10, precision: 1 }
             //console.log('velocity: '+velocity)
-            console.log('wheeling: '+wheeling)
+            //console.log("minPos: "+minPos+" maxPos: "+maxPos)   
             velocity = (velocity<.15)?0:velocity
             const runBefore = () => {setActive(true)} 
             /*
@@ -81,23 +107,24 @@ function TimeSelector(props)  {
                 let scaleheight = timecontainer.current.offsetHeight
 
                 //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
-                let step = 0
-                if (delta[0]<-50) step = (1000 * 60 * 60 * 24)  / zoomfactor
-                if (delta[0]<-100) step = (1000 * 60 * 60 * 24 * 30) / zoomfactor
-                if (delta[0]<-150) step = (1000 * 60 * 60 * 24 * 365) / zoomfactor
+                let step, div = 0
+                if (delta[0]<-50) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10}
+                if (delta[0]<-250) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 20}
+                if (delta[0]<-350) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 120}
 
                 //console.log('step: '+step+' '+delta[1]+' velo: '+velocity)
 
 
+
+
+
+                let followDest = (delta[0]<-50)?(Math.round((delta[1])/div)*step+temp.xy[1]):delta[1]+temp.xy[1]
                 if(step != temp.lastStep) {
                     console.log('Step changed from: '+temp.lastStep+' to: '+ step)
-                    //temp.followOffset = delta[1]
+                    followDest = temp.lastFollowDest
                     console.log('followOffset: '+temp.followOffset+' delta: '+delta[1])
                 }
 
-
-
-                let followDest = (delta[0]<-50)?(Math.round((delta[1]-temp.followOffset)/10)*step+temp.xy[1]):delta[1]-temp.followOffset+temp.xy[1]
                 if(followDest > topOrigin+height*3/4) followDest = topOrigin+height*3/4
                 if(followDest < -scaleheight+height/4) followDest = -scaleheight+height/4
                 //followDest = followDest - temp.followOffset
@@ -113,19 +140,37 @@ function TimeSelector(props)  {
                 
                 //console.log('followDest: '+followDest)
                 //temp.lastFollowDest = followDest
-                temp.lastStep = step
                 
                 let fardelta = (delta[0]<-50) ?  Math.round(delta[1]/10)*step + (Math.round(delta[1]/10)*step * Math.pow(velocity+1,3))*velocity  : delta[1] + (delta[1] * Math.pow(velocity+1,3))*velocity
                 //console.log('fardelta: '+fardelta)
                 let dest = (pos+fardelta+temp.xy[1]>=topOrigin+height/2)?Math.min(height/2,fardelta+temp.xy[1]):fardelta+temp.xy[1]
                 dest = (pos+fardelta+temp.xy[1]<= -scaleheight+height/2)?Math.max(-1*(max-min-height/2),fardelta+temp.xy[1]):dest
 
+                if(step != temp.lastStep) {
+                    console.log('Step changed from: '+temp.lastStep+' to: '+ step)
+                    followDest = dest = temp.lastFollowDest
+                    console.log('followOffset: '+temp.followOffset+' delta: '+delta[1])
+                }
 
+                temp.lastStep = step
+                temp.lastFollowDest = followDest
 
 
                 const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-                const setFinalTime = () => {if(!down) {setFinalposition(min+(-dest+height/2)*zoomfactor); setActive(false)}}   
-                set({ xy: down ? [0,followDest] : [0,dest],  config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
+                const setFinalTime = () => {if(!down) {setFinalposition(min+(-dest+height/2)*zoomfactor); setActive(false)}}  
+                
+                let newxy = add(delta, temp.xy)
+                //console.log("minPos: "+minPos+" maxPos: "+maxPos+" newxy[1]: "+newxy[1]+" newxy[0]: "+newxy[0])
+                //newxy: 39.236588741759945,-82983.5 followDest: -83038.5
+                let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
+                let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
+        
+                newxy[1] = newxy[1]>minX ? minX : newxy[1]
+                newxy[1] = newxy[1]<maxX ? maxX : newxy[1]
+            console.log(" newxy: "+newxy+" followDest: "+followDest+" delta: "+delta+" temp.xy: "+temp.xy)
+                //xy: add(delta, temp)
+                set({  xy: down ? [0,followDest] : [0,dest],   config: down?springConfigDown:springConfigUp,immediate: down, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
+                // good one -> set({ xy: down ? [0,followDest] : [0,dest],  config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
                 //set({ xy: down ? [0,delta[1]+temp.xy[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
             } else {    
                 let pos = target.getBoundingClientRect().left
@@ -212,14 +257,14 @@ function TimeSelector(props)  {
         let date
         try {
             date = new Date(livePosition)
+            setYear(date.getUTCFullYear())
+            setMonth(dateFormat(date,'UTC:mmm'))
+            setDay(dateFormat(date,'UTC:dd'))
+            setTime(dateFormat(date,'UTC:HH:MM:ss'))        
+            setAppdate(livePosition)
         } catch {
-            date = 0
+            console.log("Weird LivePosition"+livePosition)
         }
-        setYear(date.getUTCFullYear())
-        setMonth(dateFormat(date,'UTC:mmm'))
-        setDay(dateFormat(date,'UTC:dd'))
-        setTime(dateFormat(date,'UTC:HH:MM:ss'))        
-        setAppdate(livePosition)
     },[livePosition])
 
     useLayoutEffect(() => {     
@@ -273,14 +318,19 @@ function TimeSelector(props)  {
                 <div className='MonthLabel' key='month' >{month}</div>
                 <div className='TimeLabel' key='time' >{time}</div>
             </div>
-
+<div className={props.vertical?"Mire-v":"Mire"} ></div>
 */
     return (
         <div className={props.vertical?"Mask-v":"Mask"} >
-            <div className={props.vertical?"Mire-v":"Mire"} ></div>
+            
+            <div className="TriangleContainer" >
+                <svg height="40" width="20" className="Triangle">
+                    <polygon points="20,5 20,35 12,20" />   
+                </svg> 
+            </div>        
             <div className="TimeContainer" ref={timecontainer}>
                 
-                <animated.div className="TimeScale" {...bind()} style={{ width: wid,height: hei, transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`) }}>
+                <animated.div className="TimeScale" {...bind()} style={{ width: wid,height: hei, transform: xy.interpolate((x, y) => `translate3d(0px,${y}px,0)`) }}>
                     {timescale}
                 </animated.div>
             </div>

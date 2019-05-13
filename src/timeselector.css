@@ -83,6 +83,20 @@
     border-width: 1px;
 
 }
+.TriangleContainer {
+    position: absolute;
+    top: 50%;
+    right:0px;
+    margin-top: -16px;
+    width: 20px;
+    height: 40px;
+
+}
+.Triangle {
+    fill: var(--color);
+    stroke: var(--color);
+    stroke-width: 1;
+}
 .DayTic-v {
     position: absolute;
     pointer-events: none;
