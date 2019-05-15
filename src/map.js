@@ -109,8 +109,8 @@ export default function Map(props) {
             configuration.attributes.outlineWidth = 1;
         } else if (geometry.isPolygonType() || geometry.isMultiPolygonType()) {
             configuration.attributes = new WorldWind.ShapeAttributes(null);
-            configuration.attributes.interiorColor = new WorldWind.Color(0, 1, 1, 0.2);
-            configuration.attributes.outlineColor = new WorldWind.Color(1, 1, 1, 1);
+            configuration.attributes.interiorColor = new WorldWind.Color(1, 0, 0, 0.2);
+            configuration.attributes.outlineColor = new WorldWind.Color(1, 1, 1, 0);
         }
 
         //console.log(configuration.attributes);

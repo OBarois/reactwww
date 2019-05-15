@@ -4,7 +4,7 @@ import { useGesture } from 'react-use-gesture'
 import './timeselector.css'
 import { setGlobal, useGlobal } from 'reactn'
 import dateFormat from "dateformat"
-import { add, scale } from 'vec-la'
+import { add, sub, scale } from 'vec-la'
 
 
 // to be split in a controller and a useTouchScale hook () => {<TouchScale>, scaleRenderer, size}
@@ -49,56 +49,19 @@ function TimeSelector(props)  {
 
 
     const timecontainer = useRef()
-    //console.log('timecontainer: ')
-
-    //const bind = useGesture(({  down, delta, velocity, target , time, first, last, temp = {xy: xy.getValue(), lastStep: 0, followOffset: 0 }}) => {
-
-    //Try this later: set({ xy: add(delta, temp), immediate: down, config: { velocity: scale(direction, velocity), decay: true } })
-    // npm install --save vec-la
-/*
-    const [minPos, setMinpos] = useState(0)
-    const [maxPos, setMaxpos] = useState(0)
-    useEffect(() => {
-        setMinpos(timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2)
-        setMaxpos(- timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2)
-    },[]);
-*/
-
-    //let minPos = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
-    //let maxPos = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
-/*
-                let pos = timecontainer.current.offsetTop
-                let topOrigin = timecontainer.current.parentElement.offsetTop
-                let height = timecontainer.current.parentElement.offsetHeight
-                let scaleheight = timecontainer.current.offsetHeight
-
-                topOrigin+height/2
-                -scaleheight+height/2
-                */
 
     const [{ xy }, set] = useSpring(() => ({ xy: [0, 0] }))
 
 
     const bind = useGesture({
-        onDrag: ({  down, delta, velocity, target , direction, wheeling, time, first, last, temp = {xy: xy.getValue(), deltaOffset: 0, lastStep: 0, lastIncrement: 0 }}) => {
+        onDrag: ({  down, delta, velocity, target , direction, wheeling, time, first, last, temp = {xy: xy.getValue(), deltaOffset: [0,0], lastNewxy: [0,0],deltaFactor: [1,1], lastStep: 1, lastIncrement: 0 }}) => {
             let springConfigUp = { mass: 1, tension: 200 , friction: 40, precision: 1 }
             let springConfigDown = { mass: 1, tension: 1200 , friction: 40, precision: 0.01 }
-            let config = { mass: 1, tension: 1200 , friction: 40, velocity: scale(direction, velocity), decay: true, precision: 1 }
-            //let springConfigUp = { easing: easeeffect ,duration: 10+velocity*100, precision: 1 }
-            //let springConfigDown = { easing: easeeffect ,duration: 10, precision: 1 }
-            //console.log('velocity: '+velocity)
-            //console.log("minPos: "+minPos+" maxPos: "+maxPos)   
+            let config = {  velocity: scale(direction, velocity), decay: true, precision: 1 }
+
             velocity = (velocity<.15)?0:velocity
             const runBefore = () => {setActive(true)} 
-            /*
-            console.log('time: '+(time - temp.startTime)  )     
-            if( down && time - temp.startTime  >3000 ) {
-                console.log('zoom!!') 
-                setTimescale(scaleText(props.vertical))     
-            }
-            */
-            //if (down) console.log('delta: '+delta[0])
-            
+           
             if(myvertical.current) {    
                 //let pos = target.getBoundingClientRect().top
                 let pos = timecontainer.current.offsetTop
@@ -109,96 +72,40 @@ function TimeSelector(props)  {
                 //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
                 let step = 1
                 let div = 1
-                if (delta[0]<-50) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10}
-                if (delta[0]<-250) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 20}
-                if (delta[0]<-350) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 80}
-
-                //console.log('step: '+step+' '+delta[1]+' velo: '+velocity)
+                if (delta[0]<-30) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10}
+                if (delta[0]<-150) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 15}
+                if (delta[0]<-230) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 40}
 
                 if(step != temp.lastStep) {
                     console.log('Step changed from: '+temp.lastStep+' to: '+ step)
-                    step > temp.lastStep? temp.deltaOffset += delta[1] : temp.deltaOffset -= delta[1]
-                    temp.deltaOffset = temp.lastIncrement
+                    temp.deltaOffset = delta
+                    temp.xy = temp.lastNewxy
                 }
 
+                delta = sub(delta,temp.deltaOffset)
+                let deltaFactor = [Math.round(delta[0]/div)*step,Math.round(delta[1]/div)*step]
+                if(down) velocity = 0
+                let newxy = add(scale(deltaFactor,Math.pow(velocity+1,2.5)), temp.xy)
 
-
-
-                //let followDest = (delta[0]<-50)?(Math.round((delta[1]-temp.deltaOffset)/div)*step+temp.xy[1]):delta[1]+temp.xy[1]
-                temp.lastIncrement = Math.round((delta[1]-temp.deltaOffset)/div) * step
-                let followDest = (delta[0]<-50)?temp.lastIncrement+temp.xy[1]+temp.deltaOffset:delta[1]+temp.xy[1]
-                console.log('follow dest increment: '+temp.lastIncrement)
-
-                if(followDest > topOrigin+height*3/4) followDest = topOrigin+height*3/4
-                if(followDest < -scaleheight+height/4) followDest = -scaleheight+height/4
-                //followDest = followDest - temp.followOffset
-                /*
-                if(step != temp.step || Math.abs(delta[0])>Math.abs(delta[1])) {
-                    console.log('followDest: '+followDest+ ' changed to: '+ temp.lastFollowDest)
-                    followDest = temp.lastFollowDest
-                    delta[1] = 0
-                } else {
-                    followDest = (delta[0]<-50)?Math.round(delta[1]/10)*step+temp.xy[1]:delta[1]+temp.xy[1]
-                }
-                */
-                
-                //console.log('followDest: '+followDest)
-                //temp.lastFollowDest = followDest
-                
-                let fardelta = (delta[0]<-50) ?  Math.round((delta[1]-temp.deltaOffset)/div)*step + (Math.round((delta[1]-temp.deltaOffset)/div)*step * Math.pow(velocity+1,2))*velocity +temp.deltaOffset : delta[1] + (delta[1] * Math.pow(velocity+1,3))*velocity
-                //console.log('fardelta: '+fardelta)
-                let dest = (pos+fardelta+temp.xy[1]>=topOrigin+height/2)?Math.min(height/2,fardelta+temp.xy[1]):fardelta+temp.xy[1]
-                dest = (pos+fardelta+temp.xy[1]<= -scaleheight+height/2)?Math.max(-1*(max-min-height/2),fardelta+temp.xy[1]):dest
-
-                /*
                 if(step != temp.lastStep) {
-                    console.log('Step changed from: '+temp.lastStep+' to: '+ step)
-                    followDest  = temp.lastFollowDest
-                    dest = temp.lastFollowDest
-                    console.log('followDest: '+followDest)
-                    console.log(' delta[1]: ' + delta[1])
-                    console.log(' temp.deltaOffset: '+temp.deltaOffset)
-                    step > temp.lastStep? temp.deltaOffset += delta[1] : temp.deltaOffset -= delta[1]
-                    console.log('New temp.deltaOffset: '+temp.deltaOffset)
+                    temp.xy = newxy
                     temp.lastStep = step
-                    return temp
                 }
-*/
-                temp.lastStep = step
 
-
-                const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-                const setFinalTime = () => {if(!down) {setFinalposition(min+(-dest+height/2)*zoomfactor); setActive(false)}}  
+                temp.lastNewxy = newxy
                 
-                let newxy = add(delta, temp.xy)
-                //console.log("minPos: "+minPos+" maxPos: "+maxPos+" newxy[1]: "+newxy[1]+" newxy[0]: "+newxy[0])
-                //newxy: 39.236588741759945,-82983.5 followDest: -83038.5
+                const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
+                const setFinalTime = ({ xy }) => {if(!down) {setFinalposition(min+(-xy[1]+height/2)*zoomfactor); setActive(false)}}  
+
                 let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
                 let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
         
                 newxy[1] = newxy[1]>minX ? minX : newxy[1]
                 newxy[1] = newxy[1]<maxX ? maxX : newxy[1]
-            console.log(' temp.deltaOffset: '+temp.deltaOffset+" newxy: "+newxy + " dest: "+dest + " followDest: "+followDest+' delta - deltaOffset: '+(delta[1]-temp.deltaOffset)+" temp.xy: "+temp.xy)
-                //xy: add(delta, temp)
-                set({  xy: down ? [0,followDest] : [0,dest],   config: down?springConfigDown:springConfigUp,immediate: down, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
-                // good one -> set({ xy: down ? [0,followDest] : [0,dest],  config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
-                //set({ xy: down ? [0,delta[1]+temp.xy[1]] : [0,dest], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
+
+                set({  xy: newxy ,   config: down?springConfigDown:springConfigUp, immediate: down, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
+
             } else {    
-                let pos = target.getBoundingClientRect().left
-                let leftOrigin = target.parentNode.getBoundingClientRect().left
-                let width = timecontainer.current.parentElement.offsetWidth
-                let scalewidth = target.getBoundingClientRect().width
-                //console.log(leftOrigin+"/width: "+width+" /max-min: "+(max-min)+" /scalewidth: "+scalewidth+" /wid: "+wid)
-                let fardelta = delta[0] + delta[0] * Math.pow(velocity,2)
-                //console.log(swipefactor)
-                //let dest = (pos+fardelta+temp.xy[0]>=leftOrigin+width/2)?Math.min(width/2,fardelta+temp.xy[0]):fardelta+temp.xy[0]
-                let dest = (pos+fardelta+temp.xy[0]>=leftOrigin-width/2)?Math.min(width/2,fardelta+temp.xy[0]):fardelta+temp.xy[0]
-                dest = (pos+fardelta+temp.xy[0]<= -scalewidth-width/2)?Math.max(-1*(max-min-width/2),fardelta+temp.xy[0]):dest
-                const setLiveTime = ({ xy }) => {setLiveposition(min+(-xy[0]+width/2)*zoomfactor)}
-                const setFinalTime = () => {if(!down) {setFinalposition(min+(-dest+width/2)*zoomfactor); setActive(false)}}                
-                set({ xy: down ? [delta[0]+temp.xy[0],0] : [dest,0], config: down?springConfigDown:springConfigUp, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
-                //set({ xy: down ? [delta[0]+temp.xy[0],0] : [dest,0], pos: pos, config: {  tension: 1200 , friction: 40, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
-                //set({ xy: down ? [delta[0]+temp.xy[0],0] : [dest,0], pos: pos, config: { mass: velocity, tension: 500 * velocity, friction: 10, precision: 1 }, onRest: setFinalTime, onFrame: setLiveTime } )
             }
             return temp
         }
