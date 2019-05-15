@@ -37,7 +37,7 @@ const App = () => {
           const randomInt = Math.ceil(Math.random() * 10)
           console.log("mockApi done")
           resolve(randomInt)
-        }, 10000)
+        }, 2000)
       })
     }
     
@@ -48,7 +48,6 @@ const App = () => {
       }
     }
 
-    console.log('useEffect (mount) in App')
     doFetch()
   }, []);
   

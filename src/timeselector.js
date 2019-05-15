@@ -37,8 +37,8 @@ function TimeSelector(props)  {
 
     const [appdate, setAppdate] = useGlobal('appdate')
     const [searchdate, setSearchdate] = useGlobal('searchdate')
-    const [finalPosition, setFinalposition] = useState(appdate)
-    const [livePosition, setLiveposition] = useState(appdate)
+    const [finalPosition, setFinalposition] = useState(new Date())
+    const [livePosition, setLiveposition] = useState(new Date())
 
     const [active, setActive] = useState(false); 
 
@@ -64,10 +64,7 @@ function TimeSelector(props)  {
            
             if(myvertical.current) {    
                 //let pos = target.getBoundingClientRect().top
-                let pos = timecontainer.current.offsetTop
-                let topOrigin = timecontainer.current.parentElement.offsetTop
                 let height = timecontainer.current.parentElement.offsetHeight
-                let scaleheight = timecontainer.current.offsetHeight
 
                 //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
                 let step = 1
@@ -95,7 +92,7 @@ function TimeSelector(props)  {
                 temp.lastNewxy = newxy
                 
                 const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-                const setFinalTime = ({ xy }) => {if(!down) {setFinalposition(min+(-xy[1]+height/2)*zoomfactor); setActive(false)}}  
+                const setFinalTime = ({ xy }) => {  setActive(false); if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
 
                 let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
                 let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
@@ -163,81 +160,44 @@ function TimeSelector(props)  {
     
     },[props.vertical])
 
-    const [year, setYear] = useState('') 
-    const [month, setMonth] = useState('') 
-    const [day, setDay] = useState('') 
-    const [time, setTime] = useState('') 
 
-    useEffect(()=> {
+    
 
-    },[])
-    useEffect(() => {
-        let date
-        try {
-            date = new Date(livePosition)
-            setYear(date.getUTCFullYear())
-            setMonth(dateFormat(date,'UTC:mmm'))
-            setDay(dateFormat(date,'UTC:dd'))
-            setTime(dateFormat(date,'UTC:HH:MM:ss'))        
-            setAppdate(livePosition)
-        } catch {
-            console.log("Weird LivePosition"+livePosition)
-        }
-    },[livePosition])
 
     useLayoutEffect(() => {     
         let offset =0
         if(!active) {
             if(props.vertical) {
                 offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetHeight/2
-                set({ xy: [0,offset], config: { tension: 1200, friction: 40 }, onFrame: null }  )
+                set({ xy: [0,offset], config: { tension: 1200, friction: 40 }, onFrame: null, onRest: null }  )
             } else {
                 offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetWidth/2
-                set({ xy: [offset,0], config: { tension: 1200, friction: 40 }, onFrame: null }  )
+                set({ xy: [offset,0], config: { tension: 1200, friction: 40 }, onFrame: null, onRest: null }  )
 
             }
-/*
-            let offset = ((min - appdate)/zoomfactor)+(!props.vertical?timecontainer.current.parentElement.offsetWidth/2:timecontainer.current.parentElement.offsetHeight/2)
-            //console.log('wid: ')
-            //console.log(timecontainer.current.parentElement.offsetWidth)
-            //set({ xy: vertical?[0,offset]:[offset,0], config: { mass: 1, tension: 120 , friction: 14, precision: 1 } } )
-            if(props.vertical)
-            set({ xy: props.vertical?[0,offset]:[offset,0], config: { tension: 1200, friction: 40 }, onFrame: null }  )
-            */
-           let date = new Date(appdate)
-           setYear(date.getUTCFullYear())
-           setMonth(dateFormat(date,'UTC:mmm'))
-           setDay(dateFormat(date,'UTC:dd'))
-           setTime(dateFormat(date,'UTC:HH:MM:ss'))
    
             
         }
-    },[appdate,timescale])
+    },[appdate,timescale])  
+
+    useEffect(() => {
+        setAppdate(livePosition)
+    },[livePosition])
 
     useEffect(() => {
         console.log("useEffect (finalPosition) in TimeSelector: "+finalPosition+'  '+active)
-        //if(!active) setSearchdate(finalPosition)
-        setSearchdate(finalPosition)
-    },[finalPosition])
+        if(!active) {
+            setSearchdate(finalPosition)
+            //setActive(false)            
+        }
+        
+        //setSearchdate(finalPosition)
+    },[ finalPosition])
 
     useLayoutEffect(() => {
         console.log("zoom changed to: "+props.zoom)
     },[props.zoom])
 
-    /*
-    useEffect(() => {
-        //console.log("Time selector Active: "+active)   
-    },[active]);
-
-
-                <div className={props.vertical?"FixedLabel-v":"FixedLabel"} >
-                <div className='DayLabel' key='day' >{day}</div>
-                <div className='YearLabel' key='year' >{year}</div>
-                <div className='MonthLabel' key='month' >{month}</div>
-                <div className='TimeLabel' key='time' >{time}</div>
-            </div>
-<div className={props.vertical?"Mire-v":"Mire"} ></div>
-*/
     return (
         <div className={props.vertical?"Mask-v":"Mask"} >
             

@@ -19,19 +19,35 @@ export default function useDatahub() {
     // search time window size in ms
     const windowSize = 1000 * 60 * 60 * 3
 
-    const [data, setData] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [geojsonResults, setGeojsonResults] = useState({})
+    const [loading, setLoading] = useState(true)
 
     async function fetchUrl(url) {
         console.log('Search: '+ url)
-        const response = await fetch(url, {mode: 'cors', credentials: 'include'});
+        try {
+            const response = await fetch(url, {mode: 'cors', credentials: 'include'})
+            const json = await response.json()
+            const geoJson = dhusToGeojson(json)
+            console.log('totalResults: ' + geoJson.properties.totalResults)
+            setGeojsonResults(geoJson)    
+        } catch {
+            console.log("Didn't recieve a json !")
+            //console.log(response)
+        }
+        setLoading(false);
+    }
+        /*
+    async function fetchUrl(url) {
+        console.log('Search: '+ url)
+        const response = await fetch(url, {mode: 'cors', credentials: 'include'})
         const json = await response.json();
         const geoJson = dhusToGeojson(json)
         console.log('totalResults: ' + geoJson.properties.totalResults)
         setData(geoJson);
         setLoading(false);
         }
-
+    */
+    
     const [ searchdate,  ] = useGlobal('searchdate');
     const [ mission,  ] = useGlobal('mission');
     const [ searchUrl, setSearchurl  ] = useState('');
@@ -39,15 +55,24 @@ export default function useDatahub() {
     useEffect(() => {
         fetchUrl(searchUrl);
     }, [searchUrl]);
+    
+    useEffect(() => {
+        console.log('DataHub ready. '+mission)
+    }, []);
 
 
     useEffect(() => {
-        console.log('mission for dhus: '+mission)
+        console.log('Searching DHuS for: '+mission)
         let url = searchURLs[mission]
         if(mission in ["S1","S2","S3"]) url = searchURLs[mission]
-        url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
-        url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
-        setSearchurl(url)
+        try {
+            url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
+            url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
+            setSearchurl(url)
+    
+        } catch {
+            console.log('Not a JULIAN date !')
+        }
         
     }, [searchdate, mission]);
 /*    
@@ -57,5 +82,5 @@ export default function useDatahub() {
     }, [mission]);
     */
 
-    return {data, loading}
+    return {geojsonResults, loading}
 }
