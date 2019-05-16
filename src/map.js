@@ -110,7 +110,7 @@ export default function Map(props) {
         } else if (geometry.isPolygonType() || geometry.isMultiPolygonType()) {
             configuration.attributes = new WorldWind.ShapeAttributes(null);
             configuration.attributes.interiorColor = new WorldWind.Color(1, 0, 0, 0.2);
-            configuration.attributes.outlineColor = new WorldWind.Color(1, 1, 1, 0);
+            configuration.attributes.outlineColor = new WorldWind.Color(1, 0, 0, 0.5);
         }
 
         //console.log(configuration.attributes);
@@ -205,20 +205,18 @@ export default function Map(props) {
   },[appdate]);
 
   // The Map component reacts to changes of geoJson data provided by the Copernicus Sentinel data hub
-  const { data, loading } = useDatahub();
+  const { geojsonResults, loading } = useDatahub();
   useEffect(() => {
     console.log('datahub in use')
-    if(!loading) {
-      console.log(data)
+      console.log(geojsonResults)
       try {
-        addGeoJson(data)
+        addGeoJson(geojsonResults)
       } catch (err) {
         console.log("error on geojson parsing")
         console.log(err)
       }
       
-    }
-  },[data,loading]);
+  },[geojsonResults]);
 
 
   var globeStyle = {

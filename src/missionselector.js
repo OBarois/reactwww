@@ -14,6 +14,7 @@ console.log('mission selector')
     useHotkeys("2",()=>{setMission('S2')}) 
     useHotkeys("3",()=>{setMission('S3')}) 
     useHotkeys("5",()=>{setMission('S5P')}) 
+    useHotkeys("6",()=>{setMission('ENVISAT')}) 
 
 
 

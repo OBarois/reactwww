@@ -19,7 +19,7 @@ const App = () => {
 
 
   // Set boundaries and zoom factor of the time scale
-  const [min, setMin] = useState((new Date("2014-04-10")).getTime())
+  const [min, setMin] = useState((new Date("2010-04-10")).getTime())
   const [max, setMax] = useState((new Date("2019-12-31")).getTime())
   const [vertical, setVertical] = useState(true)
   useHotkeys("h",() => {
@@ -56,9 +56,7 @@ const App = () => {
 
   const [isFull,setIsfull] = useState(false)
   const { isFullscreen, toggleFullscreen } = useFullscreen(window.document.body);
-  console.log('isFullscreen: '+isFullscreen)
-  //const goFull = () => { setIsfull(true) }
-  //useHotkeys("f",() =>  setIsfull(prevIsFull => !prevIsFull )  )
+  
   useHotkeys("f",toggleFullscreen )  
   
   //const [ appdate, setAppdate ] = useGlobal('appdate');
