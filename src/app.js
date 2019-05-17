@@ -10,6 +10,7 @@ import { useGlobal } from 'reactn';
 import "./styles.css"
 import TimeSelector from "./timeselector";
 import TimeLabel from "./timelabel";
+import Debug from "./debug";
 
 
 
@@ -80,9 +81,10 @@ const App = () => {
           <TimeSelector min={min} max={max} vertical={vertical}/>
         </div>
         <MissionSelector mission='S1'/>
+        <Debug action='Bonjour'/>
       </Fullscreen>
    </div>
   );
 }
 
-export default App;
+export default App
