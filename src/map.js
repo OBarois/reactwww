@@ -8,8 +8,6 @@ import useDatahub from "./useDatahub";
 
 
 export default function Map(props) {
-  //const [wwd, setWwd] = useState([]);
-  //const [date, setDate] = useState(0);
   let clon = (props.clon)?props.clon:15.5
   let clat = (props.clat)?props.clat:48
   let alt = (props.alt)?props.alt:10000000
@@ -145,8 +143,8 @@ export default function Map(props) {
 
   useEffect(() => {
     console.log("useEffect (mount) in Map")
-    var elevationModel = new WorldWind.EarthElevationModel();
-    wwd.current = new WorldWind.WorldWindow(props.id, elevationModel);
+    //wwd.current = new WorldWind.WorldWindow(props.id, elevationModel);
+    wwd.current = new WorldWind.WorldWindow(props.id);
     //setWwd(wwd);
     var wmsConfigBg = {
       service: "https://tiles.maps.eox.at/wms",
@@ -167,8 +165,8 @@ export default function Map(props) {
       sector: WorldWind.Sector.FULL_SPHERE,
       levelZeroDelta: new WorldWind.Location(90, 90)
     }
-
-    var starFieldLayer = new WorldWind.StarFieldLayer('images/stars.json');
+    WorldWind.configuration.baseUrl = WorldWind.configuration.baseUrl.slice(0,-3)
+    var starFieldLayer = new WorldWind.StarFieldLayer();
     var atmosphereLayer = new WorldWind.AtmosphereLayer();
     atmosphereLayer.minActiveAltitude = 5000000
 
@@ -194,10 +192,10 @@ export default function Map(props) {
 
     wwd.current.redraw();
     wwd.current.deepPicking = true;
-  }, []); // effect runs only once
+    }, []); // effect runs only once
 
   // The Map component reacts to changes of the global state 'appdate' (in ms since Epoch)
-  const [appdate, setAppdate ] = useGlobal('appdate')
+  const [appdate,  ] = useGlobal('appdate')
   useEffect(() => {
     //console.log("useEffect (appdate) in Map")
     wwd.current.layers[2].time = wwd.current.layers[3].time = new Date(appdate)
@@ -205,7 +203,7 @@ export default function Map(props) {
   },[appdate]);
 
   // The Map component reacts to changes of geoJson data provided by the Copernicus Sentinel data hub
-  const { geojsonResults, loading } = useDatahub();
+  const { geojsonResults,  } = useDatahub();
   useEffect(() => {
     console.log('datahub in use')
       console.log(geojsonResults)

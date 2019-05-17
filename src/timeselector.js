@@ -2,17 +2,12 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react"
 import {useSpring, animated, config} from 'react-spring'
 import { useGesture } from 'react-use-gesture'
 import './timeselector.css'
-import { setGlobal, useGlobal } from 'reactn'
-import dateFormat from "dateformat"
+import { useGlobal } from 'reactn'
 import { add, sub, scale } from 'vec-la'
 
 
 // to be split in a controller and a useTouchScale hook () => {<TouchScale>, scaleRenderer, size}
 
-//easeLinear,easeQuad,easeQuadIn,easeQuadOut,easeQuadInOut,easeCubic,easeCubicIn,easeCubicOut,easeCubicInOut,easePoly,easePolyIn,easePolyOut,easePolyInOut,easeSin,
-//easeSinIn,easeSinOut,easeSinInOut,easeExp,easeExpIn,easeExpOut,easeExpInOut,easeCircle,easeCircleIn,easeCircleOut,easeCircleInOut,easeBounce,easeBounceIn,easeBounceOut,
-//easeBounceInOut,easeBack,easeBackIn,easeBackOut,easeBackInOut,easeElastic,easeElasticIn,easeElasticOut,easeElasticInOut
-import { easeSinOut  as easeeffect} from 'd3-ease'
 
 
 
@@ -36,8 +31,7 @@ function TimeSelector(props)  {
     }
 
     const [appdate, setAppdate] = useGlobal('appdate')
-    const [searchdate, setSearchdate] = useGlobal('searchdate')
-    const [finalPosition, setFinalposition] = useState(new Date())
+    const [, setSearchdate] = useGlobal('searchdate')
     const [livePosition, setLiveposition] = useState(new Date())
 
     const [active, setActive] = useState(false); 
@@ -70,10 +64,10 @@ function TimeSelector(props)  {
                 let step = 1
                 let div = 1
                 if (delta[0]<-30) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10}
-                if (delta[0]<-150) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 15}
-                if (delta[0]<-230) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 40}
+                if (delta[0]<-80) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 15}
+                if (delta[0]<-130) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 40}
 
-                if(step != temp.lastStep) {
+                if(step !== temp.lastStep) {
                     console.log('Step changed from: '+temp.lastStep+' to: '+ step)
                     temp.deltaOffset = delta
                     temp.xy = temp.lastNewxy
@@ -84,7 +78,7 @@ function TimeSelector(props)  {
                 if(down) velocity = 0
                 let newxy = add(scale(deltaFactor,Math.pow(velocity+1,2.5)), temp.xy)
 
-                if(step != temp.lastStep) {
+                if(step !== temp.lastStep) {
                     temp.xy = newxy
                     temp.lastStep = step
                 }
@@ -114,42 +108,30 @@ function TimeSelector(props)  {
         
         let monthcode = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
         let day, month, hour, year = 0
-        let lastday, lastmonth, lasthour, lastyear = 0
+        let lastday, lastmonth = 0
         let tics = []
         const dayclass = (!props.vertical)?'DayTic':'DayTic-v'
         const monthclass = (!props.vertical)?'MonthTic':'MonthTic-v'
         const yearclass = (!props.vertical)?'YearTic':'YearTic-v'
         
         
-        for (let i=props.min;i<=props.max;i+=60000) {
+        for (let i=props.min;i<=props.max;i+=3600000) {
             day = (new Date(i)).getUTCDate()
             month = monthcode[(new Date(i)).getUTCMonth()]
             hour = (new Date(i)).getUTCHours()
             year = (new Date(i)).getUTCFullYear()
-            if(day != lastday) tics.push({class:dayclass, pos: (i-props.min)/zoomfactor, label: day})
-            /*
-            if(month != lastmonth) {
+            if(day !== lastday) tics.push({class:dayclass, pos: (i-props.min)/zoomfactor, label: day})
+            if(month !== lastmonth ) {
                 tics.push({class:monthclass, pos: (i-props.min)/zoomfactor, label: month})
                 tics.push({class:yearclass, pos: (i-props.min)/zoomfactor, label: year})
             }
-            */
             //if(year != lastyear) tics.push({class:'YearTic', pos: (i-props.min)/zoomfactor, label: year})
             //if(hour != lasthour) tics.push({class:'HourTic', pos: (i-props.min)/zoomfactor, label: '.'})
             lastday = day
             lastmonth = month
-            lasthour = hour
-            lastyear = year
         }
 
             return tics.map(item => (            <div className={item.class} key={item.class+item.pos} style={(!props.vertical)?{left:item.pos}:{top:item.pos}}>{item.label}</div>))
-            /*
-        let text = ''
-        for (let i=min;i<=max;i++) {
-            text += i +"   "
-        }
-        console.log(tics)
-        return text  
-        */      
     }
 
     const [timescale, setTimescale] = useState('')    
@@ -184,15 +166,6 @@ function TimeSelector(props)  {
         setAppdate(livePosition)
     },[livePosition])
 
-    useEffect(() => {
-        console.log("useEffect (finalPosition) in TimeSelector: "+finalPosition+'  '+active)
-        if(!active) {
-            setSearchdate(finalPosition)
-            //setActive(false)            
-        }
-        
-        //setSearchdate(finalPosition)
-    },[ finalPosition])
 
     useLayoutEffect(() => {
         console.log("zoom changed to: "+props.zoom)

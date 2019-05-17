@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import dhusToGeojson from "./dhusToGeojson";
 import { useGlobal } from 'reactn';
 import dateFormat from "dateformat"

@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react"
 import { useClock } from "./useClock";
 import { useGlobal } from 'reactn';
 import { useHotkeys } from 'react-hotkeys-hook';
-import playImage from './images/play.png'
-import pauseImage from './images/pause.png'
 
 
 
