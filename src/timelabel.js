@@ -8,9 +8,7 @@ import "./timelabel.css"
 
 function TimeLabel(props) {
 
-    const [ appdate, setAppdate ] = useGlobal('appdate');
-    //console.log("Render TimerLabel (appdate): "+appdate)
-    let date = new Date(appdate)
+    const [ appdate,  ] = useGlobal('appdate');
     const [year, setYear] = useState('') 
     const [month, setMonth] = useState('') 
     const [day, setDay] = useState('') 

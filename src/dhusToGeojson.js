@@ -35,6 +35,10 @@ export default function dhusToGeojson(response) {
                 case "TB":
                     sizeInBytes = Math.round(parseFloat(sizeArray[0])*1024*1024*1024);
                     break;
+                default: 
+                    sizeInBytes = Math.round(parseFloat(sizeArray[0]));
+                    break;
+
             }
             
 
@@ -93,7 +97,7 @@ export default function dhusToGeojson(response) {
 
     let features = [];
     try {
-        features = response.feed.entry.map( item =>  mapFromHubOpenSearch(item)).filter(item => item != {});
+        features = response.feed.entry.map( item =>  mapFromHubOpenSearch(item)).filter(item => item !== {});
     } catch (err) {
         console.log(response);
         console.log("Error: ");

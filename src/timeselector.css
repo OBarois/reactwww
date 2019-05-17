@@ -1,7 +1,5 @@
 .TimeContainer {
     position: relative;
-    background: rgba(26, 60, 99, 0.0);
-    overflow: hidden;
     background: rgba(26, 60, 99, 0);
     font-family: verdana, sans-serif;
     text-shadow: 1px 1px 3px  rgba(43, 48, 5, 0.826);
@@ -30,9 +28,10 @@
 
 .TimeScale {
     position: relative;
-    white-space: nowrap;
+    right: 65px;
 
-    font-kerning: none;
+
+    
 }
 
 .DayTic {
@@ -113,15 +112,16 @@
 .MonthTic-v {
     position: absolute;
     pointer-events: none;
-    font-size: 25px; 
-    right: 30px
+    font-size: 10px; 
+    right: 10px;
+    margin-top: 15px
 }
 .YearTic-v {
     position: absolute;
     pointer-events: none;
-    font-size: 20px; 
-    top: 30px;
-    right: 30px
+    font-size: 10px; 
+    margin-top: 25px;
+    right: 10px
 }
 .HourTic-v {
     position: absolute;

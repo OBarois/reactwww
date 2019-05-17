@@ -22,11 +22,11 @@ function MissionSelector() {
 
     return (
         <div className='MissionSelector'>
-            <img className='MissionIcon' src='./images/s1_black.png' onClick={() => setMission('S1')} />
-            <img className='MissionIcon' src='./images/s2_black.png' onClick={() => setMission('S2')} />
-            <img className='MissionIcon' src='./images/s3_black.png' onClick={() => setMission('S3')} />
-            <img className='MissionIcon' src='./images/s5p_black.png' onClick={() => setMission('S5P')} />
-            <img className='MissionIcon' src='./images/envisat.png' onClick={() => setMission('ENVISAT')} />
+            <img className='MissionIcon' src='./images/s1_black.png' alt='' onClick={() => setMission('S1')} />
+            <img className='MissionIcon' src='./images/s2_black.png' alt='' onClick={() => setMission('S2')} />
+            <img className='MissionIcon' src='./images/s3_black.png' alt='' onClick={() => setMission('S3')} />
+            <img className='MissionIcon' src='./images/s5p_black.png' alt='' onClick={() => setMission('S5P')} />
+            <div className='MissionLabel'>{mission}</div>
         </div>
     )
 }
