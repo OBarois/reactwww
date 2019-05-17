@@ -3,7 +3,7 @@
     "name": "ESA's EO Catalogue",
     "icons": [
       {
-        "src": "EOi_logo.png",
+        "src": "images/EOi_logo.png",
         "sizes": "600x600",
         "type": "image/png"
       }
