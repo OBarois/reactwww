@@ -48,14 +48,15 @@ function TimeSelector(props)  {
 
 
     const bind = useGesture({
-        onDrag: ({  down, delta, velocity, target , direction, wheeling, time, first, last, temp = {xy: xy.getValue(), deltaOffset: [0,0], lastNewxy: [0,0],deltaFactor: [1,1], lastStep: 1, lastIncrement: 0 }}) => {
+        onDrag: ({  down, delta, velocity, active , direction, wheeling, time, first, last, temp = {xy: xy.getValue(), deltaOffset: [0,0], lastNewxy: [0,0],deltaFactor: [1,1], lastStep: 1, lastIncrement: 0,lastDown: false }}) => {
             let springConfigUp = { mass: 1, tension: 200 , friction: 40, precision: 1 }
             let springConfigDown = { mass: 1, tension: 1200 , friction: 40, precision: 0.01 }
             let config = {  velocity: scale(direction, velocity), decay: true, precision: 1 }
 
             velocity = (velocity<.15)?0:velocity
-            const runBefore = () => {setActive(true)} 
-           
+            
+            if(down != temp.lastDown) {console.log('set true'); setActive(true)}
+            temp.lastDown = down
             if(myvertical.current) {    
                 //let pos = target.getBoundingClientRect().top
                 let height = timecontainer.current.parentElement.offsetHeight
@@ -65,7 +66,7 @@ function TimeSelector(props)  {
                 let div = 1
                 if (delta[0]<-30) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10}
                 if (delta[0]<-80) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 15}
-                if (delta[0]<-130) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 40}
+                if (delta[0]<-130) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 30}
 
                 if(step !== temp.lastStep) {
                     console.log('Step changed from: '+temp.lastStep+' to: '+ step)
@@ -86,7 +87,7 @@ function TimeSelector(props)  {
                 temp.lastNewxy = newxy
                 
                 const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-                const setFinalTime = ({ xy }) => {  setActive(false); if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
+                const setFinalTime = ({ xy }) => {   if(!down && !active) {setActive(false);console.log('set to false')}; if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
 
                 let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
                 let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
@@ -94,7 +95,7 @@ function TimeSelector(props)  {
                 newxy[1] = newxy[1]>minX ? minX : newxy[1]
                 newxy[1] = newxy[1]<maxX ? maxX : newxy[1]
 
-                set({  xy: newxy ,   config: down?springConfigDown:springConfigUp, immediate: down, onRest: setFinalTime, onFrame: setLiveTime, onStart: runBefore } )
+                set({  xy: newxy ,   config: down?springConfigDown:springConfigUp, immediate: down, onRest: setFinalTime, onFrame: setLiveTime} )
 
             } else {    
             }
@@ -148,6 +149,7 @@ function TimeSelector(props)  {
 
     useLayoutEffect(() => {     
         let offset =0
+        //console.log('Active: '+active)
         if(!active) {
             if(props.vertical) {
                 offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetHeight/2

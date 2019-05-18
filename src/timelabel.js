@@ -6,14 +6,13 @@ import "./timelabel.css"
 
 
 
-function TimeLabel(props) {
+function TimeLabel({highlight}) {
 
     const [ appdate,  ] = useGlobal('appdate');
     const [year, setYear] = useState('') 
     const [month, setMonth] = useState('') 
     const [day, setDay] = useState('') 
     const [time, setTime] = useState('') 
-
 
     useLayoutEffect(() => {     
            let date = new Date(appdate)

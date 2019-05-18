@@ -1,3 +1,10 @@
+// EOi 
+// Copyright @obarois
+//
+//    tbd: 
+//      * make WorldWind a hook:  import eww {useTime, addGeojson, toggleProj, toggleAtmo, toggleStar, ...} from eww-hook 
+
+
 import React, { useState, useEffect, useRef } from "react";
 import WorldWind from "webworldwind-esa";
 //import { useClock } from "./useClock";
@@ -22,6 +29,7 @@ export default function Map(props) {
 
   // remove geojson layers
   useHotkeys("c",removeGeoJson)  
+
   const [geojsonlayers, setGeojsonlayers] = useState([])
   useEffect(() => {
     console.log('geojson changed')
@@ -108,7 +116,7 @@ export default function Map(props) {
         } else if (geometry.isPolygonType() || geometry.isMultiPolygonType()) {
             configuration.attributes = new WorldWind.ShapeAttributes(null);
             configuration.attributes.interiorColor = new WorldWind.Color(1, 0, 0, 0.2);
-            configuration.attributes.outlineColor = new WorldWind.Color(1, 0, 0, 0.5);
+            configuration.attributes.outlineColor = new WorldWind.Color(1, 0, 0, 0.3);
         }
 
         //console.log(configuration.attributes);
@@ -116,24 +124,28 @@ export default function Map(props) {
     }
 
     function loadCompleteCallback() {
+      console.log('geojsonlayers state updated')
+        setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
         wwd.current.redraw();
     }
 
 
     let renderableLayer = new WorldWind.RenderableLayer("GeoJSON_"+(new Date()))
-    removeGeoJson()
+    //removeGeoJson()
     wwd.current.addLayer(renderableLayer);
     //setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
-    setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+    
     let geoJson = new WorldWind.GeoJSONParser(url);
     geoJson.load(loadCompleteCallback, shapeConfigurationCallback, renderableLayer);
-}
+    //setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+  }
 
   function removeGeoJson() {
-    console.log('removing json layers ')
-    console.log(geojsonlayers)
+    //console.log('removing json layers ')
+    //console.log(geojsonlayers)
     for(let i=0;i<geojsonlayers.length;i++) {
       wwd.current.removeLayer(geojsonlayers[i])
+      console.log('removing json layers: ')
       console.log(geojsonlayers[i])
     }
     setGeojsonlayers([])
@@ -167,14 +179,14 @@ export default function Map(props) {
     }
     WorldWind.configuration.baseUrl = WorldWind.configuration.baseUrl.slice(0,-3)
     var starFieldLayer = new WorldWind.StarFieldLayer();
-    var atmosphereLayer = new WorldWind.AtmosphereLayer();
+    var atmosphereLayer = new WorldWind.AtmosphereLayer('images/BlackMarble_2016_01deg.jpg');
     atmosphereLayer.minActiveAltitude = 5000000
 
     var layers = [
       { layer: new WorldWind.WmsLayer(wmsConfigBg, ""), enabled: true },
       { layer: new WorldWind.WmsLayer(wmsConfigNames, ""), enabled: false },
       { layer: starFieldLayer, enabled: props.starfield },
-      { layer: atmosphereLayer, enabled: true }
+      { layer: atmosphereLayer, enabled: props.atmosphere }
     ];
 
     for (var l = 0; l < layers.length; l++) {
@@ -205,13 +217,15 @@ export default function Map(props) {
   // The Map component reacts to changes of geoJson data provided by the Copernicus Sentinel data hub
   const { geojsonResults,  } = useDatahub();
   useEffect(() => {
-    console.log('datahub in use')
-      console.log(geojsonResults)
-      try {
-        addGeoJson(geojsonResults)
-      } catch (err) {
-        console.log("error on geojson parsing")
-        console.log(err)
+    if(geojsonResults !== {}) {
+      console.log('datahub in use')
+        console.log(geojsonResults)
+        try {
+          addGeoJson(geojsonResults)
+        } catch (err) {
+          console.log("error on geojson parsing")
+          console.log(err)
+        }
       }
       
   },[geojsonResults]);

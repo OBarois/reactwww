@@ -22,11 +22,12 @@ function MissionSelector() {
 
     return (
         <div className='MissionSelector'>
-            <img className='MissionIcon' src='./images/s1_black.png' alt='' onClick={() => setMission('S1')} />
-            <img className='MissionIcon' src='./images/s2_black.png' alt='' onClick={() => setMission('S2')} />
-            <img className='MissionIcon' src='./images/s3_black.png' alt='' onClick={() => setMission('S3')} />
-            <img className='MissionIcon' src='./images/s5p_black.png' alt='' onClick={() => setMission('S5P')} />
+            <div className='Circle'><img className='MissionIcon' src='./images/s1_black.png' alt='' onClick={() => setMission('S1')} /></div>
+            <div className='Circle'><img className='MissionIcon' src='./images/s2_black.png' alt='' onClick={() => setMission('S2')} /></div>
+            <div className='Circle'><img className='MissionIcon' src='./images/s3_black.png' alt='' onClick={() => setMission('S3')} /></div>
+            <div className='Circle'><img className='MissionIcon' src='./images/s5p_black.png' alt='' onClick={() => setMission('S5P')} /></div>
             <div className='MissionLabel'>{mission}</div>
+            
         </div>
     )
 }
