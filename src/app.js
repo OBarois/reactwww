@@ -9,7 +9,7 @@ import { useGlobal } from 'reactn';
 
 import "./styles.css"
 import TimeSelector from "./timeselector";
-import TimeLabel from "./timelabel2";
+import TimeLabel from "./timelabel";
 import Debug from "./debug";
 import ControlPanel from "./controlpanel";
 
@@ -21,8 +21,13 @@ const App = () => {
 
 
   
-  const [ appdate,  ] = useGlobal('appdate')
+  //const [ appdate,  ] = useGlobal('appdate') // May be not a good idea 
   const [ searchdate,  ] = useGlobal('searchdate')
+  const [ mission, setMission ] = useGlobal('mission');
+    useEffect(() => {
+        console.log('Mission changed to: '+ mission)
+    }, [mission]);
+
 
   // Set boundaries and zoom factor of the time scale
   const [min, setMin] = useState((new Date("2000-04-10")).getTime())
@@ -75,7 +80,7 @@ const App = () => {
       <Fullscreen enabled={isFull} onChange={() =>  {if(!isFull) setIsfull(false)} }>
       
         <div className="DateTimeLabel" >
-          <TimeLabel vertical={vertical} date={appdate}/>
+          <TimeLabel vertical={vertical} />
         </div>
         
         <div className="ClockController">
@@ -83,18 +88,23 @@ const App = () => {
         </div> 
 
         <div className="Globe">
-          <Map id="globe" starfield="true" astmosphere='false'/>
+          <Map id="globe" starfield="false" astmosphere='false'/>
         </div>
         <div className={vertical?"TimeSelectorv":"TimeSelectorh"}>
           <TimeSelector min={min} max={max} vertical={vertical}/>
         </div>
-        <MissionSelector mission='S1'/>
+        
         <img className='Logo' src='./images/EOi_logo.png' alt='' onClick={()=>setIscontrolpanel((isControlPanel => !isControlPanel))} />
+        <div className='MissionLabel'>{mission}</div>
         <ControlPanel active={isControlPanel}/>
+          
         <Debug action={'Bonjour'}/>
       </Fullscreen>
    </div>
   );
 }
+
+//  <MissionSelector mission='S1'/>
+
 
 export default App

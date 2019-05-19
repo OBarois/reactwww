@@ -55,7 +55,7 @@ function TimeSelector(props)  {
 
             velocity = (velocity<.15)?0:velocity
             
-            if(down != temp.lastDown) {console.log('set true'); setActive(true)}
+            if(down != temp.lastDown) { setActive(true)}
             temp.lastDown = down
             if(myvertical.current) {    
                 //let pos = target.getBoundingClientRect().top
@@ -69,7 +69,7 @@ function TimeSelector(props)  {
                 if (delta[0]<-130) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 30}
 
                 if(step !== temp.lastStep) {
-                    console.log('Step changed from: '+temp.lastStep+' to: '+ step)
+                    //console.log('Step changed from: '+temp.lastStep+' to: '+ step)
                     temp.deltaOffset = delta
                     temp.xy = temp.lastNewxy
                 }
@@ -87,7 +87,7 @@ function TimeSelector(props)  {
                 temp.lastNewxy = newxy
                 
                 const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-                const setFinalTime = ({ xy }) => {   if(!down && !active) {setActive(false);console.log('set to false')}; if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
+                const setFinalTime = ({ xy }) => {   if(!down && !active) {setActive(false)}; if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
 
                 let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
                 let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2

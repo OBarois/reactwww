@@ -97,7 +97,12 @@ export default function dhusToGeojson(response) {
 
     let features = [];
     try {
-        features = response.feed.entry.map( item =>  mapFromHubOpenSearch(item)).filter(item => item !== {});
+        if( response.feed.entry ) {
+            features = response.feed.entry.map( item =>  mapFromHubOpenSearch(item)).filter(item => item !== {});
+        } else {
+            features = []
+        }
+        
     } catch (err) {
         console.log(response);
         console.log("Error: ");

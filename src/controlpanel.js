@@ -3,6 +3,8 @@ import {useSpring, animated} from 'react-spring';
 import {Spring} from 'react-spring/renderprops'
 import "./controlpanel.css"
 
+import MissionSelector from "./missionselector";
+
 
 
 
@@ -27,7 +29,9 @@ function ControlPanel({active}) {
             from={ active ? styleOff : styleOn}
             to={ active ? styleOn : styleOff}>
             {props => 
-                <div className='ControlPanel' style={props} >hello
+                <div className='ControlPanel' style={props} >
+                    <MissionSelector></MissionSelector>
+                
                 </div>}
         </Spring>
     )

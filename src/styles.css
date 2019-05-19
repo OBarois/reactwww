@@ -103,3 +103,16 @@
 
 
 }
+
+.MissionLabel {
+  position: fixed;
+  top: 100px;
+  left: 10px;
+  color: var(--color);
+  width: 100px;
+  height: 30px;
+  margin: auto;
+  z-index: 2;
+
+}
+

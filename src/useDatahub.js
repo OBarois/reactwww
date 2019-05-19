@@ -45,7 +45,7 @@ export default function useDatahub() {
                     startindex:  Number(geoJson.properties.startIndex), 
                     itemsperpage:  Number(geoJson.properties.itemsPerPage), 
                     })
-                setGeojsonResults(geoJson) 
+                if(Number(geoJson.properties.totalResults>0)) setGeojsonResults(geoJson) 
                 setLoading(false);   
             } catch {
                 console.log("Didn't recieve a json !")
@@ -80,17 +80,20 @@ export default function useDatahub() {
     }, []);
 
     useEffect(() => {
-        console.log('Searching Catalogue for: '+mission)
-        let url = searchURLs[mission]
-        //if(mission in ["S1","S2","S3"]) url = searchURLs[mission]
-        try {
-            url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
-            url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
-            url = url.replace("{startindex}", 0);
-            setSearchurl(url)
-    
-        } catch {
-            console.log('Not a JULIAN date !')
+        
+        if(mission && searchdate) {
+            
+            let url = searchURLs[mission]
+            //if(mission in ["S1","S2","S3"]) url = searchURLs[mission]
+            try {
+                url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
+                url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
+                url = url.replace("{startindex}", 0);
+                setSearchurl(url)
+        
+            } catch {
+                console.log('Not a JULIAN date !')
+            }
         }
         
     }, [searchdate, mission]);

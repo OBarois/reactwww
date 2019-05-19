@@ -37,6 +37,7 @@ export function useClock({ autoStart, duration, startdate }) {
      }
 
     function start() {
+        console.log("starting Timer... (will stop in "+duration/1000+" sec)")
         if (!intervalRef.current) {
             intervalRef.current = setInterval(() => incrementDate(step.current), refreshRate);
             setPlaying(true)
@@ -79,11 +80,8 @@ export function useClock({ autoStart, duration, startdate }) {
     // didMount effect
     useEffect(() => {
         setDate((new Date()).getTime())
-        console.log('date after setting: '+date)
         ldate.current = date
-        console.log('init date to: '+ldate.current)
         if (autoStart) {
-            console.log("starting Timer... ("+duration/1000+" sec)")
             start();
         }
         //return reset;

@@ -19,7 +19,7 @@ function Debug({action}) {
         console.log('debug: '+debug)
     }, [debug]);
 
-    
+    console.log('debug rendered')
 
     return (
         <div className='Debug' style={{display: (debug)?'inline':'none', width: '100%', height:'100%'}}>
