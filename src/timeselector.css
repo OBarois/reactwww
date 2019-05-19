@@ -3,6 +3,7 @@
     background: rgba(26, 60, 99, 0);
     font-family: verdana, sans-serif;
     text-shadow: 1px 1px 3px  rgba(43, 48, 5, 0.826);
+    overflow: hidden;
 
 }
 
@@ -50,7 +51,7 @@
 .MonthTic {
     position: absolute;
     pointer-events: none;
-    font-size: 25px; 
+    font-size: 2px; 
     bottom: 25px
 }
 .YearTic {
@@ -113,16 +114,16 @@
 .MonthTic-v {
     position: absolute;
     pointer-events: none;
-    font-size: 10px; 
-    right: 10px;
+    font-size: 14px; 
+    right: 6px;
     margin-top: 15px
 }
 .YearTic-v {
     position: absolute;
     pointer-events: none;
     font-size: 10px; 
-    margin-top: 25px;
-    right: 10px
+    margin-top: 30px;
+    right: 6px
 }
 .HourTic-v {
     position: absolute;

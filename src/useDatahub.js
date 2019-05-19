@@ -22,6 +22,7 @@ export default function useDatahub() {
 
     const [geojsonResults, setGeojsonResults] = useState({})
     const [loading, setLoading] = useState(false)
+    const [isfirstpage, setIsfirstPage] = useState(true)
     
     const [ searchdate,  ] = useGlobal('searchdate');
     const [ mission,  ] = useGlobal('mission');
@@ -32,7 +33,7 @@ export default function useDatahub() {
 //{totalresults,startindex}
     useEffect(() => {
         const fetchURL = async () => {
-            setLoading(true)
+            // setLoading(true)
             console.log('Search: '+ searchUrl)
             try {
                 const response = await fetch(searchUrl, {mode: 'cors', credentials: 'include'})
@@ -46,7 +47,9 @@ export default function useDatahub() {
                     itemsperpage:  Number(geoJson.properties.itemsPerPage), 
                     })
                 if(Number(geoJson.properties.totalResults>0)) setGeojsonResults(geoJson) 
-                setLoading(false);   
+                setIsfirstPage((pagination.startindex + pagination.itemsperpage < pagination.totalresults)?true:false)
+                console.log('first?: ' + (pagination.startindex + pagination.itemsperpage < pagination.totalresults)?'true':'false')
+                // setLoading(false);   
             } catch {
                 console.log("Didn't recieve a json !")
                 //console.log(response)
@@ -62,6 +65,7 @@ export default function useDatahub() {
         if(pagination.startindex + pagination.itemsperpage < pagination.totalresults) {
             let url = searchURLs[mission]
             console.log("There's More...")
+            // setIsfirstPage(false)
             try {
                 url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
                 url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
@@ -71,7 +75,10 @@ export default function useDatahub() {
         
             } catch {
                 console.log('Not a JULIAN date !')
+                setLoading(false);
             }
+        } else {
+            setLoading(false);
         }
     }, [pagination]);
 
@@ -89,6 +96,8 @@ export default function useDatahub() {
                 url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
                 url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
                 url = url.replace("{startindex}", 0);
+                setLoading(true)
+                // setIsfirstPage(true)
                 setSearchurl(url)
         
             } catch {
@@ -104,5 +113,5 @@ export default function useDatahub() {
     }, [mission]);
     */
 
-    return {geojsonResults, loading}
+    return {geojsonResults, loading, isfirstpage}
 }

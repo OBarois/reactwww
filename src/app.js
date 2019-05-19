@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ClockController from "./clockController";
 import Map from "./map";
+import Eww from "./eww";
 import MissionSelector from "./missionselector";
 import Fullscreen from "react-full-screen";
 import { useFullscreen } from '@straw-hat/react-fullscreen';
@@ -21,8 +22,6 @@ const App = () => {
 
 
   
-  //const [ appdate,  ] = useGlobal('appdate') // May be not a good idea 
-  const [ searchdate,  ] = useGlobal('searchdate')
   const [ mission, setMission ] = useGlobal('mission');
     useEffect(() => {
         console.log('Mission changed to: '+ mission)
@@ -30,7 +29,7 @@ const App = () => {
 
 
   // Set boundaries and zoom factor of the time scale
-  const [min, setMin] = useState((new Date("2000-04-10")).getTime())
+  const [min, setMin] = useState((new Date("2015-04-10")).getTime())
   const [max, setMax] = useState((new Date("2019-12-31")).getTime())
   
   const [vertical, setVertical] = useState(true)
@@ -88,7 +87,7 @@ const App = () => {
         </div> 
 
         <div className="Globe">
-          <Map id="globe" starfield="false" astmosphere='false'/>
+          <Eww id="globe" starfield="true" atmosphere='true' clon='0.5' clat='-40'/>
         </div>
         <div className={vertical?"TimeSelectorv":"TimeSelectorh"}>
           <TimeSelector min={min} max={max} vertical={vertical}/>
@@ -104,7 +103,10 @@ const App = () => {
   );
 }
 
-//  <MissionSelector mission='S1'/>
+      // <div className='MiniGlobe' >
+      // <Eww id='miniglobe' clon='0.5' clat='40'/>  
+      // </div>
+
 
 
 export default App

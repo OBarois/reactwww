@@ -76,21 +76,21 @@
 .Globe {
   position: fixed;
   background: black;
-  top: 0;
+  top: 0px;
   left:0px;
   height: 100%;
   width: 100%;
   z-index: 1;
 }
-.Miniglobe {
+.MiniGlobe {
   position: fixed;
   box-shadow: 2px 2px 5px rgba(37, 38, 39, 0.397);
   background:  linear-gradient(rgb(67, 124, 199), #111) repeat scroll 0 0 #222;
-  height: 100px;
+  height: 150px;
   width: 200px;
-  top: 20px;
+  bottom: 20px;
   left: 20px;
-  z-index: 2; 
+  z-index: 5; 
 }
 
 .Logo {

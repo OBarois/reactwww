@@ -12,9 +12,8 @@ import { useGlobal } from 'reactn';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useDatahub from "./useDatahub";
 
-
-
-export default function Map(props) {
+// export default function Map(props) {
+  export default function Map(props) {
   let clon = (props.clon)?props.clon:15.5
   let clat = (props.clat)?props.clat:48
   let alt = (props.alt)?props.alt:10000000
@@ -37,7 +36,7 @@ export default function Map(props) {
   },[geojsonlayers]);
 
 
-
+  // const toggleProjection = () => {
   function toggleProjection() {
     setProjection( prevProj => {
       console.log("prevProjection: "+prevProj)
@@ -70,6 +69,7 @@ export default function Map(props) {
   
   //toggle atmosphere
   useHotkeys("a",toggleAtmosphere)  
+  // const toggleAtmosphere = () => {
   function toggleAtmosphere() {
     wwd.current.layers[3].enabled = !wwd.current.layers[3].enabled
     wwd.current.redraw();
@@ -88,11 +88,12 @@ export default function Map(props) {
     wwd.current.redraw();
   }
 
-  function addGeoJson(url) {
+  function addGeoJson(url,replace) {
+    console.log('replace: '+replace)
     function shapeConfigurationCallback(geometry, properties) {
-        var configuration = {};
+        let configuration = {};
 
-        var placemarkAttributes = new WorldWind.PlacemarkAttributes(null);
+        let placemarkAttributes = new WorldWind.PlacemarkAttributes(null);
         placemarkAttributes.imageScale = 10;
         placemarkAttributes.imageColor = new WorldWind.Color(0, 1, 1, 0.2);
         placemarkAttributes.labelAttributes.offset = new WorldWind.Offset(
@@ -125,24 +126,25 @@ export default function Map(props) {
 
     function loadCompleteCallback() {
       console.log('geojsonlayers state updated')
-        setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+        // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
         wwd.current.redraw();
     }
 
 
-    let renderableLayer = new WorldWind.RenderableLayer("GeoJSON_"+(new Date()))
-    //removeGeoJson()
+    let renderableLayer = new WorldWind.RenderableLayer(url.properties.updated+Math.ceil(Math.random() * 10000))
+    // if (replace) removeGeoJson()
     wwd.current.addLayer(renderableLayer);
-    //setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
-    
+    // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+    setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+    // setGeojsonlayers(wwd.current.layers)
     let geoJson = new WorldWind.GeoJSONParser(url);
     geoJson.load(loadCompleteCallback, shapeConfigurationCallback, renderableLayer);
-    //setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+    // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
   }
 
   function removeGeoJson() {
-    //console.log('removing json layers ')
-    //console.log(geojsonlayers)
+    console.log('will remove json layers ')
+    console.log(geojsonlayers)
     for(let i=0;i<geojsonlayers.length;i++) {
       wwd.current.removeLayer(geojsonlayers[i])
       console.log('removing json layers: ')
@@ -158,7 +160,7 @@ export default function Map(props) {
     //wwd.current = new WorldWind.WorldWindow(props.id, elevationModel);
     wwd.current = new WorldWind.WorldWindow(props.id);
     //setWwd(wwd);
-    var wmsConfigBg = {
+    let wmsConfigBg = {
       service: "https://tiles.maps.eox.at/wms",
       layerNames: "s2cloudless-2018",
       numLevels: 19,
@@ -168,7 +170,7 @@ export default function Map(props) {
       levelZeroDelta: new WorldWind.Location(90, 90)
     }
 
-    var wmsConfigNames = {
+    let wmsConfigNames = {
       service: "https://tiles.maps.eox.at/wms",
       layerNames: "overlay_bright",
       numLevels: 19,
@@ -178,22 +180,22 @@ export default function Map(props) {
       levelZeroDelta: new WorldWind.Location(90, 90)
     }
     WorldWind.configuration.baseUrl = WorldWind.configuration.baseUrl.slice(0,-3)
-    var starFieldLayer = new WorldWind.StarFieldLayer();
-    var atmosphereLayer = new WorldWind.AtmosphereLayer('images/BlackMarble_2016_01deg.jpg');
+    let starFieldLayer = new WorldWind.StarFieldLayer();
+    let atmosphereLayer = new WorldWind.AtmosphereLayer('images/BlackMarble_2016_01deg.jpg');
     atmosphereLayer.minActiveAltitude = 5000000
 
-    var layers = [
+    let layers = [
       { layer: new WorldWind.WmsLayer(wmsConfigBg, ""), enabled: true },
       { layer: new WorldWind.WmsLayer(wmsConfigNames, ""), enabled: false },
       { layer: starFieldLayer, enabled: props.starfield },
       { layer: atmosphereLayer, enabled: props.atmosphere }
     ];
 
-    for (var l = 0; l < layers.length; l++) {
+    for (let l = 0; l < layers.length; l++) {
       layers[l].layer.enabled = layers[l].enabled;
       wwd.current.addLayer(layers[l].layer);
     }
-    //var date = new Date();
+    //let date = new Date();
     starFieldLayer.time = new Date(appdate);
     atmosphereLayer.time = new Date(appdate);
     setTimeout(() => {
@@ -215,7 +217,7 @@ export default function Map(props) {
   },[appdate]);
 
   // The Map component reacts to changes of geoJson data provided by the Copernicus Sentinel data hub
-  const { geojsonResults,  } = useDatahub();
+  const { geojsonResults} = useDatahub();
   useEffect(() => {
     if(geojsonResults !== {}) {
       console.log('datahub in use')
@@ -230,8 +232,15 @@ export default function Map(props) {
       
   },[geojsonResults]);
 
+  const [ searchdate,  ] = useGlobal('searchdate');
+  const [ mission,  ] = useGlobal('mission');
+  useEffect(() => {
+    console.log('reacting to searchdate or mission')
+    removeGeoJson()
+  },[searchdate,mission]);
 
-  var globeStyle = {
+
+  let globeStyle = {
     //background:  "linear-gradient(rgb(67, 124, 199), #111) repeat scroll 0 0 #222",
     background: 'inherit',
     position: "fixed",
@@ -245,3 +254,4 @@ export default function Map(props) {
       <canvas id={props.id} style={globeStyle} />
   );
 }
+

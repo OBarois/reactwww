@@ -32,11 +32,12 @@ function TimeSelector(props)  {
 
     const [appdate, setAppdate] = useGlobal('appdate')
     const [, setSearchdate] = useGlobal('searchdate')
+    const [, setHighlight] = useGlobal('highlight')
     const [livePosition, setLiveposition] = useState(new Date())
 
     const [active, setActive] = useState(false); 
 
-
+    const [step, setStep] = useState('continuous')
 
     const myvertical = useRef()
     myvertical.current = props.vertical
@@ -54,6 +55,8 @@ function TimeSelector(props)  {
             let config = {  velocity: scale(direction, velocity), decay: true, precision: 1 }
 
             velocity = (velocity<.15)?0:velocity
+
+            if (!down) setStep(1)
             
             if(down != temp.lastDown) { setActive(true)}
             temp.lastDown = down
@@ -64,12 +67,13 @@ function TimeSelector(props)  {
                 //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
                 let step = 1
                 let div = 1
-                if (delta[0]<-30) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10}
+                if (delta[0]<-30) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10; }
                 if (delta[0]<-80) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 15}
-                if (delta[0]<-130) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 30}
+                if (delta[0]<-160) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 30}
 
                 if(step !== temp.lastStep) {
                     //console.log('Step changed from: '+temp.lastStep+' to: '+ step)
+                    setStep(step)
                     temp.deltaOffset = delta
                     temp.xy = temp.lastNewxy
                 }
@@ -167,6 +171,23 @@ function TimeSelector(props)  {
     useEffect(() => {
         setAppdate(livePosition)
     },[livePosition])
+
+    useEffect(() => {
+        console.log('Step changed to: ' + step)
+        switch(step) {
+            case 40:
+                setHighlight("day")
+                break;
+            case 1200:
+                setHighlight("month")
+                break;
+            case 14600:
+                setHighlight("year")
+                break;
+            default:
+                setHighlight("none")
+        }
+    },[step])
 
 
     useLayoutEffect(() => {
