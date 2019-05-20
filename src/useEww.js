@@ -6,27 +6,29 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere }) {
     //console.log('useEww renders')
   
     const eww = useRef(null)
-    const [, setProjection] = useState("3D")
+    const [projection, setProjection] = useState("3D")
     const [geojsonlayers, setGeojsonlayers] = useState([])
+    const [ewwstate, setEwwState] = useState({latitude: clat, longitude: clon, altitude: alt})
 
+    //toggle atmosphere
     function toggleAtmosphere() {
         eww.current.layers[3].enabled = !eww.current.layers[3].enabled
         eww.current.redraw();
     }
-  //toggle starField
-  function toggleStarfield() {
-    eww.current.layers[2].enabled = !eww.current.layers[2].enabled
-    eww.current.redraw();
-  }
 
-  //toggle name overlay
-  function toggleNames() {
-    eww.current.layers[1].enabled = !eww.current.layers[1].enabled
-    eww.current.redraw();
-  }
+    //toggle starField
+    function toggleStarfield() {
+        eww.current.layers[2].enabled = !eww.current.layers[2].enabled
+        eww.current.redraw();
+    }
 
-    function addGeojson(url,replace) {
-        console.log('replace: '+replace)
+    //toggle name overlay
+    function toggleNames() {
+        eww.current.layers[1].enabled = !eww.current.layers[1].enabled
+        eww.current.redraw();
+    }
+
+    function addGeojson(url) {
         function shapeConfigurationCallback(geometry, properties) {
             let configuration = {};
     
@@ -63,8 +65,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere }) {
 
         
         function loadCompleteCallback() {
-            console.log('geojsonlayers state updated')
-            // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+            // console.log('geojsonlayers state updated')
+            setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
             eww.current.redraw();
         }
     
@@ -73,7 +75,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere }) {
         // if (replace) removeGeoJson()
         eww.current.addLayer(renderableLayer);
         // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
-        setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+        // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
         // setGeojsonlayers(eww.current.layers)
         let geoJson = new WorldWind.GeoJSONParser(url);
         geoJson.load(loadCompleteCallback, shapeConfigurationCallback, renderableLayer);
@@ -93,6 +95,11 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere }) {
         eww.current.redraw();
       }
 
+    function addWMS(config) {
+        let layer =  new WorldWind.WmsLayer(config, "")
+        // https://view.onda-dias.eu/instance00/ows?&service=WMS&request=GetMap&layers=S1B_IW_GRDH_1SDV_20190520T050758_20190520T050823_016323_01EB81_6EB6&styles=&format=image%2Fpng&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG%3A3857&bbox=2035059.441064533,7044436.526761846,2191602.4749925737,7200979.560689885
+    }
+
 
     function setTime(epoch) {
         eww.current.layers[2].time = eww.current.layers[3].time = new Date(epoch)
@@ -100,6 +107,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere }) {
         
 
      }
+
 
     function toggleProjection() {
         setProjection( prevProj => {
@@ -130,22 +138,34 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere }) {
           return supportedProjections[newProj]
           })      
       }
-    
 
+    // callback from eww   
+    // function setGlobeStates() {
+    //     console.log('ewwstate update')
+    //     setEwwState({
+    //         longitude:eww.current.navigator.lookAtLocation.longitude, 
+    //         latitude: eww.current.navigator.lookAtLocation.latitude,
+    //         altitude: eww.current.navigator.range})
+    // }
+    const setGlobeStates = () => {
+        let lo = eww.current.navigator.lookAtLocation.longitude
+        let la = eww.current.navigator.lookAtLocation.latitude
+        let al = eww.current.navigator.range
+        // console.log('ewwstate update')
+        setEwwState({
+            longitude:lo, 
+            latitude: la,
+            altitude: al
+        })
+    }
     
-    let globeStyle = {
-        background: 'inherit',
-        position: "fixed",
-        width: 'inherit',
-        height: 'inherit'
-      };
     
-    let canvas = <canvas id={id} style={globeStyle} />
     // didMount effect
     useEffect(() => {
         console.log("useEffect (mount) in Eww  star/atmo: "+ starfield+'/'+atmosphere)
         //eww.current = new WorldWind.WorldWindow(id, elevationModel);
         eww.current = new WorldWind.WorldWindow(id);
+        eww.current.redrawCallbacks.push(setGlobeStates)
         //setWwd(eww);
         let wmsConfigBg = {
             service: "https://tiles.maps.eox.at/wms",
@@ -195,7 +215,6 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere }) {
         eww.current.deepPicking = true;
     }, []); // effect runs only once
         
-
   
-  return { canvas, removeGeojson, addGeojson, toggleStarfield, toggleAtmosphere, setTime, toggleProjection, toggleNames };
+  return { ewwstate, removeGeojson, addGeojson, addWMS, toggleStarfield, toggleAtmosphere, setTime, toggleProjection, toggleNames };
 }

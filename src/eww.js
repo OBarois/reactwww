@@ -8,9 +8,10 @@ import useDatahub from "./useDatahub"
 export default function Eww({ id, clat, clon, alt, starfield, atmosphere }) {
 
 const {
-    
+    ewwstate,
     addGeojson,
     removeGeojson,
+    addWMS,
     toggleProjection,
     toggleAtmosphere,
     toggleStarfield,
@@ -32,9 +33,14 @@ const {
   useHotkeys("n",toggleNames)  
   useHotkeys("c",removeGeojson)
 
-  const { geojsonResults} = useDatahub();
+  const { geojsonResults, loading} = useDatahub();
   const [ searchdate,  ] = useGlobal('searchdate');
   const [ mission,  ] = useGlobal('mission');
+  const [ appdate,  ] = useGlobal('appdate')
+  const [ , setSearching ] = useGlobal('searching')
+  const [ , setAppaltitude ] = useGlobal('appaltitude')
+  const [ , setApplatitude ] = useGlobal('applatitude')
+  const [ , setApplongitude ] = useGlobal('applongitude')
 
   useEffect(() => {
     if(geojsonResults !== {}) {
@@ -55,9 +61,21 @@ const {
     removeGeojson()
   },[searchdate,mission]);
 
+  useEffect(() => {
+    setSearching(loading)
+  },[loading]);
 
-const [appdate,  ] = useGlobal('appdate')
-useEffect(() => {
+  useEffect(() => {
+    // console.log(' ewwstate changed')
+    setAppaltitude(ewwstate.altitude)
+    setApplongitude(ewwstate.longitude)
+    setApplatitude(ewwstate.latitude)
+  },[ewwstate.longitude,ewwstate.latitude, ewwstate.altitude ]);
+
+
+
+
+  useEffect(() => {
     setTime(appdate)
   },[appdate]);
 

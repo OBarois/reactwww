@@ -11,6 +11,8 @@ import { useGlobal } from 'reactn';
 import "./styles.css"
 import TimeSelector from "./timeselector";
 import TimeLabel from "./timelabel";
+import MapStateLabel from "./mapstatelabel";
+
 import Debug from "./debug";
 import ControlPanel from "./controlpanel";
 
@@ -87,7 +89,7 @@ const App = () => {
         </div> 
 
         <div className="Globe">
-          <Eww id="globe" starfield="true" atmosphere='true' clon='0.5' clat='-40'/>
+          <Eww id="globe" starfield="true" atmosphere='true' clon='0.5' clat='40'/>
         </div>
         <div className={vertical?"TimeSelectorv":"TimeSelectorh"}>
           <TimeSelector min={min} max={max} vertical={vertical}/>
@@ -95,9 +97,10 @@ const App = () => {
         
         <img className='Logo' src='./images/EOi_logo.png' alt='' onClick={()=>setIscontrolpanel((isControlPanel => !isControlPanel))} />
         <div className='MissionLabel'>{mission}</div>
+        <MapStateLabel className='MissionLabel'>{mission}</MapStateLabel>
         <ControlPanel active={isControlPanel}/>
           
-        <Debug action={'Bonjour'}/>
+        <Debug action='Bonjour'/>
       </Fullscreen>
    </div>
   );
