@@ -20,7 +20,7 @@ export default function useDatahub() {
     // search time window size in ms
     const windowSize = 1000 * 60 * 60 * 3
 
-    const [geojsonResults, setGeojsonResults] = useState({})
+    const [geojsonResults, setGeojsonResults] = useState(null)
     const [loading, setLoading] = useState(false)
     const [isfirstpage, setIsfirstPage] = useState(true)
     
@@ -28,18 +28,18 @@ export default function useDatahub() {
     const [ mission,  ] = useGlobal('mission');
     const [ apppolygon,  ] = useGlobal('apppolygon');
 
-    const [ searchUrl, setSearchurl  ] = useState('');
+    const [ searchUrl, setSearchurl  ] = useState(null);
     // const [ polygon, setPolygon  ] = useState('');
 
     const [ pagination, setPagination ] = useState({totalresults:0 ,startindex:0, itemsperpage:0});
 
 //{totalresults,startindex}
     useEffect(() => {
-        const fetchURL = async () => {
+        const fetchURL = async (url) => {
             // setLoading(true)
-            console.log('Search: '+ searchUrl)
+            console.log('Search: '+ url)
             try {
-                const response = await fetch(searchUrl, {mode: 'cors', credentials: 'include'})
+                const response = await fetch(url, {mode: 'cors', credentials: 'include'})
                 const json = await response.json()
                 const geoJson = (mission === 'ENVISAT')? json : dhusToGeojson(json)
                 console.log('totalResults: ' + geoJson.properties.totalResults)
@@ -60,7 +60,7 @@ export default function useDatahub() {
             }
             
         }
-        fetchURL(searchUrl);
+        if(searchUrl) fetchURL(searchUrl)
     }, [searchUrl]);
     
     useEffect(() => {
@@ -95,7 +95,9 @@ export default function useDatahub() {
     }, [apppolygon]);
 
     useEffect(() => {
-        
+        console.log('mission '+mission)
+        console.log('searchdate '+searchdate)
+
         if(mission && searchdate) {
             
             let url = searchURLs[mission]

@@ -48,7 +48,7 @@ const {
   const [ , setApppolygon ] = useGlobal('apppolygon')
 
   useEffect(() => {
-    if(geojsonResults !== {}) {
+    if(geojsonResults) {
       console.log('datahub in use')
         console.log(geojsonResults)
         try {

@@ -15,6 +15,7 @@ import MapStateLabel from "./mapstatelabel";
 
 import Debug from "./debug";
 import ControlPanel from "./controlpanel";
+import StepMask from './stepmask'
 
 
 
@@ -102,6 +103,7 @@ console.log('app renders')
         <MapStateLabel></MapStateLabel>
         <ControlPanel active={isControlPanel}/>
         <Debug action='Bonjour'/>
+        <StepMask/>
       </Fullscreen>
    </div>
   );

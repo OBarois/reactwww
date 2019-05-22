@@ -8,4 +8,7 @@ export  function initGlobalStates() {
     setGlobal({appdate: ((new Date()).getTime())})
     setGlobal({searchdate: ((new Date()).getTime())})
     setGlobal({mission: 'S1'})
+    setGlobal({searching: false})
+    setGlobal({apppolygon: ''})
+    
 }

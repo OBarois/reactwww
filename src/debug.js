@@ -8,7 +8,7 @@ import './debug.css'
 function Debug({action}) {
 
     const [ debug, setDebug ] = useState(false)
-    useHotkeys("d",()=>{setDebug(action => !action)}) 
+    useHotkeys("d",()=>{setDebug(debug => !debug)}) 
 
     useEffect(() => {
         console.log('Debug Overlay: press D ')
@@ -23,7 +23,7 @@ function Debug({action}) {
 
     return (
         <div className='Debug' style={{display: (debug)?'inline':'none', width: '100%', height:'100%'}}>
-            <div className='ContinuousScroll' style={{position: 'relative', top: '70%', right:0, width: 60, height:'100%', background:  'rgba(22, 22, 20, 0.24)'}}/>
+            {/* <div className='ContinuousScroll' style={{position: 'relative', top: '70%', right:0, width: 60, height:'100%', background:  'rgba(22, 22, 20, 0.24)'}}/> */}
         </div>
     )
 }

@@ -87,19 +87,19 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         catch(err) {tr = null;}
 
         //console.log(bl.longitude+'/'+bl.latitude+'/'+tr.longitude+'/'+tr.latitude);
-
-        if(bl == null && tr == null )  {
-              area = {type:"bbox", value:"-180,-90,180,90"};
+        if(bl == null || tr == null )  {
+            //   area = {type:"bbox", value:"-180,-90,180,90"};
               polygon = ''
         } else {
               area = {
                     type: "bbox",
                     value:
-                          ((bl != null) ? bl.longitude : -180) +','
-                          +((bl != null) ? bl.latitude : -90)+','
-                          +((tr != null) ? tr.longitude : 180)+','
-                          +((tr != null) ? tr.latitude : 90)
+                           bl.longitude +','
+                          + bl.latitude +','
+                          +tr.longitude +','
+                          +tr.latitude
               };
+
               polygon = 'POLYGON((' 
                 + bl.longitude + ' ' + bl.latitude + ',' 
                 + tr.longitude + ' ' + bl.latitude + ',' 
@@ -167,15 +167,13 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     }
 
     function removeGeojson() {
-        console.log('will remove json layers ')
-        console.log(geojsonlayers)
         for(let i=0;i<geojsonlayers.length;i++) {
           eww.current.removeLayer(geojsonlayers[i])
-          console.log('removing json layers: ')
-          console.log(geojsonlayers[i])
+        //   console.log('removing json layers: ')
+        //   console.log(geojsonlayers[i])
         }
         setGeojsonlayers([])
-        console.log(geojsonlayers)
+        // console.log(geojsonlayers)
         eww.current.redraw();
       }
 

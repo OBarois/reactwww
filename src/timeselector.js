@@ -4,6 +4,7 @@ import { useGesture } from 'react-use-gesture'
 import './timeselector.css'
 import { useGlobal } from 'reactn'
 import { add, sub, scale } from 'vec-la'
+import StepMask from './stepmask'
 
 
 // to be split in a controller and a useTouchScale hook () => {<TouchScale>, scaleRenderer, size}
@@ -12,6 +13,14 @@ import { add, sub, scale } from 'vec-la'
 
 
 function TimeSelector(props)  {
+
+    /// debug snippet
+    const [debug, setDebug] = useState('')    
+    useEffect(() => {
+        console.log('debug: ' + debug)
+    },[debug])
+
+
     //console.log("Render TimeSelector ")
     const dayspace = 40
     const zoomfactor = (props.max-props.min)/(dayspace*(props.max-props.min)/(1000*60*60*24))
@@ -49,12 +58,33 @@ function TimeSelector(props)  {
 
 
     const bind = useGesture({
-        onDrag: ({  down, delta, velocity, active , direction, wheeling, time, first, last, temp = {xy: xy.getValue(), deltaOffset: [0,0], lastNewxy: [0,0],deltaFactor: [1,1], lastStep: 1, lastIncrement: 0,lastDown: false }}) => {
+        onDrag: ({  down, delta, distance, velocity, active , direction, wheeling, time, first, last, temp = {
+                                                xy: xy.getValue(), 
+                                                deltaOffset: [0, 0], 
+                                                deltaCumul: [0, 0],
+                                                lastNewxy: [0, 0],
+                                                lastStep: 1, 
+                                                lastIncrement: 0,
+                                                lastDown: false, 
+                                                lastTime: time
+                                            }
+                }) => {
             let springConfigUp = { mass: 1, tension: 200 , friction: 40, precision: 1 }
             let springConfigDown = { mass: 1, tension: 1200 , friction: 40, precision: 0.01 }
             let config = {  velocity: scale(direction, velocity), decay: true, precision: 1 }
 
             velocity = (velocity<.15)?0:velocity
+
+            if(time - temp.lastTime > 1000) {
+                console.log('deltaCumul...')
+                console.log(temp.deltaCumul)
+                if (temp.deltaCumul < 0.01) {
+                    console.log('STABLE !!')
+                }
+                temp.lastTime = time
+                temp.deltaCumul = 0
+            }
+            temp.deltaCumul += velocity      
 
             if (!down) setStep(1)
             
@@ -153,7 +183,8 @@ function TimeSelector(props)  {
     
 
 
-    useLayoutEffect(() => {     
+    useLayoutEffect(() => {
+        // if no gesture (touch, mouse) is ongoing, the time selector follows the global appdate
         let offset =0
         //console.log('Active: '+active)
         if(!active) {
@@ -164,9 +195,7 @@ function TimeSelector(props)  {
                 offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetWidth/2
                 set({ xy: [offset,0], config: { tension: 1200, friction: 40 }, onFrame: null, onRest: null }  )
 
-            }
-   
-            
+            }           
         }
     },[appdate,timescale])  
 
@@ -174,8 +203,11 @@ function TimeSelector(props)  {
         setAppdate(livePosition)
     },[livePosition])
 
+
+
     useEffect(() => {
         console.log('Step changed to: ' + step)
+        setDebug('Step changed to: ' + step)
         switch(step) {
             case 40:
                 setHighlight("day")
@@ -210,6 +242,7 @@ function TimeSelector(props)  {
                     {timescale}
                 </animated.div>
             </div>
+            <StepMask/>
         </div>
     )
 }

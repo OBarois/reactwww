@@ -1,0 +1,53 @@
+.StepMask {
+    position: fixed;
+    background-color: #992abb38;
+    height: 80%;
+    width: 100%;
+    top: 10%;
+    left:0px;
+    color: rgba(255, 255, 255, 0.151);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.DayMask {
+    position: absolute;
+    background-color: #992abb38;
+    height: 100%;
+    width: 35px;
+    top: 0px;
+    right: 0px;
+    margin-right: 30px;
+    
+    color: rgba(105, 182, 218, 0.438);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.MonthMask {
+    position: absolute;
+    background-color: #992abb38;
+    height: 100%;
+    width: 35px;
+    top: 0px;
+    right: 0px;
+    margin-right: 80px;
+    
+    color: rgba(105, 182, 218, 0.438);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.YearMask {
+    position: absolute;
+    background-color: #992abb38;
+    height: 100%;
+    width: 35px;
+    top: 0px;
+    right: 0px;
+    margin-right: 160px;
+    
+    color: rgba(105, 182, 218, 0.438);
+    z-index: 10;
+    pointer-events: none;
+}
