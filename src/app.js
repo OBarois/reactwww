@@ -28,6 +28,7 @@ const App = () => {
     useEffect(() => {
         console.log('Mission changed to: '+ mission)
     }, [mission]);
+ 
 
 
   // Set boundaries and zoom factor of the time scale
@@ -75,7 +76,8 @@ const App = () => {
   useHotkeys("f",toggleFullscreen )  
   
   //const [ appdate, setAppdate ] = useGlobal('appdate');
-
+  // const [ myname,  ] = useGlobal('appnames');
+console.log('app renders')
   return (
     <div className="App">
       <Fullscreen enabled={isFull} onChange={() =>  {if(!isFull) setIsfull(false)} }>
@@ -89,7 +91,7 @@ const App = () => {
         </div> 
 
         <div className="Globe">
-          <Eww id="globe" starfield="true" atmosphere='true' clon='0.5' clat='40'/>
+          <Eww id="globe" starfield="true" atmosphere='true' clon='0.5' clat='40' names='true'/>
         </div>
         <div className={vertical?"TimeSelectorv":"TimeSelectorh"}>
           <TimeSelector min={min} max={max} vertical={vertical}/>
@@ -97,18 +99,18 @@ const App = () => {
         
         <img className='Logo' src='./images/EOi_logo.png' alt='' onClick={()=>setIscontrolpanel((isControlPanel => !isControlPanel))} />
         <div className='MissionLabel'>{mission}</div>
-        <MapStateLabel className='MissionLabel'>{mission}</MapStateLabel>
+        <MapStateLabel></MapStateLabel>
         <ControlPanel active={isControlPanel}/>
-          
         <Debug action='Bonjour'/>
       </Fullscreen>
    </div>
   );
 }
 
-      // <div className='MiniGlobe' >
-      // <Eww id='miniglobe' clon='0.5' clat='40'/>  
-      // </div>
+        // <div className='MiniGlobe' >
+        //   <Eww id='miniglobe' clon='0.5' clat='40' myname={myname}/>  
+        // </div>  
+
 
 
 

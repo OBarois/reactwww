@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react"
+import React, { useGlobal, useState, useEffect } from "reactn"
 import { useEww } from "./useEww"
-import { useGlobal } from 'reactn'
+// import { useGlobal } from 'reactn'
 import { useHotkeys } from 'react-hotkeys-hook'
 import useDatahub from "./useDatahub"
 
 
-export default function Eww({ id, clat, clon, alt, starfield, atmosphere }) {
+export default function Eww({ id, clat, clon, alt, starfield, atmosphere, names }) {
 
 const {
     ewwstate,
@@ -23,7 +23,8 @@ const {
     clon: clon,
     alt: alt,
     starfield: starfield,
-    atmosphere: atmosphere
+    atmosphere: atmosphere,
+    names: names
 })
 
   // toogle projection
@@ -37,10 +38,14 @@ const {
   const [ searchdate,  ] = useGlobal('searchdate');
   const [ mission,  ] = useGlobal('mission');
   const [ appdate,  ] = useGlobal('appdate')
+  const [ appstarfield,  setAppstarfield] = useGlobal('appstarfield')
+  const [ appatmosphere,  setAppatmosphere] = useGlobal('appatmosphere')
+  const [ appnames,  setAppnames] = useGlobal('appnames')
   const [ , setSearching ] = useGlobal('searching')
   const [ , setAppaltitude ] = useGlobal('appaltitude')
   const [ , setApplatitude ] = useGlobal('applatitude')
   const [ , setApplongitude ] = useGlobal('applongitude')
+  const [ , setApppolygon ] = useGlobal('apppolygon')
 
   useEffect(() => {
     if(geojsonResults !== {}) {
@@ -62,6 +67,19 @@ const {
   },[searchdate,mission]);
 
   useEffect(() => {
+    console.log('atmosphere')
+    toggleAtmosphere(appatmosphere)
+  },[appatmosphere])
+
+  useEffect(() => {
+    toggleStarfield(appstarfield)
+  },[appstarfield])
+  useEffect(() => {
+    toggleNames(appnames)
+  },[appnames])
+
+
+  useEffect(() => {
     setSearching(loading)
   },[loading]);
 
@@ -72,12 +90,23 @@ const {
     setApplatitude(ewwstate.latitude)
   },[ewwstate.longitude,ewwstate.latitude, ewwstate.altitude ]);
 
+  useEffect(() => {
+    // uncomment to search via polygon at low lats
+    setApppolygon(ewwstate.viewpolygon)
+    setApppolygon('')
+  },[ewwstate.viewpolygon ]);
 
 
 
   useEffect(() => {
     setTime(appdate)
   },[appdate]);
+
+  useEffect(() => {
+    setAppatmosphere(atmosphere)
+    setAppstarfield(starfield)
+    setAppnames(names)
+  },[]);
 
 
 let globeStyle = {

@@ -7,13 +7,13 @@ import "./mapstatelabel.css"
 function MapStateLabel() {
 
     const [ appaltitude,  ] = useGlobal('appaltitude')
-    const [altitude, setAltitude] = useState()
+    // const [altitude, setAltitude] = useState()
 
 
-    useLayoutEffect(() => {    
-        console.log('Altitude changed') 
-        setAltitude(Math.ceil(appaltitude / 1000))
-    },[appaltitude])
+    // useLayoutEffect(() => {    
+    //     console.log('Altitude changed') 
+    //     setAltitude(Math.ceil(appaltitude / 1000))
+    // },[appaltitude])
 
     return (
         <div className='MapStateLabel' >

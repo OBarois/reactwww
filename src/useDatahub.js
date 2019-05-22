@@ -11,7 +11,7 @@ export default function useDatahub() {
     let searchURLs = []
     //http://131.176.236.55/dhus/
     //https://scihub.copernicus.eu/apihub/search?
-    searchURLs["S1"] = 'https://131.176.236.55/dhus/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-1%20AND%20producttype:GRD)&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
+    searchURLs["S1"] = 'https://131.176.236.55/dhus/search?q=({polygon}%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-1%20AND%20producttype:GRD)&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
     searchURLs["S2"] = 'https://131.176.236.55/dhus/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-2%20AND%20producttype:S2MSI1C)&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
     searchURLs["S3"] = 'https://131.176.236.55/dhus/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-3%20AND%20(producttype:OL_1_ERR___%20OR%20producttype:SL_1_RBT___%20OR%20producttype:SR_1_SRA___))&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
     searchURLs["S5P"] = 'https://s5phub.copernicus.eu/search?q=(%20beginposition:[{start}%20TO%20{end}]%20AND%20platformname:Sentinel-5 precursor%20AND%20(producttype:L1B_RA_BD1%20OR%20(producttype:L2__NO2___%20AND%20processingmode:Near real time)))&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
@@ -26,7 +26,10 @@ export default function useDatahub() {
     
     const [ searchdate,  ] = useGlobal('searchdate');
     const [ mission,  ] = useGlobal('mission');
+    const [ apppolygon,  ] = useGlobal('apppolygon');
+
     const [ searchUrl, setSearchurl  ] = useState('');
+    // const [ polygon, setPolygon  ] = useState('');
 
     const [ pagination, setPagination ] = useState({totalresults:0 ,startindex:0, itemsperpage:0});
 
@@ -67,6 +70,7 @@ export default function useDatahub() {
             console.log("There's More...")
             // setIsfirstPage(false)
             try {
+                url = url.replace("{polygon}", (apppolygon !== '') ? '%20footprint:"Intersects('+ apppolygon + ')"' : '')
                 url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
                 url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
                 url = url.replace("{startindex}", pagination.startindex + pagination.itemsperpage);
@@ -87,12 +91,19 @@ export default function useDatahub() {
     }, []);
 
     useEffect(() => {
+        console.log('apppolygon: '+apppolygon)
+    }, [apppolygon]);
+
+    useEffect(() => {
         
         if(mission && searchdate) {
             
             let url = searchURLs[mission]
             //if(mission in ["S1","S2","S3"]) url = searchURLs[mission]
             try {
+                console.log(apppolygon?true:false)
+
+                url = url.replace("{polygon}", (apppolygon !== '') ? '%20footprint:"Intersects('+ apppolygon + ')"' : '')
                 url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
                 url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
                 url = url.replace("{startindex}", 0);

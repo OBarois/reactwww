@@ -93,6 +93,8 @@ function TimeSelector(props)  {
                 const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
                 const setFinalTime = ({ xy }) => {   if(!down && !active) {setActive(false)}; if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
 
+
+                // tbd: consider using  clamp from https://lodash.com/
                 let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
                 let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
         
