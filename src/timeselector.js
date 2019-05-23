@@ -44,7 +44,7 @@ function TimeSelector(props)  {
     const [, setHighlight] = useGlobal('highlight')
     const [livePosition, setLiveposition] = useState(new Date())
 
-    const [active, setActive] = useState(false); 
+    const [tsactive, setTsactive] = useState(false); 
 
     const [step, setStep] = useState('continuous')
 
@@ -88,7 +88,8 @@ function TimeSelector(props)  {
 
             if (!down) setStep(1)
             
-            if(down != temp.lastDown) { setActive(true)}
+            // if(down != temp.lastDown) { setTsactive(true)}
+            if(first) { setTsactive(true)}
             temp.lastDown = down
             if(myvertical.current) {    
                 //let pos = target.getBoundingClientRect().top
@@ -111,7 +112,7 @@ function TimeSelector(props)  {
                 delta = sub(delta,temp.deltaOffset)
                 let deltaFactor = [Math.round(delta[0]/div)*step,Math.round(delta[1]/div)*step]
                 if(down) velocity = 0
-                let newxy = add(scale(deltaFactor,Math.pow(velocity+1,2.5)), temp.xy)
+                let newxy = add(scale(deltaFactor,Math.pow(velocity+1,2)), temp.xy)
 
                 if(step !== temp.lastStep) {
                     temp.xy = newxy
@@ -121,10 +122,9 @@ function TimeSelector(props)  {
                 temp.lastNewxy = newxy
                 
                 const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-                const setFinalTime = ({ xy }) => {   if(!down && !active) {setActive(false)}; if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
+                const setFinalTime = ({ xy }) => {   if(!down && !active) {setTsactive(false)}; if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
 
 
-                // tbd: consider using  clamp from https://lodash.com/
                 let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
                 let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
         
@@ -136,7 +136,21 @@ function TimeSelector(props)  {
             } else {    
             }
             return temp
+        },
+        onWheel: ({down, delta, wheeling, local, temp= { xy: xy.getValue() }}) => {
+            console.log(local)
+            console.log(xy.getValue())
+            setTsactive(true)
+            let height = timecontainer.current.parentElement.offsetHeight
+            const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
+            const setFinalTime = ({ xy }) => {   setTsactive(false); if(!wheeling) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
+            let newxy = scale(add(delta,temp.xy), 0.1)
+            temp.xy = newxy
+
+            set({  xy: newxy , config: { tension: 1200, friction: 40, precision: 0.01  }, immediate: wheeling, onRest: setFinalTime, onFrame: setLiveTime} )
+            return temp
         }
+
     })
 
     
@@ -186,8 +200,8 @@ function TimeSelector(props)  {
     useLayoutEffect(() => {
         // if no gesture (touch, mouse) is ongoing, the time selector follows the global appdate
         let offset =0
-        //console.log('Active: '+active)
-        if(!active) {
+        console.log('ts Active: '+tsactive)
+        if(!tsactive) {
             if(props.vertical) {
                 offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetHeight/2
                 set({ xy: [0,offset], config: { tension: 1200, friction: 40 }, onFrame: null, onRest: null }  )
@@ -242,7 +256,6 @@ function TimeSelector(props)  {
                     {timescale}
                 </animated.div>
             </div>
-            <StepMask/>
         </div>
     )
 }

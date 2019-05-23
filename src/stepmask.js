@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useGlobal } from 'reactn'
 import './stepmask.css'
 
 
 
 
-function StepMask({action}) {
-
-    const [ active, setDebug ] = useState(action)
+function StepMask() {
+    const [highlight] = useGlobal('highlight')
+    const [ active, setDebug ] = useState(false)
     useHotkeys("m",()=>{setDebug(active => !active)}) 
 
     useEffect(() => {
-        console.log('Debug Overlay: press D ')
-        console.log('action (use): '+action)
+        console.log('Mask Overlay: press m ')
+        console.log('active (use): '+active)
     }, []);
 
     useEffect(() => {
-        console.log('active: '+active)
-    }, [active]);
+        setDebug((highlight !== 'none') )
+    }, [highlight]);
 
     console.log('active rendered')
 
