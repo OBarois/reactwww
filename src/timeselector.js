@@ -5,6 +5,7 @@ import './timeselector.css'
 import { useGlobal } from 'reactn'
 import { add, sub, scale } from 'vec-la'
 import StepMask from './stepmask'
+import useDebug from './useDebug'
 
 
 // to be split in a controller and a useTouchScale hook () => {<TouchScale>, scaleRenderer, size}
@@ -15,11 +16,8 @@ import StepMask from './stepmask'
 function TimeSelector(props)  {
 
     /// debug snippet
-    const [debug, setDebug] = useState('')    
-    useEffect(() => {
-        console.log('debug: ' + debug)
-    },[debug])
-
+    // const [debug, setDebug] = useDebug('')    
+    const [ , setDebug ] = useGlobal('debug')
 
     //console.log("Render TimeSelector ")
     const dayspace = 40
@@ -38,6 +36,7 @@ function TimeSelector(props)  {
         hei = 100
 
     }
+
 
     const [appdate, setAppdate] = useGlobal('appdate')
     const [, setSearchdate] = useGlobal('searchdate')
@@ -75,16 +74,16 @@ function TimeSelector(props)  {
 
             velocity = (velocity<.15)?0:velocity
 
-            if(time - temp.lastTime > 1000) {
-                console.log('deltaCumul...')
-                console.log(temp.deltaCumul)
-                if (temp.deltaCumul < 0.01) {
-                    console.log('STABLE !!')
-                }
-                temp.lastTime = time
-                temp.deltaCumul = 0
-            }
-            temp.deltaCumul += velocity      
+            // if(time - temp.lastTime > 1000) {
+            //     console.log('deltaCumul...')
+            //     console.log(temp.deltaCumul)
+            //     if (temp.deltaCumul < 0.01) {
+            //         console.log('STABLE !!')
+            //     }
+            //     temp.lastTime = time
+            //     temp.deltaCumul = 0
+            // }
+            // temp.deltaCumul += velocity      
 
             if (!down) setStep(1)
             
@@ -98,12 +97,14 @@ function TimeSelector(props)  {
                 //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
                 let step = 1
                 let div = 1
+                console.log()
                 if (delta[0]<-30) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10; }
                 if (delta[0]<-80) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 15}
                 if (delta[0]<-160) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 30}
 
                 if(step !== temp.lastStep) {
                     //console.log('Step changed from: '+temp.lastStep+' to: '+ step)
+                    setDebug('Step changed from: '+temp.lastStep+' to: '+ step)
                     setStep(step)
                     temp.deltaOffset = delta
                     temp.xy = temp.lastNewxy
@@ -139,12 +140,14 @@ function TimeSelector(props)  {
         },
         onWheel: ({down, delta, wheeling, local, temp= { xy: xy.getValue() }}) => {
             console.log(local)
-            console.log(xy.getValue())
+            setDebug(xy.getValue()[0] + '/' + xy.getValue()[1])
             setTsactive(true)
             let height = timecontainer.current.parentElement.offsetHeight
             const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
             const setFinalTime = ({ xy }) => {   setTsactive(false); if(!wheeling) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
+            // let newxy = scale(add(delta,temp.xy), 0.1)
             let newxy = scale(add(delta,temp.xy), 0.1)
+            //setDebug(newxy)
             temp.xy = newxy
 
             set({  xy: newxy , config: { tension: 1200, friction: 40, precision: 0.01  }, immediate: wheeling, onRest: setFinalTime, onFrame: setLiveTime} )
@@ -200,7 +203,6 @@ function TimeSelector(props)  {
     useLayoutEffect(() => {
         // if no gesture (touch, mouse) is ongoing, the time selector follows the global appdate
         let offset =0
-        console.log('ts Active: '+tsactive)
         if(!tsactive) {
             if(props.vertical) {
                 offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetHeight/2
@@ -221,7 +223,7 @@ function TimeSelector(props)  {
 
     useEffect(() => {
         console.log('Step changed to: ' + step)
-        setDebug('Step changed to: ' + step)
+        setDebug( 'Step will changed to: ' + step)
         switch(step) {
             case 40:
                 setHighlight("day")

@@ -1,16 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 
-export function useDebug() {
+export default function useDebug(init) {
 
     /// debug snippet
-    const [debugdata, setDebugdata] = useState()    
+    const [debugdata, setDebugdata] = useState(init)    
     useEffect(() => {
-        console.log('debug: ' + debug)
-    },[debug])
+        console.log('debug: ' + debugdata)
+    },[debugdata])
 
-    const setDebugdata = (data) =>{
-
-    }
 
 return [ debugdata, setDebugdata ]
 

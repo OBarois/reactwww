@@ -1,6 +1,6 @@
 .Debug {
     position: fixed;
-    background-color: #992abb38;
+    background: linear-gradient(rgba(186, 67, 216, 0.212), rgba(228, 221, 221, 0) ,  rgba(186, 67, 216, 0.212));
     height: 100%;
     width: 70%;
     top: 0px;
@@ -12,4 +12,13 @@
     color: white;
     z-index: 10;
     pointer-events: none;
+
+}
+
+.DebugBox1{
+    background:  linear-gradient(rgba(67, 132, 216, 0.267), rgba(66, 28, 28, 0)) repeat scroll 0 0 rgba(151, 101, 101, 0.24);
+    border-radius: 20px;
+    height: 300px;
+    width: 300px;
+    margin: auto
 }
