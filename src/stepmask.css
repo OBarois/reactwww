@@ -1,11 +1,11 @@
 .StepMask {
     position: fixed;
-    background-color: #992abb38;
+    background-color: #2ab1bb00;
     height: 80%;
     width: 100%;
     top: 10%;
     left:0px;
-    color: rgba(255, 255, 255, 0.151);
+    color: rgba(255, 255, 255, 0);
     z-index: 10;
     pointer-events: none;
 }
@@ -13,6 +13,7 @@
 .DayMask {
     position: absolute;
     background-color: #992abb38;
+    border-radius: 100px;
     height: 100%;
     width: 35px;
     top: 0px;
@@ -27,6 +28,7 @@
 .MonthMask {
     position: absolute;
     background-color: #992abb38;
+    border-radius: 100px;
     height: 100%;
     width: 35px;
     top: 0px;
@@ -41,6 +43,7 @@
 .YearMask {
     position: absolute;
     background-color: #992abb38;
+    border-radius: 100px;
     height: 100%;
     width: 35px;
     top: 0px;
