@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ClockController from "./clockController";
-import Map from "./map";
 import Eww from "./eww";
 import MissionSelector from "./missionselector";
+import MapSelector from "./mapselector";
 import Fullscreen from "react-full-screen";
 import { useFullscreen } from '@straw-hat/react-fullscreen';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -72,7 +72,7 @@ const App = () => {
 
   const [isFull,setIsfull] = useState(false)
   const { isFullscreen, toggleFullscreen } = useFullscreen(window.document.body);
-  const [isControlPanel, setIscontrolpanel] = useState(false)
+  // const [isControlPanel, setIscontrolpanel] = useState(false)
   
   useHotkeys("f",toggleFullscreen )  
   
@@ -98,10 +98,12 @@ console.log('app renders')
           <TimeSelector min={min} max={max} vertical={vertical}/>
         </div>
         
-        <img className='Logo' src='./images/EOi_logo.png' alt='' onClick={()=>setIscontrolpanel((isControlPanel => !isControlPanel))} />
         <div className='MissionLabel'>{mission}</div>
         <MapStateLabel></MapStateLabel>
-        <ControlPanel active={isControlPanel}/>
+        <ControlPanel active='true' imageSrc='./images/EOi_logo.png' >
+                <MissionSelector></MissionSelector>
+                <MapSelector></MapSelector>
+        </ControlPanel>
         <Debug action='Bonjour'/>
         <StepMask/>
       </Fullscreen>
@@ -112,6 +114,8 @@ console.log('app renders')
         // <div className='MiniGlobe' >
         //   <Eww id='miniglobe' clon='0.5' clat='40' myname={myname}/>  
         // </div>  
+
+                // <img className='Logo' src='./images/EOi_logo.png' alt='' onClick={()=>setIscontrolpanel((isControlPanel => !isControlPanel))} />
 
 
 

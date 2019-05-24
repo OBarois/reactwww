@@ -222,7 +222,7 @@ function TimeSelector(props)  {
 
 
     useEffect(() => {
-        console.log('Step changed to: ' + step)
+        // console.log('Step changed to: ' + step)
         setDebug( 'Step will changed to: ' + step)
         switch(step) {
             case 40:

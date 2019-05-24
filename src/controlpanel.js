@@ -1,50 +1,79 @@
-import React from "react";
+import React, {useState, useLayoutEffect, useEffect, useRef } from "react";
 import {useSpring, animated} from 'react-spring';
 import {Spring} from 'react-spring/renderprops'
+import { useGesture } from 'react-use-gesture'
+import { useGlobal } from 'reactn'
+import { add, sub, scale } from 'vec-la'
 import "./controlpanel.css"
 
-import MissionSelector from "./missionselector";
-import MapSelector from "./mapselector";
+ 
 
 
+function ControlPanel(props) {
+    const [ , setDebug ] = useGlobal('debug')
 
+    const [panelon, setPanelon] = useState(props.active)
+    const [{ xy }, set] = useSpring(() => ({ xy: [0, 0] }))
 
-
-function ControlPanel({active}) {
-
-
-    /*
-    //const props = useSpring({from: { opacity: 0, marginLeft: 0 }, to: { opacity: 1, marginLeft: 100 }})
-    const props = useSpring({opacity: 0, to: { opacity: 1}})
-    return (
-        <animated.div className='ControlPanel' style={props}>I will fade in</animated.div>
-    )
-*/
-    let styleOn = { opacity: 1, marginRight: 0 }
-    let styleOff = { opacity: 0, marginRight: -500 }
-
+    const slidePanel = useRef()
     // const bind = useGesture({ onDrag: ({ local }) => set({ local }) })
 
-    // const [props] = useSpring({
-    //     to: { opacity: 1, marginRight: 0 }
-    //     from: { opacity: 0, marginRight: -500 },
-    //     delay: '2000'
-    // })
+    useEffect(() => {    
+        console.log('slidePanel toggle: ' + panelon) 
+        
+        let panelWidth = slidePanel.current.offsetWidth
+        set({ xy: panelon?[0,0]:[panelWidth,0]})
+        // setPanelon((panelon) => !panelon)
+    },[panelon])
+
+    // useLayoutEffect(() => {     
+    //     console.log('slidePanel set to: '+panelon)
+    //     // let panelWidth = slidePanel.current.offsetWidth
+    //     // set({ xy: panelon?[0,0]:[panelWidth,0]})
+    // },[panelon])
+
+    const bind = useGesture({
+        onDrag: ({  local, down,  delta, vxvy, temp={xy: xy.getValue()}}) => {
+            setDebug(local[0] + ' / ' + local[1] + ' /vx: ' + vxvy[0] + ' /xy: ' + temp.xy[0])
+
+            let swipped = false
+            let newxy = [0,0]
+            if(down) {
+                newxy = add(temp.xy,delta)
+                // set({ xy: newxy })
+            } else {
+                if(vxvy[0] > 0.1) {
+                    // newxy = [slidePanel.current.offsetWidth,0]
+                    setPanelon((panelon) => !panelon)
+                    // swipped = true
+                } else {
+                    newxy = temp.xy 
+                }
+            }
+            
+            set({ xy: newxy, immediate: down })
+            // temp.xy = newxy
+            return temp
+            // set({ local: down?local:[0,0] })
+
+            }
+        })
+
+
 
     return (
+        <div>
+            <img className='Logo' src={props.imageSrc} alt='' onClick={()=>setPanelon(state => !state)} />
 
-        <Spring
-            from={ active ? styleOff : styleOn}
-            to={ active ? styleOn : styleOff}>
-                
-            {props => 
-                <div className='ControlPanel' style={props} >
-                    <MissionSelector></MissionSelector>
-                    <MapSelector></MapSelector>
-                
-                </div>}
-        </Spring>
+            <animated.div {...bind()} ref={slidePanel} className='ControlPanel' style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,0,0)`) }}>
+                {/* <MissionSelector></MissionSelector>
+                <MapSelector></MapSelector> */}
+                {props.children}
+            </animated.div>
+        </div>
+
     )
+
     
 }
 
