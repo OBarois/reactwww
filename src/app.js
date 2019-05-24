@@ -100,7 +100,7 @@ console.log('app renders')
         
         <div className='MissionLabel'>{mission}</div>
         <MapStateLabel></MapStateLabel>
-        <ControlPanel active='true' imageSrc='./images/EOi_logo.png' >
+        <ControlPanel active='false' imageSrc='./images/EOi_logo.png' >
                 <MissionSelector></MissionSelector>
                 <MapSelector></MapSelector>
         </ControlPanel>

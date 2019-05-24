@@ -19,10 +19,10 @@ function ControlPanel(props) {
     // const bind = useGesture({ onDrag: ({ local }) => set({ local }) })
 
     useEffect(() => {    
-        console.log('slidePanel toggle: ' + panelon) 
+        console.log('slidePanel: ' + panelon) 
         
         let panelWidth = slidePanel.current.offsetWidth
-        set({ xy: panelon?[0,0]:[panelWidth,0]})
+        set({ xy: panelon?[panelWidth,0]:[0,0]})
         // setPanelon((panelon) => !panelon)
     },[panelon])
 
@@ -63,7 +63,7 @@ function ControlPanel(props) {
 
     return (
         <div>
-            <img className='Logo' src={props.imageSrc} alt='' onClick={()=>setPanelon(state => !state)} />
+            <img className='Logo' src={props.imageSrc} alt='' style={{display: panelon?'inline':'none'}} onClick={()=>setPanelon(state => !state)} />
 
             <animated.div {...bind()} ref={slidePanel} className='ControlPanel' style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,0,0)`) }}>
                 {/* <MissionSelector></MissionSelector>

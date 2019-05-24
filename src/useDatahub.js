@@ -31,7 +31,7 @@ export default function useDatahub() {
     const [ searchUrl, setSearchurl  ] = useState(null);
     // const [ polygon, setPolygon  ] = useState('');
 
-    const [ pagination, setPagination ] = useState({totalresults:0 ,startindex:0, itemsperpage:0});
+    const [ pagination, setPagination ] = useState(null);
 
 //{totalresults,startindex}
     useEffect(() => {
@@ -64,25 +64,27 @@ export default function useDatahub() {
     }, [searchUrl]);
     
     useEffect(() => {
-        console.log(pagination)
-        if(pagination.startindex + pagination.itemsperpage < pagination.totalresults) {
-            let url = searchURLs[mission]
-            console.log("There's More...")
-            // setIsfirstPage(false)
-            try {
-                url = url.replace("{polygon}", (apppolygon !== '') ? '%20footprint:"Intersects('+ apppolygon + ')"' : '')
-                url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
-                url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
-                url = url.replace("{startindex}", pagination.startindex + pagination.itemsperpage);
-                //console.log("Next URL: " + url)
-                setSearchurl(url)
-        
-            } catch {
-                console.log('Not a JULIAN date !')
+        if(pagination) {
+            if(pagination.startindex + pagination.itemsperpage < pagination.totalresults ) {
+                let url = searchURLs[mission]
+                console.log("There's More...")
+                // setIsfirstPage(false)
+                try {
+                    url = url.replace("{polygon}", (apppolygon !== '') ? '%20footprint:"Intersects('+ apppolygon + ')"' : '')
+                    url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
+                    url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
+                    url = url.replace("{startindex}", pagination.startindex + pagination.itemsperpage);
+                    //console.log("Next URL: " + url)
+                    setSearchurl(url)
+            
+                } catch {
+                    console.log('Not a JULIAN date !')
+                    setLoading(false);
+                }
+            } else {
                 setLoading(false);
             }
-        } else {
-            setLoading(false);
+    
         }
     }, [pagination]);
 
