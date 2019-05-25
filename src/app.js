@@ -14,7 +14,7 @@ import TimeLabel from "./timelabel";
 import MapStateLabel from "./mapstatelabel";
 
 import Debug from "./debug";
-import ControlPanel from "./controlpanel";
+import SlidePanel from "./slidepanel";
 import StepMask from './stepmask'
 
 
@@ -100,16 +100,24 @@ console.log('app renders')
         
         <div className='MissionLabel'>{mission}</div>
         <MapStateLabel></MapStateLabel>
-        <ControlPanel active='false' imageSrc='./images/EOi_logo.png' >
-                <MissionSelector></MissionSelector>
-                <MapSelector></MapSelector>
-        </ControlPanel>
+        <SlidePanel active='false' imageSrc='./images/EOi_logo.png' >
+          <MissionSelector></MissionSelector>
+          <MapSelector></MapSelector>
+        </SlidePanel>
+
         <Debug action='Bonjour'/>
         <StepMask/>
       </Fullscreen>
    </div>
   );
 }
+
+        // <ControlPanel active='false' imageSrc='./images/EOi_logo.png' >
+        //         <MissionSelector></MissionSelector>
+        //         <MapSelector></MapSelector>
+        // </ControlPanel>
+
+
 
         // <div className='MiniGlobe' >
         //   <Eww id='miniglobe' clon='0.5' clat='40' myname={myname}/>  

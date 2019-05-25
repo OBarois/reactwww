@@ -2,13 +2,13 @@
     position: fixed;
     display: block;
     background:rgba(129, 124, 77, 0);
-    bottom: 0px;
+    bottom: 20px;
     left: 5px;
     width: 100px;
     height: 20px;
     z-index: 2;
     font-family: arial, sans-serif;
-    text-shadow: 0.1em 0.1em 3px  rgba(22, 22, 20, 0.74);
+    
     font-kerning: none;
   }
   
