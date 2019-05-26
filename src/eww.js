@@ -33,6 +33,7 @@ const {
   useHotkeys("s",toggleStarfield)  
   useHotkeys("n",toggleNames)  
   useHotkeys("c",removeGeojson)
+  
 
   const { geojsonResults, loading} = useDatahub();
   const [ searchdate,  ] = useGlobal('searchdate');
@@ -46,13 +47,16 @@ const {
   const [ , setApplatitude ] = useGlobal('applatitude')
   const [ , setApplongitude ] = useGlobal('applongitude')
   const [ , setApppolygon ] = useGlobal('apppolygon')
+  const [ replace, setReplace ] = useState(true)
+
+  useHotkeys("z",()=>setReplace(state=>!state))
 
   useEffect(() => {
     if(geojsonResults) {
       console.log('datahub in use')
         console.log(geojsonResults)
         try {
-          addGeojson(geojsonResults)
+          addGeojson(geojsonResults,replace)
         } catch (err) {
           console.log("error on geojson parsing")
           console.log(err)
@@ -63,7 +67,7 @@ const {
 
   useEffect(() => {
     console.log('reacting to searchdate or mission')
-    removeGeojson()
+    if(replace) removeGeojson()
   },[searchdate,mission]);
 
   useEffect(() => {

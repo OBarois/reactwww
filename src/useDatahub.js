@@ -96,7 +96,7 @@ export default function useDatahub() {
     
     // search time window size in ms
     const windowSize = 1000 * 60 * 60 * 3
-    const MAX_ITEMS = 2000
+    const MAX_ITEMS = 2200
 
     const [geojsonResults, setGeojsonResults] = useState(null)
     const [loading, setLoading] = useState(false)

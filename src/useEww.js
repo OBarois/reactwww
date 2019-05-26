@@ -112,7 +112,9 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
 
     }
 
-    function addGeojson(url) {
+    function addGeojson(url,replace) {
+
+        console.log('replace: '+replace)
         function shapeConfigurationCallback(geometry, properties) {
             let configuration = {};
             configuration.userProperties = properties
