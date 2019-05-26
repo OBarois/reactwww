@@ -36,6 +36,7 @@ import WorldWind from "webworldwind-esa";
 
 export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     //console.log('useEww renders')
+    
   
     const eww = useRef(null)
     const [projection, setProjection] = useState("3D")
@@ -233,8 +234,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         let lo = eww.current.navigator.lookAtLocation.longitude
         let la = eww.current.navigator.lookAtLocation.latitude
         let al = eww.current.navigator.range
-        let vp = getViewPolygon()
-        // console.log(vp)
+        let vp = (al < 2000000?getViewPolygon():'')
+        // console.log(al + 'km : '+ vp)
         setEwwState({
             longitude:lo, 
             latitude: la,

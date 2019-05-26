@@ -15,31 +15,43 @@ export default function SlidePanel(props) {
     const slidePanel = useRef()
 
     const toggle = () =>  {
-        // setDebug('toggle to: '+visible)
-        setVisible(state => !state)
+        setDebug(['toggle from: '+visible+' '+slidePanel.current.offsetWidth,2])
+        set({ xy: !visible?[0,0]:[slidePanel.current.offsetWidth,0], immediate: false})
+        setVisible(visible => !visible)
     }
 
     useEffect(() => {
-        setDebug('visible: '+visible)
-        set({ xy: visible?[slidePanel.current.offsetWidth,0]:[0,0], immediate: false})
+        setDebug(['visible: '+visible,1])
+        // set({ xy: visible?[0,0]:[slidePanel.current.offsetWidth,0], immediate: false})
     },[visible])
 
-    const bind = useGesture({
-        onDrag: ({  local, down,  delta, vxvy, temp={xy: xy.getValue()}}) => {
+    useEffect(() => {
+        setTimeout(toggle,1000)
+        // set({ xy: visible?[0,0]:[slidePanel.current.offsetWidth,0], immediate: false})
+    },[])
 
+    const bind = useGesture({
+        onDrag: ({  direction, velocity, down,  delta, vxvy, temp={xy: xy.getValue()}}) => {
+            // setDebug('tempX: '+add(temp.xy,delta)[0],1)
+            // setDebug('down: '+down,2)
+            
             if(down) {
+                
                 set({ xy: add(temp.xy,delta), immediate: true })
-                return temp
+
 
                 // set({ xy: newxy })
             } else {
                 if(vxvy[0] > 0.2) {
-                    setVisible(state => !state)
+                    let config = {  velocity: scale(direction, velocity), decay: true, precision: 1 }
+                    setDebug(['visible: '+visible,1])
+                    set({ xy: [slidePanel.current.offsetWidth,0], immediate: false})
+                    setVisible(false)
                 } else {
                     set({ xy: temp.xy, immediate: false })
                 }
             }
-
+            return temp
 
 
             // if(!down && vxvy[0] > 0.2) {
@@ -64,8 +76,10 @@ export default function SlidePanel(props) {
         <div>
             <img className='Logo' src={props.imageSrc} alt=''  onClick={toggle} />
 
-            <animated.div {...bind()} ref={slidePanel} className='ControlPanel' style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,0,0)`) }}>
-                {props.children}
+            <animated.div {...bind()} ref={slidePanel} className='ControlPanel' style={{ userSelect: 'none', transform: xy.interpolate((x, y) => `translate3d(${x}px,0,0)`) }}>
+                <div>
+                    {props.children}
+                </div>
             </animated.div>
         </div>
 

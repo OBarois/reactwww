@@ -1,13 +1,14 @@
 
 .ControlPanel {
     position: fixed;
-    background-color: #2a5abbdc;
+    background-color: #5f636d73;
     height: 100%;
     width: 300px;
     margin-left: -300px;
     top: 0px;
     right:0px;
-
+    user-select: none;
+    -webkit-user-select: none;
     align-items: left;
     justify-content: center;
     color: white;

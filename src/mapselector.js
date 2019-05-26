@@ -26,9 +26,9 @@ function MapSelector() {
     //console.log('mission rendering')
     return (
         <div className='MapSelector'>
-            <div className='CircleButton'><img className='MapIcon' src='./images/atmosphere.png' alt='' onClick={() => setAppatmosphere(!appatmosphere)} /></div>
-            <div className='CircleButton'><img className='MapIcon' src='./images/starfield.png' alt='' onClick={() => setAppstarfield(!appstarfield)} /></div>
-            <div className='CircleButton'><img className='MapIcon' src='./images/names.png' alt='' onClick={() => setAppnames(!appnames)} /></div>
+            <div className='CircleButton'><img className='MapIcon' draggable="false"src='./images/atmosphere.png' alt='' onClick={() => setAppatmosphere(!appatmosphere)} /></div>
+            <div className='CircleButton'><img className='MapIcon' draggable="false"src='./images/starfield.png' alt='' onClick={() => setAppstarfield(!appstarfield)} /></div>
+            <div className='CircleButton'><img className='MapIcon' draggable="false"src='./images/names.png' alt='' onClick={() => setAppnames(!appnames)} /></div>
            
         </div>
     )

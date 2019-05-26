@@ -9,7 +9,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useGlobal } from 'reactn';
 
 import "./styles.css"
-import TimeSelector from "./timeselector";
+import TimeSelector from "./timeselector2";
 import TimeLabel from "./timelabel";
 import MapStateLabel from "./mapstatelabel";
 

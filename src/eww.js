@@ -93,7 +93,7 @@ const {
   useEffect(() => {
     // uncomment to search via polygon at low lats
     setApppolygon(ewwstate.viewpolygon)
-    setApppolygon('')
+    // setApppolygon('')
   },[ewwstate.viewpolygon ]);
 
 
