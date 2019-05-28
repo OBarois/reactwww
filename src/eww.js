@@ -46,7 +46,7 @@ const {
   const [ , setAppaltitude ] = useGlobal('appaltitude')
   const [ , setApplatitude ] = useGlobal('applatitude')
   const [ , setApplongitude ] = useGlobal('applongitude')
-  const [ , setApppolygon ] = useGlobal('apppolygon')
+  const [ apppolygon, setApppolygon ] = useGlobal('apppolygon')
   const [ replace, setReplace ] = useState(true)
 
   useHotkeys("z",()=>setReplace(state=>!state))
@@ -68,7 +68,7 @@ const {
   useEffect(() => {
     console.log('reacting to searchdate or mission')
     if(replace) removeGeojson()
-  },[searchdate,mission]);
+  },[searchdate,mission,apppolygon]);
 
   useEffect(() => {
     console.log('atmosphere')
@@ -88,7 +88,6 @@ const {
   },[loading]);
 
   useEffect(() => {
-    // console.log(' ewwstate changed')
     setAppaltitude(ewwstate.altitude)
     setApplongitude(ewwstate.longitude)
     setApplatitude(ewwstate.latitude)
@@ -96,9 +95,14 @@ const {
 
   useEffect(() => {
     // uncomment to search via polygon at low lats
-    setApppolygon(ewwstate.viewpolygon)
-    // setApppolygon('')
+    // setApppolygon(ewwstate.viewpolygon)
+
   },[ewwstate.viewpolygon ]);
+
+  useEffect(() => {
+    setApppolygon(ewwstate.aoi)
+    // setApppolygon('')
+  },[ewwstate.aoi]);
 
 
 

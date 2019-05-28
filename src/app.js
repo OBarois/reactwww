@@ -16,6 +16,7 @@ import MapStateLabel from "./mapstatelabel";
 import Debug from "./debug";
 import SlidePanel from "./slidepanel";
 import StepMask from './stepmask'
+import ColorPicker from './colorpicker'
 
 
 
@@ -33,7 +34,7 @@ const App = () => {
 
 
   // Set boundaries and zoom factor of the time scale
-  const [min, setMin] = useState((new Date("2015-04-10")).getTime())
+  const [min, setMin] = useState((new Date("2014-04-10")).getTime())
   const [max, setMax] = useState((new Date("2019-12-31")).getTime())
   
   const [vertical, setVertical] = useState(true)
@@ -103,6 +104,7 @@ console.log('app renders')
         <SlidePanel active='false' imageSrc='./images/EOi_logo.png' >
           <MissionSelector></MissionSelector>
           <MapSelector></MapSelector>
+          
         </SlidePanel>
 
         <Debug action='Bonjour'/>
@@ -112,12 +114,13 @@ console.log('app renders')
   );
 }
 
+
         // <ControlPanel active='false' imageSrc='./images/EOi_logo.png' >
         //         <MissionSelector></MissionSelector>
         //         <MapSelector></MapSelector>
         // </ControlPanel>
 
-
+// <ColorPicker />
 
         // <div className='MiniGlobe' >
         //   <Eww id='miniglobe' clon='0.5' clat='40' myname={myname}/>  

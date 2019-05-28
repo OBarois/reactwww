@@ -140,7 +140,7 @@ function TimeSelector(props)  {
         },
         onWheel: ({down, delta, wheeling, local, temp= { xy: xy.getValue() }}) => {
             console.log(local)
-            setDebug(xy.getValue()[0] + '/' + xy.getValue()[1])
+            setDebug([xy.getValue()[0] + '/' + xy.getValue()[1], 1])
             setTsactive(true)
             let height = timecontainer.current.parentElement.offsetHeight
             const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
@@ -148,7 +148,7 @@ function TimeSelector(props)  {
             // let newxy = scale(add(delta,temp.xy), 0.1)
             let newxy = scale(add(delta,temp.xy), 0.1)
             //setDebug(newxy)
-            temp.xy = newxy
+            // temp.xy = newxy
 
             set({  xy: newxy , config: { tension: 1200, friction: 40, precision: 0.01  }, immediate: wheeling, onRest: setFinalTime, onFrame: setLiveTime} )
             return temp

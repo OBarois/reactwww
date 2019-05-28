@@ -11,35 +11,35 @@ export default function useDatahub() {
     //http://131.176.236.55/dhus/
     //https://scihub.copernicus.eu/apihub/search?
 
-    const buildUrl = ({code, polygon, start, end, startindex}) => {
+    const buildUrl = ({code, polygon, date, startindex}) => {
 
-        // console.log('Search param: '+code+','+polygon+','+start+','+end+','+startindex)
+         console.log('Search param: '+code+','+polygon+','+date+','+startindex)
 
         let collections = [
             {
                 code: 'S1',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-1 AND producttype:GRD)&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-1 AND producttype:GRD)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-1 A/B GRD' ,
                 dateOff: ' beginposition:[{start} TO {end}] AND',
                 areaOff:  ' footprint:"Intersects({polygon})" AND'
             },
             {
                 code: 'S2',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND producttype:S2MSI1C)&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND producttype:S2MSI1C)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-2 A/B Level 1C',
                 dateOff: ' beginposition:[{start} TO {end}] AND',
                 areaOff:  ' footprint:"Intersects({polygon})" AND'
             },
             {
                 code: 'S3',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-3 AND (producttype:OL_1_ERR___ OR producttype:SL_1_RBT___ OR producttype:SR_1_SRA___))&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-3 AND (producttype:OL_1_ERR___ OR producttype:SL_1_RBT___ OR producttype:SR_1_SRA___))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-3 A/B, OLCI/SLSTR/SRAL' ,
                 dateOff: ' beginposition:[{start} TO {end}] AND',
                 areaOff:  ' footprint:"Intersects({polygon})" AND'
             },
             {
                 code: 'S5P',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-1 A/B',
                 dateOff: ' beginposition:[{start} TO {end}] AND',
                 areaOff:  ' footprint:"Intersects({polygon})" AND'
@@ -60,14 +60,24 @@ export default function useDatahub() {
         // console.log(getTargetCollection(mission))
         let target = getTargetCollection(code)
         let newurl = target.templateUrl
-        console.log(target.areaOff)
+        let start, end, windowSize
         
 
         if(polygon.length > 0) {
+            windowSize = 1000 * 60 * 60 * 24 * 7 // 1 week time window
+            start = dateFormat(new Date(date - windowSize/2),'isoUtcDateTime')
+            end =  dateFormat(new Date(date + windowSize/2),'isoUtcDateTime')
             console.log('|'+polygon.length+'|')
             newurl = newurl.replace("{polygon}", polygon)
-            newurl = newurl.replace(target.dateOff, '')
+            // newurl = newurl.replace(target.dateOff, '')
+            newurl = newurl.replace("{start}", start)
+            newurl = newurl.replace("{end}", end)
+
         } else {
+            windowSize = 1000 * 60 * 60 * 3  // 3 hours time window
+            start = dateFormat(new Date(date - windowSize/2),'isoUtcDateTime')
+            end =  dateFormat(new Date(date + windowSize/2),'isoUtcDateTime')
+
             newurl = newurl.replace(target.areaOff, '')
             newurl = newurl.replace("{start}", start)
             newurl = newurl.replace("{end}", end)
@@ -77,22 +87,8 @@ export default function useDatahub() {
 
 
         return newurl
-
-
-
-        
-        // url = url.replace("{polygon}", (apppolygon !== '') ? ' footprint:"Intersects('+ apppolygon + ')"' : '')
-        // url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
-        // url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
-        // url = url.replace("{startindex}", pagination.startindex + pagination.itemsperpage);
-
     }
 
-    searchURLs["S1"] = 'https://131.176.236.55/dhus/search?q=({polygon} beginposition:[{start} TO {end}] AND platformname:Sentinel-1 AND producttype:GRD)&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
-    searchURLs["S2"] = 'https://131.176.236.55/dhus/search?q=({polygon} beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND producttype:S2MSI1C)&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
-    searchURLs["S3"] = 'https://131.176.236.55/dhus/search?q=({polygon} beginposition:[{start} TO {end}] AND platformname:Sentinel-3 AND (producttype:OL_1_ERR___ OR producttype:SL_1_RBT___ OR producttype:SR_1_SRA___))&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
-    searchURLs["S5P"] = 'https://s5phub.copernicus.eu/search?q=({polygon} beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=ingestiondate&order=desc&format=json'
-    searchURLs["ENVISAT"] = 'https://eocat.esa.int/ngeo/catalogue/FEDEO-ENVISAT.ASA.IMP_1P/search?start={start}&stop={end}&format=json&count=50&startIndex={startindex}'
     
     // search time window size in ms
     const windowSize = 1000 * 60 * 60 * 3
@@ -145,23 +141,19 @@ export default function useDatahub() {
     useEffect(() => {
         if(pagination) {
             if(pagination.startindex + pagination.itemsperpage < Math.min(pagination.totalresults,MAX_ITEMS) ) {
-                let url = searchURLs[mission]
+                // let url = searchURLs[mission]
                 console.log("There's More...")
                 // setIsfirstPage(false)
                 try {
                     let url = buildUrl({
                         code: mission,
                         polygon: apppolygon, 
-                        start: dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'), 
-                        end: dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'), 
+                        date: searchdate,
+                        // start: dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'), 
+                        // end: dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'), 
                         startindex: pagination.startindex + pagination.itemsperpage
                     })
 
-                    // url = url.replace("{polygon}", (apppolygon !== '') ? ' footprint:"Intersects('+ apppolygon + ')" AND ' : '')
-                    // url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
-                    // url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
-                    // url = url.replace("{startindex}", pagination.startindex + pagination.itemsperpage);
-                    //console.log("Next URL: " + url)
                     setSearchurl(url)
 
                 
@@ -191,25 +183,15 @@ export default function useDatahub() {
 
         if(mission && searchdate) {
             
-            let url = searchURLs[mission]
-            //if(mission in ["S1","S2","S3"]) url = searchURLs[mission]
             try {
-                console.log(apppolygon?true:false)
-
                 let url = buildUrl({
                     code: mission,
                     polygon: apppolygon, 
-                    start: dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'), 
-                    end: dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'), 
+                    date: searchdate,
+                    // start: dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'), 
+                    // end: dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'), 
                     startindex: 0
                 })
-                // console.log('url2: '+url2)
-
-
-                // url = url.replace("{polygon}", (apppolygon !== '') ? ' footprint:"Intersects('+ apppolygon + ')" AND ' : '')
-                // url = url.replace("{start}", dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'));
-                // url = url.replace("{end}", dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'));
-                // url = url.replace("{startindex}", 0);
                 setLoading(true)
                 // setIsfirstPage(true)
                 setSearchurl(url)
@@ -219,13 +201,7 @@ export default function useDatahub() {
             }
         }
         
-    }, [searchdate, mission]);
-/*    
-    const [ mission, setMission ] = useGlobal('mission');
-    useEffect(() => {
-        if(mission in ["S1","S2","S3"]) setUrl(searchURLs[mission])
-    }, [mission]);
-    */
+    }, [searchdate, mission, apppolygon]);
 
     return {geojsonResults, loading, isfirstpage}
 }

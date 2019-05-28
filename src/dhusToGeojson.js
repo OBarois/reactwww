@@ -98,7 +98,13 @@ export default function dhusToGeojson(response) {
     let features = [];
     try {
         if( response.feed.entry ) {
-            features = response.feed.entry.map( item =>  mapFromHubOpenSearch(item)).filter(item => item !== {});
+            if(Array.isArray(response.feed.entry)) {
+                console.log('entry is an  array')
+                features = response.feed.entry.map( item =>  mapFromHubOpenSearch(item)).filter(item => item !== {});
+            } else {
+                features = [mapFromHubOpenSearch(response.feed.entry)]
+            }
+                
         } else {
             features = []
         }

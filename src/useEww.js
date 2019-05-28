@@ -40,8 +40,10 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
   
     const eww = useRef(null)
     const [projection, setProjection] = useState("3D")
+    // const [aoi, setAoi] = useState({type: null, value: null})
+    const [aoi, setAoi] = useState('')
     const [geojsonlayers, setGeojsonlayers] = useState([])
-    const [ewwstate, setEwwState] = useState({latitude: clat, longitude: clon, altitude: alt})
+    const [ewwstate, setEwwState] = useState({latitude: clat, longitude: clon, altitude: alt, aoi:''})
 
     //toggle atmosphere
     function toggleAtmosphere() {
@@ -144,6 +146,14 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                 configuration.attributes = new WorldWind.ShapeAttributes(null);
                 configuration.attributes.interiorColor = new WorldWind.Color(1, 0, 0, 0.2);
                 configuration.attributes.outlineColor = new WorldWind.Color(1, 0, 0, 0.3);
+
+                configuration.highlightAttributes = new WorldWind.ShapeAttributes(configuration.attributes);
+                configuration.highlightAttributes.outlineColor = new WorldWind.Color(1, 0, 0, 0.4);
+                configuration.highlightAttributes.interiorColor = new WorldWind.Color(1, 0, 0, 0.6);
+                // configuration.attributes.outlineWidth = 0.3;
+
+                configuration.attributes.applyLighting = true;
+
             }
     
             //console.log(configuration.attributes);
@@ -225,39 +235,95 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
       }
 
     // callback from eww   
-    // function setGlobeStates() {
-    //     console.log('ewwstate update')
-    //     setEwwState({
-    //         longitude:eww.current.navigator.lookAtLocation.longitude, 
-    //         latitude: eww.current.navigator.lookAtLocation.latitude,
-    //         altitude: eww.current.navigator.range})
-    // }
     const setGlobeStates = () => {
         let lo = eww.current.navigator.lookAtLocation.longitude
         let la = eww.current.navigator.lookAtLocation.latitude
         let al = eww.current.navigator.range
         let vp = (al < 2000000?getViewPolygon():'')
         // console.log(al + 'km : '+ vp)
-        setEwwState({
-            longitude:lo, 
-            latitude: la,
-            altitude: al, 
-            viewpolygon: vp
-        })
+
+        // let newewwstate = {...ewwstate, longitude:lo, 
+        //     latitude: la,
+        //     altitude: al, 
+        //     viewpolygon: vp}
+        // setEwwState(newewwstate)
+
+        setEwwState((ewwstate) => { return {...ewwstate, longitude:lo, latitude: la, altitude: al, viewpolygon: vp}}) 
+
+        // setEwwState({
+        //     longitude:lo, 
+        //     latitude: la,
+        //     altitude: al, 
+        //     viewpolygon: vp,
+        //     aoi: ai
+            
+        // })
     }
 
     // handler for tap/click
 
-    const handleClick  = () => {
+    const handleClick  = (recognizer) => {
         console.log('click')
+        let x = recognizer.clientX
+        let y = recognizer.clientY
+        // Perform the pick. Must first convert from window coordinates to canvas coordinates, which are
+        // relative to the upper left corner of the canvas rather than the upper left corner of the page.
+        let pickList = eww.current.pick(eww.current.canvasCoordinates(x, y));
+        console.log(pickList)
+        if (pickList.terrainObject()) {
+            // position = pickList.terrainObject().position;
+            // store list of selected footprints in a string for later comparison
+            let pickedItems = []
+            for (let i = 0; i < pickList.objects.length; i++) {
+                if (pickList.objects[i].userObject instanceof WorldWind.SurfaceShape) {
+                    pickedItems.push(pickList.objects[i].userObject.userProperties.name) 
+                    pickList.objects[i].userObject.highlighted = !pickList.objects[i].userObject.highlighted
+                }
+            }
+            console.log(pickedItems)
+            eww.current.redraw()
+        } else {
+            console.log('No position !');
+            return;
+        }
+
+
     }
 
-    const handleDoubleClick  = () => {
+    const handleDoubleClick  = (recognizer) => {
         console.log('double click')
+        let x = recognizer.clientX
+        let y = recognizer.clientY
+        let pickList = eww.current.pick(eww.current.canvasCoordinates(x, y));
+
+        let position;
+  
+  
+        // Get coordinates of clicked point and list of selected footprints. Do nothing if click done outside the globe.
+        if (pickList.terrainObject()) {
+            position = pickList.terrainObject().position;
+            eww.current.goTo(new WorldWind.Location(position.latitude, position.longitude));
+
+            let point = "POINT("+position.longitude+' '+position.latitude+")"
+            
+            setEwwState((ewwstate) => { return {...ewwstate, aoi: point}}) 
+    
+        } else {
+              console.log('No position !');
+              setEwwState((ewwstate) => { return {...ewwstate, aoi: ''}})
+        }
+  
         
+
+       
     }
 
-    
+    // useEffect(() => {
+    //     console.log("useEffect aoi: " + aoi)
+    //     let newewwstate = {...ewwstate, aoi: aoi}
+    //     setEwwState(newewwstate)
+    // }, [aoi]); 
+
     // didMount effect
     useEffect(() => {
         console.log("useEffect (mount) in Eww  star/atmo: "+ starfield+'/'+atmosphere)
@@ -267,16 +333,23 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
 
         // Define a min/max altitude limit
         WorldWind.BasicWorldWindowController.prototype.applyLimits = function () {
-            var navigator = this.wwd.navigator;
-            navigator.range = WorldWind.WWMath.clamp(eww.current.navigator.range, 2000, 300000000);
+            eww.current.navigator.range = WorldWind.WWMath.clamp(eww.current.navigator.range, 2000, 300000000);
         }
 
         // define click/tap recognisers
-        let tapRecognizer = new WorldWind.TapRecognizer(eww.current, handleClick);
-        tapRecognizer.numberOfTaps = 1;
-        let doubleTapRecognizer = new WorldWind.TapRecognizer(eww.current, handleDoubleClick);
-        doubleTapRecognizer.numberOfTaps = 2;
-        doubleTapRecognizer.recognizeSimultaneouslyWith(tapRecognizer);
+        // let tapRecognizer = new WorldWind.TapRecognizer(eww.current, handleClick);
+        // tapRecognizer.numberOfTaps = 1;
+        // let doubleTapRecognizer = new WorldWind.TapRecognizer(eww.current, handleDoubleClick);
+        // doubleTapRecognizer.numberOfTaps = 2;
+        // doubleTapRecognizer.recognizeSimultaneouslyWith(tapRecognizer);
+
+        let clickRecognizer = new WorldWind.ClickRecognizer(eww.current, handleClick);
+        clickRecognizer.numberOfClicks = 1;
+        let doubleClickRecognizer = new WorldWind.ClickRecognizer(eww.current, handleDoubleClick);
+        doubleClickRecognizer.numberOfClicks = 2;
+        doubleClickRecognizer.recognizeSimultaneouslyWith(clickRecognizer);
+        doubleClickRecognizer.maxClickInterval = 200;
+
 
         //setWwd(eww);
         let wmsConfigBg = {
