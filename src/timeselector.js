@@ -97,14 +97,16 @@ function TimeSelector(props)  {
                 //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
                 let step = 1
                 let div = 1
-                console.log()
+                
                 if (delta[0]<-30) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10; }
                 if (delta[0]<-80) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 15}
                 if (delta[0]<-160) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 30}
 
                 if(step !== temp.lastStep) {
                     //console.log('Step changed from: '+temp.lastStep+' to: '+ step)
+                    
                     setDebug(['Step changed from: '+temp.lastStep+' to: '+ step, 1])
+                    
                     setStep(step)
                     temp.deltaOffset = delta 
                     temp.xy = temp.lastNewxy

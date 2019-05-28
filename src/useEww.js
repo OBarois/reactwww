@@ -302,7 +302,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         // Get coordinates of clicked point and list of selected footprints. Do nothing if click done outside the globe.
         if (pickList.terrainObject()) {
             position = pickList.terrainObject().position;
-            eww.current.goTo(new WorldWind.Location(position.latitude, position.longitude));
+            // eww.current.goTo(new WorldWind.Location(position.latitude, position.longitude));
 
             let point = "POINT("+position.longitude+' '+position.latitude+")"
             

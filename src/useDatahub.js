@@ -64,7 +64,7 @@ export default function useDatahub() {
         
 
         if(polygon.length > 0) {
-            windowSize = 1000 * 60 * 60 * 24 * 7 // 1 week time window
+            windowSize = 1000 * 60 * 60 * 24 * 30 // 1 week time window
             start = dateFormat(new Date(date - windowSize/2),'isoUtcDateTime')
             end =  dateFormat(new Date(date + windowSize/2),'isoUtcDateTime')
             console.log('|'+polygon.length+'|')

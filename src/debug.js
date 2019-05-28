@@ -21,7 +21,8 @@ function Debug() {
 
     useEffect(() => {
         if(active) {
-            console.log('debug txt: '+debug)
+            console.log('debug txt: ')
+            console.log(debug)
             let lines = debugkeys
             lines[debug[1]] = debug[0]
             setDebugkeys( lines )
@@ -29,10 +30,6 @@ function Debug() {
         }
     }, [debug]);
 
-    useEffect(() => {
-        console.log('debugkeys: ')
-        console.log(debugkeys)
-    }, [debugkeys[1]]);
 
     useEffect(() => {
         setDebug( ['Hi',0])
@@ -50,7 +47,7 @@ function Debug() {
             {/* <div className='ContinuousScroll' style={{position: 'relative', top: '70%', right:0, width: 60, height:'100%', background:  'rgba(22, 22, 20, 0.24)'}}/> */}
             <div className='DebugBox1'>
                 <ul>
-                    {debugkeys.map(item=><li key={item[1]}>{item[0]}</li>)}
+                    {debugkeys.map(item=><li key={item?item[1]:''}>{item?item:'free'}</li>)}
                 </ul>
             </div> 
         </div>
