@@ -36,7 +36,7 @@ export default function useDatahub() {
             },
             {
                 code: 'S5P',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                templateUrl: 'https://s5phub.copernicus.eu/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-1 A/B',
                 dateOff: ' beginposition:[{start} TO {end}] AND',
                 areaOff:  ' footprint:"Intersects({polygon})" AND'
