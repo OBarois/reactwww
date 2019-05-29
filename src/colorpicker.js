@@ -17,17 +17,19 @@ function ColorPicker() {
     // }, [mission]);
     
     const handleChangeComplete = (color) => {
-        setAppcolor(color.hex );
+        document.documentElement.style.setProperty('--color', color.hex);
+        //setAppcolor(color.hex );
       };
     
     //console.log('mission rendering')
     return (
         <div className='ColorSelector'>
             <HuePicker color={appcolor} onChangeComplete={handleChangeComplete }/>
-            <AlphaPicker />  
+            
             
         </div>
     )
+    // <AlphaPicker />  
 }
 
 export default ColorPicker;

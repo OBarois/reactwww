@@ -31,15 +31,13 @@ export default function SlidePanel(props) {
     },[])
 
     const bind = useGesture({
-        onDrag: ({  event, direction, velocity, down,  delta, vxvy, temp={xy: xy.getValue()}}) => {
+        onDrag: ({  first , event, direction, velocity, down,  delta, vxvy, temp={initTarget: '', xy: xy.getValue()}}) => {
             // setDebug('tempX: '+add(temp.xy,delta)[0],1)
             // setDebug('down: '+down,2)
-            event.stopPropagation()
+            if(first) temp.initTarget = event.target.getAttribute("class")
+            if(temp.initTarget != 'ControlPanel') return
             if(down) {
-                
                 set({ xy: add(temp.xy,delta), immediate: true })
-
-
                 // set({ xy: newxy })
             } else {
                 if(vxvy[0] > 0.2) {
@@ -77,10 +75,8 @@ export default function SlidePanel(props) {
         <div>
             <img className='Logo' draggable="false" src={props.imageSrc} alt=''  onClick={toggle} />
 
-            <animated.div {...bind()} ref={slidePanel} className='ControlPanel' style={{ userSelect: 'none', transform: xy.interpolate((x, y) => `translate3d(${x}px,0,0)`) }}>
-                <div>
+            <animated.div {...bind()} ref={slidePanel} className='ControlPanel' style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,0,0)`) }}>
                     {props.children}
-                </div>
             </animated.div>
         </div>
 

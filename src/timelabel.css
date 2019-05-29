@@ -1,79 +1,110 @@
-@-webkit-keyframes color_change {
-	from { color: var(--color); }
-	to { color: red; }
-}
-@-moz-keyframes color_change {
-	from { color: var(--color); }
-	to { color: red; }
-}
-@-ms-keyframes color_change {
-	from { color: var(--color); }
-	to { color: red; }
-}
-@-o-keyframes color_change {
-	from { color: var(--color); }
-	to { color: red; }
-}
-@keyframes color_change {
-	from { color: var(--color); }
-	to { color: red; }
+@-webkit-keyframes glow { 
+    0% { background-color:red; }
+    50% { background-color:orange; }
+    100% { background-color:red; } 
+
+} 
+@keyframes glow { 
+    0% { background-color:red; }
+    50% { background-color:orange; }
+    100% { background-color:red; } 
 }
 
-.LabelCountainer {
+
+.LabelContainer {
     position: absolute;
-    top: 0px;
-    left:0px;
-    width: 130px;
-    height: 100px;
+    top: 5px;
+    left:5px;
+    width: 115px;
+    height: 'auto';
     background: rgba(157, 82, 219, 0);
     border-radius: 8px;
-}
-.Line{
-    width: 100px;
-    height: 10px;
-    position: absolute;
-    font-size: 40px; 
-    top: 20px;
-    left: 18px;
+    display: flex; 
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+  
+   
 
-    }
+}
+
+.Date {
+    width: 100%;
+    height: 60px;
+    display: flex; 
+    justify-content: center;
+    flex-direction: row;
+    background: rgba(177, 155, 33, 0);
+
+
+    margin: auto;
+}
+.YearMonth {
+    width: 50%;
+    /* height: 100%; */
+    display: flex; 
+    justify-content: center;
+    flex-direction: column;
+
+    margin: auto;
+}
+
+.Line{
+    width: 100%;
+    height: 3px;
+    background: var(--color);
+    /* position: absolute; */
+    font-size: 30px; 
+    /* margin-top: -40px;
+    margin-left: 20px; */
+    margin: 'auto';
+}
+
 
 .Line-active{
-    -webkit-animation: color_change 0.3s infinite alternate;
-	-moz-animation: color_change 0.3s infinite alternate;
-	-ms-animation: color_change 0.3s infinite alternate;
-	-o-animation: color_change 0.3s infinite alternate;
-	animation: color_change 0.3s infinite alternate;
-
-    }
+    -webkit-animation: glow 1s infinite alternate;
+	-moz-animation: glow 1s infinite alternate;
+	-ms-animation: glow 1s infinite alternate;
+	-o-animation: glow 1s infinite alternate;
+	animation: glow 1s infinite alternate;
+}
     
 .DayLabel {
-    position: absolute;
+    /* position: absolute; */
     pointer-events: none;
-    font-size: 58px; 
-    top: 0px;
-    left: 0px
+    font-size: 55px; 
+    width: 50%;
+    height: 'auto';
+    margin: auto;
 }
 .TimeLabel {
-    position: absolute;
+    /* position: absolute; */
     pointer-events: none;
-    font-size: 25px;
-    top: 66px;
-    left: 12px;
+    background: rgba(157, 82, 219, 0);
+
+    font-size: 28px;
+    text-align: 'justify';
+    width: 100%;
+    height: 'auto';
+    margin-top: 5px;
 }
 .MonthLabel {
-    position: absolute;
+    /* position: absolute; */
     pointer-events: none;
-    top: 6px;
-    font-size: 28px; 
-    left: 70px
+    /* top: 6px; */
+    font-size: 25px; 
+    /* left: 70px; */
+    margin: auto;
+    height: 60%;
 }
 .YearLabel {
-    position: absolute;
+    /* position: absolute; */
     pointer-events: none;
-    font-size: 22px; 
-    top: 35px;
-    left: 70px
+    font-size: 20px; 
+    /* top: 35px;
+    left: 70px; */
+    margin: auto;
+    height: 40%;
 }
 .Highlighted {
     color: rgba(212, 232, 238, 0.918);

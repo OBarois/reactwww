@@ -117,6 +117,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     function addGeojson(url,replace) {
 
         console.log('replace: '+replace)
+
         function shapeConfigurationCallback(geometry, properties) {
             let configuration = {};
             configuration.userProperties = properties
@@ -167,9 +168,9 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
             eww.current.redraw();
         }
     
-    
+        // if (replace) removeGeojson()
         let renderableLayer = new WorldWind.RenderableLayer(url.properties.updated+Math.ceil(Math.random() * 10000))
-        // if (replace) removeGeoJson()
+        
         eww.current.addLayer(renderableLayer);
         // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
         // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
@@ -236,6 +237,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
 
     // callback from eww   
     const setGlobeStates = () => {
+        
         let lo = eww.current.navigator.lookAtLocation.longitude
         let la = eww.current.navigator.lookAtLocation.latitude
         let al = eww.current.navigator.range
@@ -349,6 +351,14 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         doubleClickRecognizer.numberOfClicks = 2;
         doubleClickRecognizer.recognizeSimultaneouslyWith(clickRecognizer);
         doubleClickRecognizer.maxClickInterval = 200;
+
+        let tapRecognizer = new WorldWind.TapRecognizer(eww.current, handleClick);
+        tapRecognizer.numberOfTaps = 1;
+        let doubleTapRecognizer = new WorldWind.TapRecognizer(eww.current, handleDoubleClick);
+        doubleTapRecognizer.numberOfClicks = 2;
+        doubleTapRecognizer.recognizeSimultaneouslyWith(tapRecognizer);
+        doubleTapRecognizer.maxTapInterval = 200;
+
 
 
         //setWwd(eww);

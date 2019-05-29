@@ -7,9 +7,6 @@ import dateFormat from "dateformat"
 
 export default function useDatahub() {
 
-    let searchURLs = []
-    //http://131.176.236.55/dhus/
-    //https://scihub.copernicus.eu/apihub/search?
 
     const buildUrl = ({code, polygon, date, startindex}) => {
 
@@ -106,6 +103,7 @@ export default function useDatahub() {
     // const [ polygon, setPolygon  ] = useState('');
 
     const [ pagination, setPagination ] = useState(null);
+    const [ searchtimeout, setSearchtimeout ] = useState(null);
 
 //{totalresults,startindex}
     useEffect(() => {
@@ -182,23 +180,28 @@ export default function useDatahub() {
         console.log('searchdate '+searchdate)
 
         if(mission && searchdate) {
+            clearTimeout(searchtimeout)
+            let timeout = setTimeout(() => {
+                try {
+                    let url = buildUrl({
+                        code: mission,
+                        polygon: apppolygon, 
+                        date: searchdate,
+                        // start: dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'), 
+                        // end: dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'), 
+                        startindex: 0
+                    })
+                    setLoading(true)
+                    // setIsfirstPage(true)
+                    setSearchurl(url)
             
-            try {
-                let url = buildUrl({
-                    code: mission,
-                    polygon: apppolygon, 
-                    date: searchdate,
-                    // start: dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'), 
-                    // end: dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'), 
-                    startindex: 0
-                })
-                setLoading(true)
-                // setIsfirstPage(true)
-                setSearchurl(url)
-        
-            } catch {
-                console.log('Not a JULIAN date !')
-            }
+                } catch {
+                    console.log('Not a JULIAN date !')
+                }
+
+            },500)
+            setSearchtimeout(timeout)
+            
         }
         
     }, [searchdate, mission, apppolygon]);

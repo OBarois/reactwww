@@ -97,7 +97,7 @@ function TimeSelector(props)  {
                 //let followDest = (delta[0]<-200)?delta[1]*10+temp.xy[1]:delta[1]+temp.xy[1]
                 let step = 1
                 let div = 1
-                console.log(temp.xy[0])
+                // console.log(temp.xy[0])
                 if (delta[0]<-30) {step = (1000 * 60 * 60 * 24)  / zoomfactor; div = 10; }
                 if (delta[0]<-80) {step = (1000 * 60 * 60 * 24 * 30) / zoomfactor; div = 15}
                 if (delta[0]<-160) {step = (1000 * 60 * 60 * 24 * 365) / zoomfactor; div = 30}
@@ -138,19 +138,29 @@ function TimeSelector(props)  {
             }
             return temp
         },
-        onWheel: ({down, delta, wheeling, local, temp= { xy: xy.getValue() }}) => {
-            console.log(local)
-            setDebug([xy.getValue()[0] + '/' + xy.getValue()[1], 1])
+        onWheel: ({down, delta, distance, wheeling, event, temp= { xy: xy.getValue() }}) => {
+            event.persist()
+            // console.log(event.deltaY)
+            // console.log('direction: '+direction)
+            // console.log(delta)
+            // console.log(temp.xy)
             setTsactive(true)
             let height = timecontainer.current.parentElement.offsetHeight
             const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
             const setFinalTime = ({ xy }) => {   setTsactive(false); if(!wheeling) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
-            // let newxy = scale(add(delta,temp.xy), 0.1)
-            let newxy = scale(add(delta,temp.xy), 0.1)
+            let newxy = add([0,event.deltaY],temp.xy)
+
+            let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
+            let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2
+    
+            newxy[1] = newxy[1]>minX ? minX : newxy[1]
+            newxy[1] = newxy[1]<maxX ? maxX : newxy[1]
+
+            // let newxy = scale(delta, 0.1)
             //setDebug(newxy)
             // temp.xy = newxy
 
-            set({  xy: newxy , config: { tension: 1200, friction: 40, precision: 0.01  }, immediate: wheeling, onRest: setFinalTime, onFrame: setLiveTime} )
+            set({  xy: newxy , config: { tension: 1200, friction: 40, precision: 1  }, immediate: true, onRest: setFinalTime, onFrame: setLiveTime} )
             return temp
         }
 

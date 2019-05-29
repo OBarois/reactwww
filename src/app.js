@@ -104,7 +104,7 @@ console.log('app renders')
         <SlidePanel active='false' imageSrc='./images/EOi_logo.png' >
           <MissionSelector></MissionSelector>
           <MapSelector></MapSelector>
-          
+          <ColorPicker />
         </SlidePanel>
 
         <Debug action='Bonjour'/>

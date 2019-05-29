@@ -31,11 +31,15 @@ function TimeLabel() {
 
 
     return (
-        <div className='LabelCountainer' >
-            <div className={searching===true?'Line  Line-active':'Line'} key='line' >____</div>
-            <div className={highlight==='day'?'DayLabel  Highlighted':'DayLabel'}  key='day'  >{day}</div>
-            <div className={highlight==='year'?'YearLabel  Highlighted':'YearLabel'}  key='year' >{year}</div>
-            <div className={highlight==='month'?'MonthLabel  Highlighted':'MonthLabel'}  key='month' >{month}</div>
+        <div className='LabelContainer' >
+            <div className='Date'>
+                <div className={highlight==='day'?'DayLabel  Highlighted':'DayLabel'}  key='day'  >{day}</div>
+                <div className='YearMonth'>
+                    <div className={highlight==='month'?'MonthLabel  Highlighted':'MonthLabel'}  key='month' >{month}</div>
+                    <div className={highlight==='year'?'YearLabel  Highlighted':'YearLabel'}  key='year' >{year}</div>
+                </div>
+            </div>
+            <div className={searching===true?'Line  Line-active':'Line'} key='line' ></div>
             <div className='TimeLabel' key='time' >{time}</div>
         </div>
     );
