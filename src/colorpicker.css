@@ -1,0 +1,7 @@
+.ColorSelector {
+    width: 250px;
+    height: 50px;
+    /* background:  red; */
+    overflow: hidden;
+margin: auto;
+}

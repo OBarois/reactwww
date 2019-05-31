@@ -34,7 +34,7 @@ const App = () => {
 
 
   // Set boundaries and zoom factor of the time scale
-  const [min, setMin] = useState((new Date("2014-04-10")).getTime())
+  const [min, setMin] = useState((new Date("2014-10-01")).getTime())
   const [max, setMax] = useState((new Date("2019-12-31")).getTime())
   
   const [vertical, setVertical] = useState(true)
@@ -101,7 +101,7 @@ console.log('app renders')
         
         <div className='MissionLabel'>{mission}</div>
         <MapStateLabel></MapStateLabel>
-        <SlidePanel active='false' imageSrc='./images/EOi_logo.png' >
+        <SlidePanel active='false' imageSrc='./images/ESA_logo_white.png' >
           <MissionSelector></MissionSelector>
           <MapSelector></MapSelector>
           <ColorPicker />

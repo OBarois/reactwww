@@ -61,9 +61,9 @@ export default function useDatahub() {
         
 
         if(polygon.length > 0) {
-            windowSize = 1000 * 60 * 60 * 24 * 30 // 1 week time window
-            start = dateFormat(new Date(date - windowSize/2),'isoUtcDateTime')
-            end =  dateFormat(new Date(date + windowSize/2),'isoUtcDateTime')
+            windowSize = 1000 * 60 * 60 * 24 * 30 // 1 month time window
+            start = dateFormat(new Date(date - windowSize/2),'isoUtcDateTime').replace('Z','.000Z')
+            end =  dateFormat(new Date(date + windowSize/2),'isoUtcDateTime').replace('Z','.000Z')
             console.log('|'+polygon.length+'|')
             newurl = newurl.replace("{polygon}", polygon)
             // newurl = newurl.replace(target.dateOff, '')
@@ -72,8 +72,10 @@ export default function useDatahub() {
 
         } else {
             windowSize = 1000 * 60 * 60 * 3  // 3 hours time window
-            start = dateFormat(new Date(date - windowSize/2),'isoUtcDateTime')
-            end =  dateFormat(new Date(date + windowSize/2),'isoUtcDateTime')
+            // windowSize = 1000 * 60 * 60 * 24 * 30 // 1 month time window
+
+            start = dateFormat(new Date(date - windowSize/2),'isoUtcDateTime').replace('Z','.000Z')
+            end =  dateFormat(new Date(date + windowSize/2),'isoUtcDateTime').replace('Z','.000Z')
 
             newurl = newurl.replace(target.areaOff, '')
             newurl = newurl.replace("{start}", start)
@@ -180,8 +182,8 @@ export default function useDatahub() {
         console.log('searchdate '+searchdate)
 
         if(mission && searchdate) {
-            clearTimeout(searchtimeout)
-            let timeout = setTimeout(() => {
+            // clearTimeout(searchtimeout)
+            // let timeout = setTimeout(() => {
                 try {
                     let url = buildUrl({
                         code: mission,
@@ -189,7 +191,7 @@ export default function useDatahub() {
                         date: searchdate,
                         // start: dateFormat(new Date(searchdate - windowSize/2),'isoUtcDateTime'), 
                         // end: dateFormat(new Date(searchdate + windowSize/2),'isoUtcDateTime'), 
-                        startindex: 0
+                        startindex: 1
                     })
                     setLoading(true)
                     // setIsfirstPage(true)
@@ -199,8 +201,8 @@ export default function useDatahub() {
                     console.log('Not a JULIAN date !')
                 }
 
-            },500)
-            setSearchtimeout(timeout)
+            // },500)
+            // setSearchtimeout(timeout)
             
         }
         

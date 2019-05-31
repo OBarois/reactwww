@@ -114,9 +114,9 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
 
     }
 
-    function addGeojson(url,replace) {
+    function addGeojson(url,epoch) {
 
-        console.log('replace: '+replace)
+        // console.log('replace: '+replace)
 
         function shapeConfigurationCallback(geometry, properties) {
             let configuration = {};
@@ -153,7 +153,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                 configuration.highlightAttributes.interiorColor = new WorldWind.Color(1, 0, 0, 0.6);
                 // configuration.attributes.outlineWidth = 0.3;
 
-                configuration.attributes.applyLighting = true;
+                // configuration.attributes.applyLighting = true;
 
             }
     
@@ -165,11 +165,12 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         function loadCompleteCallback() {
             console.log(renderableLayer)
             setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+            // enableRenderables(epoch) // uncomment to disable renderables
             eww.current.redraw();
         }
     
         // if (replace) removeGeojson()
-        let renderableLayer = new WorldWind.RenderableLayer(url.properties.updated+Math.ceil(Math.random() * 10000))
+        let renderableLayer = new WorldWind.RenderableLayer('Products: '+url.properties.updated+Math.ceil(Math.random() * 10000))
         
         eww.current.addLayer(renderableLayer);
         // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
@@ -196,9 +197,34 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         // https://view.onda-dias.eu/instance00/ows?&service=WMS&request=GetMap&layers=S1B_IW_GRDH_1SDV_20190520T050758_20190520T050823_016323_01EB81_6EB6&styles=&format=image%2Fpng&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG%3A3857&bbox=2035059.441064533,7044436.526761846,2191602.4749925737,7200979.560689885
     }
 
+    function getLayerByName(name) {
+        for (let i = 0; i < eww.current.layers.length; i++) {
+            // console.log('display name: '+eww.current.layers[i].displayName)
+            if (eww.current.layers[i].displayName === name) return eww.current.layers[i]
+        }
+        return null
+    }
+
+    async function enableRenderables(time) {
+        let timeOffset = 1000 * 60 * 60 * 3 // 3 hours
+        for (let i = 0; i < eww.current.layers.length; i++) {
+            if (eww.current.layers[i].displayName.includes('Products:')) {
+                for (let j = 0; j < eww.current.layers[i].renderables.length; j++) {
+                    let renderable = eww.current.layers[i].renderables[j]
+                    let renderableStartDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStartTime)).getTime()
+                    let renderableStopDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStopTime)).getTime()
+                    renderable.enabled = (renderableStartDate <= time+timeOffset/2 && renderableStopDate >= time-timeOffset/2) ? true : false            
+                }
+            }
+        }
+
+    }
 
     function setTime(epoch) {
-        eww.current.layers[2].time = eww.current.layers[3].time = new Date(epoch)
+        getLayerByName('StarField').time = getLayerByName('Atmosphere').time = new Date(epoch)
+        enableRenderables(epoch)
+        // console.log('display name: ')
+        // console.log(getLayerByName('StarField').displayName)
         eww.current.redraw();
         
 
@@ -355,7 +381,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         let tapRecognizer = new WorldWind.TapRecognizer(eww.current, handleClick);
         tapRecognizer.numberOfTaps = 1;
         let doubleTapRecognizer = new WorldWind.TapRecognizer(eww.current, handleDoubleClick);
-        doubleTapRecognizer.numberOfClicks = 2;
+        doubleTapRecognizer.numberOfTaps = 2;
         doubleTapRecognizer.recognizeSimultaneouslyWith(tapRecognizer);
         doubleTapRecognizer.maxTapInterval = 200;
 
@@ -365,6 +391,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         let wmsConfigBg = {
             service: "https://tiles.maps.eox.at/wms",
             layerNames: "s2cloudless-2018",
+            title: "s2cloudless-2018",
             numLevels: 19,
             format: "image/png",
             size: 256,
@@ -375,6 +402,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         let wmsConfigNames = {
             service: "https://tiles.maps.eox.at/wms",
             layerNames: "overlay_bright",
+            title: "overlay_bright",
             numLevels: 19,
             format: "image/png",
             size: 256,
@@ -384,6 +412,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         WorldWind.configuration.baseUrl = WorldWind.configuration.baseUrl.slice(0,-3)
         let starFieldLayer = new WorldWind.StarFieldLayer();
         let atmosphereLayer = new WorldWind.AtmosphereLayer('images/BlackMarble_2016_01deg.jpg');
+        // let atmosphereLayer = new WorldWind.AtmosphereLayer('images/BlackMarble_2016_3km.jpg');
+        
         //atmosphereLayer.minActiveAltitude = 5000000
     
         let layers = [
@@ -408,6 +438,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     
         eww.current.redraw();
         eww.current.deepPicking = true;
+        // eww.current.orderedRenderingFilters.push(declutterByTime)
     }, []); // effect runs only once
         
   

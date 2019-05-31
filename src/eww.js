@@ -56,7 +56,7 @@ const {
       console.log('datahub in use')
         console.log(geojsonResults)
         try {
-          addGeojson(geojsonResults,replace)
+          addGeojson(geojsonResults,appdate)
         } catch (err) {
           console.log("error on geojson parsing")
           console.log(err)

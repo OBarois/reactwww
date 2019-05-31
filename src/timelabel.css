@@ -15,7 +15,7 @@
     position: absolute;
     top: 5px;
     left:5px;
-    width: 115px;
+    width: 100px;
     height: 'auto';
     background: rgba(157, 82, 219, 0);
     border-radius: 8px;
@@ -50,14 +50,15 @@
 }
 
 .Line{
-    width: 100%;
-    height: 3px;
+    width: 80%;
+    height: 2px;
     background: var(--color);
     /* position: absolute; */
-    font-size: 30px; 
-    /* margin-top: -40px;
-    margin-left: 20px; */
-    margin: 'auto';
+    font-size: 20px; 
+    margin-top: -7px;
+    margin-left: 8px;
+    /* margin: 'auto'; */
+    box-shadow: 0.1em 0.1em 0.15em  rgba(22, 22, 20, 0.74);
 }
 
 
@@ -72,7 +73,7 @@
 .DayLabel {
     /* position: absolute; */
     pointer-events: none;
-    font-size: 55px; 
+    font-size: 45px; 
     width: 50%;
     height: 'auto';
     margin: auto;
@@ -82,17 +83,18 @@
     pointer-events: none;
     background: rgba(157, 82, 219, 0);
 
-    font-size: 28px;
+    font-size: 20px;
     text-align: 'justify';
     width: 100%;
     height: 'auto';
-    margin-top: 5px;
+    margin-top: 2px;
+    margin-left: -2px;
 }
 .MonthLabel {
     /* position: absolute; */
     pointer-events: none;
     /* top: 6px; */
-    font-size: 25px; 
+    font-size: 21px; 
     /* left: 70px; */
     margin: auto;
     height: 60%;
@@ -100,7 +102,7 @@
 .YearLabel {
     /* position: absolute; */
     pointer-events: none;
-    font-size: 20px; 
+    font-size: 17px; 
     /* top: 35px;
     left: 70px; */
     margin: auto;
@@ -109,5 +111,8 @@
 .Highlighted {
     color: rgba(212, 232, 238, 0.918);
     text-shadow: 0px 0px 10px  rgba(219, 36, 36, 1);
+}
+.Greyedout {
+    color: rgba(150, 159, 161, 0.918);
 }
 
