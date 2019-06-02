@@ -25,9 +25,9 @@ function TimeLabel() {
         setTime(dateFormat(date,'UTC:HH:MM:ss'))
     },[appdate])
 
-    useLayoutEffect(() => {     
-        console.log('Searching: '+searching)
-    },[searching])
+    // useLayoutEffect(() => {     
+    //     console.log('Searching: '+searching)
+    // },[searching])
 
 
     return (

@@ -39,7 +39,7 @@ function TimeSelector(props)  {
 
 
     const [appdate, setAppdate] = useGlobal('appdate')
-    const [, setSearchdate] = useGlobal('searchdate')
+    const [, setSearchepoch] = useGlobal('searchepoch')
     const [, setHighlight] = useGlobal('highlight')
     const [livePosition, setLiveposition] = useState(new Date())
 
@@ -64,7 +64,6 @@ function TimeSelector(props)  {
                                                 lastNewxy: [0, 0],
                                                 lastStep: 1, 
                                                 lastIncrement: 0,
-                                                lastDown: false, 
                                                 lastTime: time
                                             }
                 }) => {
@@ -87,9 +86,7 @@ function TimeSelector(props)  {
 
             if (!down) setStep(1)
             
-            // if(down != temp.lastDown) { setTsactive(true)}
             if(first) { setTsactive(true)}
-            temp.lastDown = down
             if(myvertical.current) {    
                 //let pos = target.getBoundingClientRect().top
                 let height = timecontainer.current.parentElement.offsetHeight
@@ -123,7 +120,7 @@ function TimeSelector(props)  {
                 temp.lastNewxy = newxy
                 
                 const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-                const setFinalTime = ({ xy }) => {   if(!down && !active) {setTsactive(false)}; if(!down) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
+                const setFinalTime = ({ xy }) => {   if(!down && !active) {setTsactive(false)}; if(!down) { setSearchepoch(min+(-xy[1]+height/2)*zoomfactor) }}  
 
 
                 let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
@@ -147,8 +144,9 @@ function TimeSelector(props)  {
             setTsactive(true)
             let height = timecontainer.current.parentElement.offsetHeight
             const setLiveTime = ({ xy }) => { setLiveposition(min+(-xy[1]+height/2)*zoomfactor)}
-            const setFinalTime = ({ xy }) => {   setTsactive(false); if(!wheeling) { setSearchdate(min+(-xy[1]+height/2)*zoomfactor) }}  
-            let newxy = add([0,event.deltaY],temp.xy)
+            const setFinalTime = ({ xy }) => {   setTsactive(false); if(!wheeling) { setSearchepoch(min+(-xy[1]+height/2)*zoomfactor) }}  
+            // let newxy = add([0,event.deltaY],temp.xy)
+            let newxy = add([0,event.deltaY*0.2],temp.xy)
 
             let minX = timecontainer.current.parentElement.offsetTop + timecontainer.current.parentElement.offsetHeight / 2
             let maxX = - timecontainer.current.offsetHeight + timecontainer.current.parentElement.offsetHeight / 2

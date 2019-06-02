@@ -113,8 +113,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         return polygon
 
     }
-
-    function addGeojson(url,epoch) {
+    
+    const addGeojson = (url,epoch) => {
 
         // console.log('replace: '+replace)
 
@@ -165,7 +165,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         function loadCompleteCallback() {
             console.log(renderableLayer)
             setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
-            // enableRenderables(epoch) // uncomment to disable renderables
+            enableRenderables(epoch) // uncomment to disable renderables
             eww.current.redraw();
         }
     
@@ -187,7 +187,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         //   console.log('removing json layers: ')
         //   console.log(geojsonlayers[i])
         }
-        setGeojsonlayers([])
+        setGeojsonlayers((geojsonlayers)=>[])
         // console.log(geojsonlayers)
         eww.current.redraw();
       }

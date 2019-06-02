@@ -39,7 +39,7 @@ function TimeSelector(props)  {
 
 
     const [appdate, setAppdate] = useGlobal('appdate')
-    const [, setSearchdate] = useGlobal('searchdate')
+    const [, setSearchdate] = useGlobal('searchepoch')
     const [, setHighlight] = useGlobal('highlight')
     const [livePosition, setLiveposition] = useState(new Date())
 

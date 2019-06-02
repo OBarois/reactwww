@@ -8,8 +8,8 @@ import './stepmask.css'
 
 function StepMask() {
     const [highlight] = useGlobal('highlight')
-    const [ active, setDebug ] = useState(false)
-    useHotkeys("m",()=>{setDebug(active => !active)}) 
+    const [ active, setActive ] = useState(false)
+    useHotkeys("m",()=>{setActive(active => !active)}) 
 
     useEffect(() => {
         console.log('Mask Overlay: press m ')
@@ -17,7 +17,7 @@ function StepMask() {
     }, []);
 
     useEffect(() => {
-        setDebug((highlight !== 'none') )
+        // setActive((highlight !== 'none') )
     }, [highlight]);
 
     console.log('active rendered')

@@ -36,7 +36,10 @@ const {
   
 
   const { geojsonResults, loading} = useDatahub();
-  const [ searchdate,  ] = useGlobal('searchdate');
+  const [ searchepoch,  ] = useGlobal('searchepoch');
+  const [ startend,  ] = useGlobal('startend');
+  const [ replace,  ] = useGlobal('replace');
+
   const [ mission,  ] = useGlobal('mission');
   const [ appdate,  ] = useGlobal('appdate')
   const [ appstarfield,  setAppstarfield] = useGlobal('appstarfield')
@@ -47,9 +50,9 @@ const {
   const [ , setApplatitude ] = useGlobal('applatitude')
   const [ , setApplongitude ] = useGlobal('applongitude')
   const [ apppolygon, setApppolygon ] = useGlobal('apppolygon')
-  const [ replace, setReplace ] = useState(true)
+  // const [ replace, setReplace ] = useState(true)
 
-  useHotkeys("z",()=>setReplace(state=>!state))
+  // useHotkeys("z",()=>setReplace(state=>!state))
 
   useEffect(() => {
     if(geojsonResults) {
@@ -66,9 +69,9 @@ const {
   },[geojsonResults]);
 
   useEffect(() => {
-    console.log('reacting to searchdate or mission')
-    if(replace) removeGeojson()
-  },[searchdate,mission,apppolygon]);
+    console.log('replace: ' + replace)
+    removeGeojson()
+  },[replace]);
 
   useEffect(() => {
     console.log('atmosphere')
