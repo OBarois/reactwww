@@ -50,12 +50,15 @@ export default function dhusToGeojson(response) {
                     updated: new Date(hubItem.ingestiondate),
                     title: item.title,
                     name: item.title,
+                    uuid: item.id,
                     date: hubItem.beginposition  +'/'+  hubItem.endposition,
-                    links: {
-                        data: [{
-                            href: item.link[0].href,
-                        }]
-                    },
+                    downloadUrl: item.link[0].href,
+                    quicklookUrl: (item.link.length >= 2) ? item.link[2].href: null,
+                    // links: {
+                    //     data: [{
+                    //         href: item.link[0].href,
+                    //     }]
+                    // },
                     earthObservation: {
                         parentIdentifier: "",
                         status: "ARCHIVED",

@@ -12,3 +12,23 @@
     font-kerning: none;
   }
   
+  .Quicklook {
+    position: fixed;
+    box-shadow: 2px 2px 5px rgba(37, 38, 39, 0.397);
+    top: 100px;
+    left: 5px;
+    /* width: 100px;
+    height: 20px; */
+    z-index: 2;
+
+  }
+  .Metadata {
+    position: fixed;
+    box-shadow: 2px 2px 5px rgba(37, 38, 39, 0.397);
+    top: 93px;
+    left: 5px;
+    /* width: 100px;
+    height: 20px; */
+    z-index: 2;
+
+  }

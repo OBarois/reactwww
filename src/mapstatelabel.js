@@ -35,7 +35,9 @@ function MapStateLabel() {
 
     return (
         <div className='MapStateLabel' >
-            <div style={{fontSize: 10}}>{item}</div>
+            <div style={{fontSize: 10}}>
+                {apppickeditems.map( item => <div className='metadata'>{item.userProperties.name}<img className='Quicklook' src={item.userProperties.quicklookUrl} alt=''/></div>)} 
+            </div>
             <div >{Math.ceil(appaltitude / 1000)+ ' Km'}</div>
         </div>
     )

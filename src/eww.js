@@ -111,7 +111,7 @@ const {
   },[ewwstate.aoi]);
 
   useEffect(() => {
-    console.log(ewwstate.pickedItems.length + ' items picked')
+    // console.log(ewwstate.pickedItems.length + ' items picked')
     // setApppolygon('')
     setApppickeditems(ewwstate.pickedItems)
   },[ewwstate.pickedItems]);

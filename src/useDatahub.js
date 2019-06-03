@@ -98,7 +98,7 @@ export default function useDatahub() {
     }
 
     
-    const MAX_ITEMS = 5000
+    const MAX_ITEMS = 13000
 
     const [geojsonResults, setGeojsonResults] = useState(null)
     const [loading, setLoading] = useState(false)

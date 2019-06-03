@@ -69,10 +69,12 @@ export default function SearchManager() {
 
 
     useEffect(() => {
-        console.log('searchepoch: '+(new Date(searchepoch)).toJSON())
+        // console.log('searchepoch: '+(new Date(searchepoch)).toJSON())
         let SearchDate = new Date(searchepoch)
+        console.log('searchepoch: '+ SearchDate.toJSON())
         let startepoch = (new Date(Date.UTC(SearchDate.getUTCFullYear(), SearchDate.getUTCMonth(), SearchDate.getUTCDate())))
 
+        // Catalogue search time window is discreet, set from 00:00:00 to 23:59:59 of the selected day 
         let _startdate = (new Date(startepoch.getTime())).toJSON()
         let _enddate = (new Date(startepoch.getTime() + windowSize - 1000)).toJSON()
 
@@ -83,7 +85,7 @@ export default function SearchManager() {
         if (newSearchList.indexOf(_startdate) < 0) {
             newSearchList.push(_startdate)
             if (newSearchList.length > 5) {
-                newSearchList.shift()
+                // newSearchList.shift()
                 console.log('should now remove geojson layer')
             }
             setSearchList(newSearchList)
@@ -94,6 +96,7 @@ export default function SearchManager() {
             setGosearch(Math.random)
         } else {
             console.log('Search already done !')
+            
         }
     }, [searchepoch]);
 

@@ -212,6 +212,7 @@ function TimeSelector(props)  {
         // if no gesture (touch, mouse) is ongoing, the time selector follows the global appdate
         let offset =0
         if(!tsactive) {
+            
             if(props.vertical) {
                 offset = ((min - appdate)/zoomfactor)+timecontainer.current.parentElement.offsetHeight/2
                 set({ xy: [0,offset], config: { tension: 1200, friction: 40 }, onFrame: null, onRest: null }  )
