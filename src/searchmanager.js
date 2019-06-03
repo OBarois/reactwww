@@ -9,6 +9,7 @@ export default function SearchManager() {
     const [ searchepoch,  ] = useGlobal('searchepoch');
     const [ startend,  setStartend] = useGlobal('startend');
     const [ apppolygon,  ] = useGlobal('apppolygon');
+    const [ mission,  ] = useGlobal('mission');
     const [ replace, setReplace ] = useGlobal('replace')
     const [gosearch, setGosearch] = useGlobal('gosearch')
 
@@ -42,19 +43,19 @@ export default function SearchManager() {
     useEffect(() => {
         console.log('apppolygon: '+apppolygon)
         setReplacemode(count => count+1)
-        if(apppolygon == '') {
-            setWindowSize(1000 * 60 * 60 * 24)
-            // setStartend({
-            //     start: null,
-            //     end: null
-            // })    
+        // if(apppolygon == '') {
+        //     setWindowSize(1000 * 60 * 60 * 24)
+        //     // setStartend({
+        //     //     start: null,
+        //     //     end: null
+        //     // })    
             
 
-        } else {
-            setWindowSize(1000 * 60 * 60 * 24 * 7)
-        }
-        // setGosearch(Math.random)
-    }, [apppolygon]);
+        // } else {
+        //     setWindowSize(1000 * 60 * 60 * 24 * 7)
+        // }
+        // // setGosearch(Math.random)
+    }, [apppolygon, mission]);
 
     useEffect(() => {
         console.log("cleaning searches: " + replacemode)

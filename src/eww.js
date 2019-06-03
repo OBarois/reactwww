@@ -50,6 +50,7 @@ const {
   const [ , setApplatitude ] = useGlobal('applatitude')
   const [ , setApplongitude ] = useGlobal('applongitude')
   const [ apppolygon, setApppolygon ] = useGlobal('apppolygon')
+  const [ apppickeditems, setApppickeditems ] = useGlobal('apppickeditems')
   // const [ replace, setReplace ] = useState(true)
 
   // useHotkeys("z",()=>setReplace(state=>!state))
@@ -96,16 +97,24 @@ const {
     setApplatitude(ewwstate.latitude)
   },[ewwstate.longitude,ewwstate.latitude, ewwstate.altitude ]);
 
-  useEffect(() => {
-    // uncomment to search via polygon at low lats
-    // setApppolygon(ewwstate.viewpolygon)
+  // useEffect(() => {
+  //   // uncomment to search via polygon at low lats
+  //   // console.log(' could use polygon:')
+  //   // console.log(ewwstate.viewpolygon)
+  //   // setApppolygon(ewwstate.viewpolygon)
 
-  },[ewwstate.viewpolygon ]);
+  // },[ewwstate.viewpolygon ]);
 
   useEffect(() => {
     setApppolygon(ewwstate.aoi)
     // setApppolygon('')
   },[ewwstate.aoi]);
+
+  useEffect(() => {
+    console.log(ewwstate.pickedItems.length + ' items picked')
+    // setApppolygon('')
+    setApppickeditems(ewwstate.pickedItems)
+  },[ewwstate.pickedItems]);
 
 
 

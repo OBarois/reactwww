@@ -43,7 +43,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     // const [aoi, setAoi] = useState({type: null, value: null})
     const [aoi, setAoi] = useState('')
     const [geojsonlayers, setGeojsonlayers] = useState([])
-    const [ewwstate, setEwwState] = useState({latitude: clat, longitude: clon, altitude: alt, aoi:''})
+    const [ewwstate, setEwwState] = useState({latitude: clat, longitude: clon, altitude: alt, aoi:'', pickedItems: []})
 
     //toggle atmosphere
     function toggleAtmosphere() {
@@ -209,11 +209,16 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         let timeOffset = 1000 * 60 * 60 * 3 // 3 hours
         for (let i = 0; i < eww.current.layers.length; i++) {
             if (eww.current.layers[i].displayName.includes('Products:')) {
+                
                 for (let j = 0; j < eww.current.layers[i].renderables.length; j++) {
                     let renderable = eww.current.layers[i].renderables[j]
-                    let renderableStartDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStartTime)).getTime()
-                    let renderableStopDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStopTime)).getTime()
-                    renderable.enabled = (renderableStartDate <= time+timeOffset/2 && renderableStopDate >= time-timeOffset/2) ? true : false            
+                    if (time != 0) {
+                        let renderableStartDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStartTime)).getTime()
+                        let renderableStopDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStopTime)).getTime()
+                        renderable.enabled = (renderableStartDate <= time+timeOffset/2 && renderableStopDate >= time-timeOffset/2) ? true : false   
+                    } else {
+                        renderable.enabled = false
+                    }         
                 }
             }
         }
@@ -268,30 +273,15 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         let la = eww.current.navigator.lookAtLocation.latitude
         let al = eww.current.navigator.range
         let vp = (al < 2000000?getViewPolygon():'')
-        // console.log(al + 'km : '+ vp)
-
-        // let newewwstate = {...ewwstate, longitude:lo, 
-        //     latitude: la,
-        //     altitude: al, 
-        //     viewpolygon: vp}
-        // setEwwState(newewwstate)
 
         setEwwState((ewwstate) => { return {...ewwstate, longitude:lo, latitude: la, altitude: al, viewpolygon: vp}}) 
 
-        // setEwwState({
-        //     longitude:lo, 
-        //     latitude: la,
-        //     altitude: al, 
-        //     viewpolygon: vp,
-        //     aoi: ai
-            
-        // })
     }
 
     // handler for tap/click
 
     const handleClick  = (recognizer) => {
-        console.log('click')
+        // console.log('click')
         let x = recognizer.clientX
         let y = recognizer.clientY
         // Perform the pick. Must first convert from window coordinates to canvas coordinates, which are
@@ -301,14 +291,27 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         if (pickList.terrainObject()) {
             // position = pickList.terrainObject().position;
             // store list of selected footprints in a string for later comparison
+
+            // de-highlight all rendereables
+            for (let i = 0; i < eww.current.layers.length; i++) {
+                if (eww.current.layers[i].displayName.includes('Products:')) {                    
+                    for (let j = 0; j < eww.current.layers[i].renderables.length; j++) {
+                        let renderable = eww.current.layers[i].renderables[j]
+                        renderable.highlighted = false
+                    }
+                }
+            }
+    
+            // ... and now highlight all picked rendereables
             let pickedItems = []
             for (let i = 0; i < pickList.objects.length; i++) {
                 if (pickList.objects[i].userObject instanceof WorldWind.SurfaceShape) {
-                    pickedItems.push(pickList.objects[i].userObject.userProperties.name) 
+                    pickedItems.push(pickList.objects[i].userObject) 
                     pickList.objects[i].userObject.highlighted = !pickList.objects[i].userObject.highlighted
                 }
             }
             console.log(pickedItems)
+            setEwwState((ewwstate) => { return {...ewwstate, pickedItems: pickedItems}})
             eww.current.redraw()
         } else {
             console.log('No position !');

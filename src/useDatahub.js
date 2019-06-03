@@ -72,7 +72,7 @@ export default function useDatahub() {
             // windowSize = 1000 * 60 * 60 * 24 * 30 // 1 month time window
             // start = dateFormat(new Date(date - windowSize/2),'isoUtcDateTime').replace('Z','.000Z')
             // end =  dateFormat(new Date(date + windowSize/2),'isoUtcDateTime').replace('Z','.000Z')
-            console.log('|'+polygon.length+'|')
+            // console.log('|'+polygon.length+'|')
             newurl = newurl.replace("{polygon}", polygon)
             newurl = newurl.replace(target.dateOff, '')
             // newurl = newurl.replace("{start}", start)
@@ -98,16 +98,12 @@ export default function useDatahub() {
     }
 
     
-    // search time window size in ms
-    const [windowSize, setWindowSize] = useState(1000 * 60 * 60 * 24)
     const MAX_ITEMS = 5000
 
     const [geojsonResults, setGeojsonResults] = useState(null)
     const [loading, setLoading] = useState(false)
-    const [isfirstpage, setIsfirstPage] = useState(true)
     
     const [ searchepoch,  ] = useGlobal('searchepoch');
-    // const [ startend, setStartend ] = useState({start:0, end:0});
     const [ startend,  ] = useGlobal('startend');
     const [ mission,  ] = useGlobal('mission');
     const [ apppolygon,  ] = useGlobal('apppolygon');
@@ -117,10 +113,7 @@ export default function useDatahub() {
     const [se] = SearchManager();
 
     const [ searchUrl, setSearchurl  ] = useState(null);
-    // const [ polygon, setPolygon  ] = useState('');
-
-    const [ pagination, setPagination ] = useState(null);
-    const [ searchtimeout, setSearchtimeout ] = useState(null);
+    // const [ searchtimeout, setSearchtimeout ] = useState(null);
 
 //{totalresults,startindex}
 
@@ -130,7 +123,7 @@ export default function useDatahub() {
 //   .catch(error => console.log('error is', error));
     useEffect(() => {
         const fetchURL = async (url,index) => {
-            // setLoading(true)
+             setLoading(true)
             let newurl = url
             newurl = newurl.replace("{startindex}",index)
             console.log('Search: '+newurl)
@@ -152,13 +145,14 @@ export default function useDatahub() {
 
                     // setPagination(paging)
                     if(paging.totalresults>0) setGeojsonResults(geoJson) 
-                    // setIsfirstPage((pagination.startindex + pagination.itemsperpage < pagination.totalresults)?true:false)
+
                     if (paging.startindex + paging.itemsperpage < Math.min(paging.totalresults,MAX_ITEMS) ) {
                         console.log("There's More...")  
-                        console.log(url + '/' + (paging.startindex + paging.itemsperpage))
                         fetchURL(url,(paging.startindex + paging.itemsperpage))
+                    } else {
+                        setLoading(false)  
                     }
-                    // setLoading(false);   
+
                 } catch (err) {
                     console.log("Didn't recieve a json !")
                     console.log(err)
@@ -167,81 +161,20 @@ export default function useDatahub() {
             } catch(err) {
                 console.log("Error contacting server...")
                 console.log(err)
-                setLoading(false)
-                
+                setLoading(false)   
             }
-            return paging
-            
         }
 
         if(searchUrl) {
-            let url = searchUrl
-            // url = url.replace("{startindex}",0)
-            let page = fetchURL(url,0)
-            // page.then((result)=>{
-            //     console.log(result)
-            //     if(result.startindex + result.itemsperpage < Math.min(result.totalresults,MAX_ITEMS) ) {
-
-                // }
-            // })
-            
-
+            // setLoading(true)
+            fetchURL(searchUrl,0)
         }
     }, [searchUrl]);
     
-    useEffect(() => {
-        if(pagination) {
-            if(pagination.startindex + pagination.itemsperpage < Math.min(pagination.totalresults,MAX_ITEMS) ) {
-                // let url = searchURLs[mission]
-                // console.log("There's More...")
-                // setIsfirstPage(false)
-                try {
-                    let url = buildUrl({
-                        code: mission,
-                        polygon: apppolygon, 
-                        start: startend.start,
-                        end: startend.end,
-                        // start: dateFormat(new Date(searchepoch - windowSize/2),'isoUtcDateTime'), 
-                        // end: dateFormat(new Date(searchepoch + windowSize/2),'isoUtcDateTime'), 
-                        startindex: pagination.startindex + pagination.itemsperpage
-                    })
-
-                    setSearchurl(url)
-
-                
-            
-                } catch {
-                    console.log('Not a JULIAN date !')
-                    setLoading(false);
-                }
-            } else {
-                setLoading(false);
-            }
-    
-        }
-    }, [pagination]);
 
     useEffect(() => {
         console.log('DataHub ready. '+mission)
     }, []);
-
-    // useEffect(() => {
-    //     console.log('apppolygon: '+apppolygon)
-    //     if(apppolygon == '') {
-    //         setWindowSize(1000 * 60 * 60 * 24)
-    //     } else {
-    //         setWindowSize(1000 * 60 * 60 * 24 * 7)
-    //     }
-    // }, [apppolygon]);
-
-    // useEffect(() => {
-    //     console.log('searchepoch: '+searchepoch)
-    //     setStartend({
-    //         start: dateFormat(new Date(searchepoch - windowSize/2),'isoUtcDateTime').replace('Z','.000Z'),
-    //         end: dateFormat(new Date(searchepoch + windowSize/2),'isoUtcDateTime').replace('Z','.000Z')
-    //     })
-
-    // }, [searchepoch, windowSize]);
 
 
 
@@ -256,15 +189,10 @@ export default function useDatahub() {
                         code: mission,
                         polygon: apppolygon, 
                         start: startend.start,
-                        end: startend.end,
-                        // start: dateFormat(new Date(searchepoch - windowSize/2),'isoUtcDateTime'), 
-                        // end: dateFormat(new Date(searchepoch + windowSize/2),'isoUtcDateTime'), 
-                        startindex: 0
+                        end: startend.end
                     })
-                    // url = url.replace("{startindex}",0)
 
-                    setLoading(true)
-                    // setIsfirstPage(true)
+                    // setLoading(true)
                     setSearchurl(url)
             
                 } catch(e) {

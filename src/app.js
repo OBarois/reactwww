@@ -108,7 +108,7 @@ console.log('app renders')
         </SlidePanel>
 
         <Debug action='Bonjour'/>
-        <StepMask/>
+
       </Fullscreen>
    </div>
   );
@@ -121,6 +121,7 @@ console.log('app renders')
         // </ControlPanel>
 
 // <ColorPicker />
+//         <StepMask/>
 
         // <div className='MiniGlobe' >
         //   <Eww id='miniglobe' clon='0.5' clat='40' myname={myname}/>  
