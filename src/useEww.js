@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import WorldWind from "webworldwind-esa";
+import TexturedSurfacePolygon from './wwwx/shapes/TexturedSurfacePolygon'
 
 
 // BasicWorldWindowController.prototype.applyLimits = function () {
@@ -43,6 +44,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     // const [aoi, setAoi] = useState({type: null, value: null})
     const [aoi, setAoi] = useState('')
     const [geojsonlayers, setGeojsonlayers] = useState([])
+    const [quicklooklayers, setQuicklooklayers] = useState([])
     const [ewwstate, setEwwState] = useState({latitude: clat, longitude: clon, altitude: alt, aoi:'', pickedItems: []})
 
     //toggle atmosphere
@@ -150,10 +152,11 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
 
                 configuration.highlightAttributes = new WorldWind.ShapeAttributes(configuration.attributes);
                 configuration.highlightAttributes.outlineColor = new WorldWind.Color(1, 0, 0, 0.4);
-                configuration.highlightAttributes.interiorColor = new WorldWind.Color(1, 0, 0, 0.6);
+                configuration.highlightAttributes.interiorColor = new WorldWind.Color(1, 0, 0, 0);
                 // configuration.attributes.outlineWidth = 0.3;
 
                 // configuration.attributes.applyLighting = true;
+                // configuration.attributes.imageSource = properties.quicklookUrl
 
             }
     
@@ -192,9 +195,51 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         eww.current.redraw();
       }
 
-    function addWMS(config) {
-        let layer =  new WorldWind.WmsLayer(config, "")
+    function addWMS() {
+    }
+
+    function addQuicklookWMS(renderable) {
+
+        console.log(renderable.computeSectors(eww.current.drawContext))
+        console.log(WorldWind.Sector.FULL_SPHERE)
+
+        // for S2:  
+        // https://view.onda-dias.eu/instance00/ows?&service=WMS&request=GetMap&layers=S2L1C_TRUE_COLOR&styles=&format=image/png&transparent=true&version=1.1.1&width=1500&height=1000&srs=EPSG:4326&bbox=12.357903,41.800495,12.625694,41.984760
+
+        
         // https://view.onda-dias.eu/instance00/ows?&service=WMS&request=GetMap&layers=S1B_IW_GRDH_1SDV_20190520T050758_20190520T050823_016323_01EB81_6EB6&styles=&format=image%2Fpng&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG%3A3857&bbox=2035059.441064533,7044436.526761846,2191602.4749925737,7200979.560689885
+        let wmsConfigQL = {
+            service: "https://view.onda-dias.eu/instance00/ows",
+            // layerNames: renderable.userProperties.title,
+            // layerNames: 'S2L1C_TRUE_COLOR',
+            layerNames: 'S1_IW_GRDH_FullResolution',
+            
+            // title: renderable.userProperties.title,
+            title: 'quicklook',
+            numLevels: 19,
+            format: "image/png",
+            size: 256,
+            sector: renderable.computeSectors(eww.current.drawContext)[0],
+            // sector: renderable.sector,
+            // sector: WorldWind.Sector.FULL_SPHERE,
+            levelZeroDelta: new WorldWind.Location(90, 90)
+        }
+
+        // let wmsConfigQL = {
+        //     service: "https://tiles.maps.eox.at/wms",
+        //     layerNames: "overlay_bright",
+        //     title: "overlay_bright",
+        //     numLevels: 19,
+        //     format: "image/png",
+        //     size: 256,
+        //     sector: WorldWind.Sector.FULL_SPHERE,
+        //     levelZeroDelta: new WorldWind.Location(90, 90)
+        // }
+        // eww.current.removeLayer(getLayerByName('quicklook') )
+        let qllayer =  new WorldWind.WmsLayer(wmsConfigQL, renderable.userProperties.date)
+        eww.current.addLayer(qllayer)
+        eww.current.redraw()
+        console.log(eww.current.layers)
     }
 
     function getLayerByName(name) {
@@ -221,8 +266,70 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                     }         
                 }
             }
+            if (eww.current.layers[i].displayName === 'quicklook') {
+                // eww.current.layers[i].enabled = 
+            }
         }
 
+    }
+
+    function addQuicklook(renderable) {
+
+        function imageLoader(url, useCredentials) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+        
+                img.onload = function() {
+                    resolve(img);
+                };
+        
+                img.onerror = function(e){
+                    reject(e);
+                };
+        
+                img.crossOrigin = useCredentials ? 'Use-Credentials' : 'Anonymous';
+                img.src = url;
+                console.log(' adding QL')
+            });
+        }
+
+
+        // console.log(' adding QL')
+        //  console.log(renderable.attributes)
+        // let quicklook =  new TexturedSurfacePolygon(renderable.sector)
+        // let quicklookLayer = new WorldWind.RenderableLayer('Quicklooks')
+        // // quicklookLayer.addRenderable(quicklook)
+        // // setQuicklooklayers((quicklooklayers)=>[...quicklooklayers,quicklookLayer])
+        // // eww.current.addLayer(quicklookLayer)
+        // let ql = new Image()
+        // ql.src = renderable.userProperties.quicklookUrl
+        // quicklook.image = ql
+        
+        imageLoader(renderable.userProperties.quicklookUrl,true).then(image => {
+            let quicklookLayer = getLayerByName('Quicklooks')
+            removeQuicklooks()
+            let footprint = [
+                renderable.boundaries[0][0],
+                renderable.boundaries[0][3],
+                renderable.boundaries[0][2],
+                renderable.boundaries[0][1]
+            ]
+            // footprint[0].pop()
+            console.log(footprint)
+            let quicklook =  new TexturedSurfacePolygon(footprint,renderable.attributes)
+            quicklook.maxImageWidth = 64
+            quicklook.maxImageHeight = 64
+            
+            quicklook.image = image
+            quicklookLayer.addRenderable(quicklook)
+            eww.current.addLayer(quicklookLayer)
+            eww.current.redraw()
+        })
+    }
+
+    function removeQuicklooks() {
+        getLayerByName('Quicklooks').removeAllRenderables()
+        eww.current.redraw()
     }
 
     function setTime(epoch) {
@@ -291,7 +398,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         if (pickList.terrainObject()) {
             // position = pickList.terrainObject().position;
             // store list of selected footprints in a string for later comparison
-
+            eww.current.removeLayer(getLayerByName('quicklook') )
             // de-highlight all rendereables
             for (let i = 0; i < eww.current.layers.length; i++) {
                 if (eww.current.layers[i].displayName.includes('Products:')) {                    
@@ -308,6 +415,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                 if (pickList.objects[i].userObject instanceof WorldWind.SurfaceShape) {
                     pickedItems.push(pickList.objects[i].userObject) 
                     pickList.objects[i].userObject.highlighted = !pickList.objects[i].userObject.highlighted
+                    
+                    addQuicklookWMS(pickList.objects[i].userObject)
                 }
             }
             console.log(pickedItems)
@@ -418,12 +527,15 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         // let atmosphereLayer = new WorldWind.AtmosphereLayer('images/BlackMarble_2016_3km.jpg');
         
         //atmosphereLayer.minActiveAltitude = 5000000
+
+        let quicklookLayer = new WorldWind.RenderableLayer('Quicklooks')
     
         let layers = [
             { layer: new WorldWind.WmsLayer(wmsConfigBg, ""), enabled: true },
             { layer: new WorldWind.WmsLayer(wmsConfigNames, ""), enabled: names },
             { layer: starFieldLayer, enabled: starfield },
-            { layer: atmosphereLayer, enabled: atmosphere }
+            { layer: atmosphereLayer, enabled: atmosphere },
+            { layer: quicklookLayer, enabled: true }
         ];
     
         for (let l = 0; l < layers.length; l++) {
