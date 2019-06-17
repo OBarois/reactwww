@@ -1,4 +1,4 @@
-import React, { useGlobal, useState, useEffect } from "reactn"
+import React, { useGlobal, useState, useEffect, useLayoutEffect } from "reactn"
 import { useEww } from "./useEww"
 // import { useGlobal } from 'reactn'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -75,13 +75,14 @@ const {
   },[replace]);
 
   useEffect(() => {
-    console.log('atmosphere')
+    // console.log('atmosphere')
     toggleAtmosphere(appatmosphere)
   },[appatmosphere])
 
   useEffect(() => {
     toggleStarfield(appstarfield)
   },[appstarfield])
+
   useEffect(() => {
     toggleNames(appnames)
   },[appnames])
@@ -119,6 +120,7 @@ const {
 
 
   useEffect(() => {
+    // console.log('app date: '+appdate)
     setTime(appdate)
   },[appdate]);
 
@@ -126,6 +128,7 @@ const {
     setAppatmosphere(atmosphere)
     setAppstarfield(starfield)
     setAppnames(names)
+    
   },[]);
 
 

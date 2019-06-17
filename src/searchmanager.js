@@ -38,11 +38,11 @@ export default function SearchManager() {
     // // replace => { setReplace(!replace); return !replace }
     // useHotkeys('ctrl+k', () => setCount(prevCount => prevCount + 1));
     // useHotkeys("z",() => setReplacemode(state => !state))
-    useHotkeys("z",() => setReplacemode(count => count+1))
+    useHotkeys("z",() => setReplacemode(count => count+=1))
 
     useEffect(() => {
         console.log('apppolygon: '+apppolygon)
-        setReplacemode(count => count+1)
+        setReplacemode(count => count+=1)
         // if(apppolygon == '') {
         //     setWindowSize(1000 * 60 * 60 * 24)
         //     // setStartend({
@@ -61,7 +61,7 @@ export default function SearchManager() {
         console.log("cleaning searches: " + replacemode)
         // setReplace(replacemode)
         if(replacemode) {
-            setReplace(count => count+1)
+            setReplace(count => count+=1)
             setSearchList([])
             setGosearch(Math.random)
         }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import dhusToGeojson from "./dhusToGeojson";
+import eocatToGeojson from "./eocatToGeojson"
 import { useGlobal } from 'reactn';
 import dateFormat from "dateformat"
 import SearchManager from './searchmanager'
@@ -9,68 +10,19 @@ import SearchManager from './searchmanager'
 
 export default function useDatahub() {
 
+    const [ collections, setCollections ] = useState([])
+
 
     const buildUrl = ({code, polygon, start, end, startindex}) => {
 
 
         
-        let collections = [
-            {
-                code: 'S1',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-1 AND producttype:GRD)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
-                name: 'Sentinel-1 A/B GRD' ,
-                startIndexOrigin: 0,
-                dateOff: ' beginposition:[{start} TO {end}] AND',
-                areaOff:  ' footprint:"Intersects({polygon})" AND'
-            },
-            {
-                code: 'S2A',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2A_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
-                name: 'Sentinel-2 A/B Level 1C',
-                startIndexOrigin: 0,
-                dateOff: ' beginposition:[{start} TO {end}] AND',
-                areaOff:  ' footprint:"Intersects({polygon})" AND'
-            },
-            {
-                code: 'S2B',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2B_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
-                name: 'Sentinel-2 A/B Level 1C',
-                startIndexOrigin: 0,
-                dateOff: ' beginposition:[{start} TO {end}] AND',
-                areaOff:  ' footprint:"Intersects({polygon})" AND'
-            },
-            {
-                code: 'S3',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-3 AND (producttype:OL_1_ERR___ OR producttype:SL_1_RBT___ OR producttype:SR_1_SRA___))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
-                name: 'Sentinel-3 A/B, OLCI/SLSTR/SRAL' ,
-                startIndexOrigin: 0,
-                dateOff: ' beginposition:[{start} TO {end}] AND',
-                areaOff:  ' footprint:"Intersects({polygon})" AND'
-            },
-            {
-                code: 'S5P',
-                templateUrl: 'https://s5phub.copernicus.eu/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
-                name: 'Sentinel-1 A/B',
-                startIndexOrigin: 0,
-                dateOff: ' beginposition:[{start} TO {end}] AND',
-                areaOff:  ' footprint:"Intersects({polygon})" AND'
-            },
-            {
-                code: 'ENVISAT',
-                templateUrl: 'https://eocat.esa.int/ngeo/catalogue/FEDEO-ENVISAT.ASA.IMP_1P/search?start={start}&stop={end}&format=json&count=50&startIndex={startindex}',
-                startIndexOrigin: 1,
-                name: 'Sentinel-1 A/B',
-                dateOff: ' beginposition:[{start} TO {end}]',
-                areaOff:  ' footprint:"Intersects({polygon})"'
-            }
 
-        ]
-
-        const getTargetCollection= (mission) => {
-            return collections.find( (collection) => {return collection.code == mission} )
-        }
+        // const getTargetCollection= (mission) => {
+        //     return collections.find( (collection) => {return collection.code == mission} )
+        // }
         // console.log(getTargetCollection(mission))
-        let target = getTargetCollection(code)
+        let target = collections[code]
         let newurl = target.templateUrl
         //let start, end, 
         // let windowSize
@@ -98,8 +50,8 @@ export default function useDatahub() {
             newurl = newurl.replace("{end}", end)
         }
         
-        startindex = target.startIndexOrigin = 0 ? startindex : startindex + target.startIndexOrigin
-        // newurl = newurl.replace("{startindex}",startindex)
+        // startindex = startindex == 0 ? startindex : startindex + target.startIndexOrigin
+        // newurl = newurl.replace("{startindex}",target.startIndexOrigin)
 
 
         return newurl
@@ -142,7 +94,7 @@ export default function useDatahub() {
                 // console.log( response.text())
                 try {
                     const json = await response.json()
-                    const geoJson = (mission === 'ENVISAT')? json : dhusToGeojson(json)
+                    const geoJson = (mission === 'ENVISAT')? eocatToGeojson(json) : dhusToGeojson(json)
                     // console.log('totalResults: ' + geoJson.properties.totalResults)
                     paging = {
                         totalresults: geoJson.properties.totalResults == null ? 0 : Number(geoJson.properties.totalResults) ,
@@ -175,18 +127,75 @@ export default function useDatahub() {
 
         if(searchUrl) {
             // setLoading(true)
-            fetchURL(searchUrl,0)
+            fetchURL(searchUrl,collections[mission].startIndexOrigin)
         }
     }, [searchUrl]);
     
 
     useEffect(() => {
         console.log('DataHub ready. '+mission)
+        let _collections = [
+            {
+                code: 'S1',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-1 AND producttype:GRD)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                name: 'Sentinel-1 A/B GRD' ,
+                startIndexOrigin: 0,
+                dateOff: ' beginposition:[{start} TO {end}] AND',
+                areaOff:  ' footprint:"Intersects({polygon})" AND'
+            },
+            {
+                code: 'S2A',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2A_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                name: 'Sentinel-2 A/B Level 1C',
+                startIndexOrigin: 0,
+                dateOff: ' beginposition:[{start} TO {end}] AND',
+                areaOff:  ' footprint:"Intersects({polygon})" AND'
+            },
+            {
+                code: 'S2B',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2B_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                name: 'Sentinel-2 A/B Level 1C',
+                startIndexOrigin: 0,
+                dateOff: ' beginposition:[{start} TO {end}] AND',
+                areaOff:  ' footprint:"Intersects({polygon})" AND'
+            },
+            {
+                code: 'S3',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-3 AND (producttype:OL_1_ERR___ OR producttype:SL_1_RBT___ OR producttype:SR_1_SRA___))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                name: 'Sentinel-3 A/B, OLCI/SLSTR/SRAL' ,
+                startIndexOrigin: 0,
+                dateOff: ' beginposition:[{start} TO {end}] AND',
+                areaOff:  ' footprint:"Intersects({polygon})" AND'
+            },
+            {
+                code: 'S5P',
+                templateUrl: 'https://s5phub.copernicus.eu/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                name: 'Sentinel-1 A/B',
+                startIndexOrigin: 0,
+                dateOff: ' beginposition:[{start} TO {end}] AND',
+                areaOff:  ' footprint:"Intersects({polygon})" AND'
+            },
+            {
+                code: 'ENVISAT',
+                templateUrl: 'https://eocat.esa.int/api/catalogue/EOCAT-ENVISAT.ASA.IMP_1P/search?start={start}&stop={end}&format=json&count=50&startIndex={startindex}',
+                startIndexOrigin: 1,
+                name: 'Sentinel-1 A/B',
+                dateOff: ' beginposition:[{start} TO {end}]',
+                areaOff:  ' footprint:"Intersects({polygon})"'
+            }
+        ]
+    
+        let collectionArray = []
+        _collections.map((item)=>{collectionArray[item.code]=item})
+        setCollections(collectionArray)
+        
+    
     }, []);
 
 
 
     useEffect(() => {
+        console.log('mission: '+mission)
         console.log('mission: '+mission+ ' start/end: '+ startend.start+'/' + startend.end + ' apppolygon: '+apppolygon)
 
         if(mission && searchepoch) {
@@ -201,6 +210,7 @@ export default function useDatahub() {
                     })
 
                     // setLoading(true)
+                    // console.log('start: '+collections[mission].startIndexOrigin)
                     setSearchurl(url)
             
                 } catch(e) {

@@ -11,7 +11,7 @@ function MissionSelector() {
 
     const [ mission, setMission ] = useGlobal('mission');
     useHotkeys("1",()=>{setMission('S1')}) 
-    useHotkeys("2",()=>{setMission('S2')}) 
+    useHotkeys("2",()=>{setMission('S2A')}) 
     useHotkeys("3",()=>{setMission('S3')}) 
     useHotkeys("5",()=>{setMission('S5P')}) 
     useHotkeys("6",()=>{setMission('ENVISAT')}) 
@@ -29,6 +29,7 @@ function MissionSelector() {
             <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s2_black.png' alt='' onClick={() => setMission('S2B')} /></div>
             <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s3_black.png' alt='' onClick={() => setMission('S3')} /></div>
             <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s5p_black.png' alt='' onClick={() => setMission('S5P')} /></div>
+            <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s5p_black.png' alt='' onClick={() => setMission('ENVISAT')} /></div>
            
             
         </div>

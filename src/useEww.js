@@ -50,21 +50,24 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     //toggle atmosphere
     function toggleAtmosphere() {
         console.log('toggleAtmosphere')
-        eww.current.layers[3].enabled = !eww.current.layers[3].enabled
+        let _layer = getLayerByName('Atmosphere')
+        _layer.enabled = !_layer.enabled
         eww.current.redraw();
     }
 
     //toggle starField
     function toggleStarfield() {
         console.log('toggleStarfield')
-        eww.current.layers[2].enabled = !eww.current.layers[2].enabled
+        let _layer = getLayerByName('StarField')
+        _layer.enabled = !_layer.enabled
         eww.current.redraw();
     }
 
     //toggle name overlay
     function toggleNames() {
         console.log('toggleNames')
-        eww.current.layers[1].enabled = !eww.current.layers[1].enabled
+        let _layer = getLayerByName('overlay_bright')
+        _layer.enabled = !_layer.enabled
         eww.current.redraw();
     }
 
@@ -247,6 +250,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     }
 
     function getLayerByName(name) {
+        // console.log('Searching layer: '+ name)
         for (let i = 0; i < eww.current.layers.length; i++) {
             // console.log('display name: '+eww.current.layers[i].displayName)
             if (eww.current.layers[i].displayName === name) return eww.current.layers[i]
@@ -261,6 +265,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                 
                 for (let j = 0; j < eww.current.layers[i].renderables.length; j++) {
                     let renderable = eww.current.layers[i].renderables[j]
+                    console.log('enabling')
                     if (time != 0) {
                         let renderableStartDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStartTime)).getTime()
                         let renderableStopDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStopTime)).getTime()
@@ -556,7 +561,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     
         let layers = [
             { layer: new WorldWind.WmsLayer(wmsConfigBg, ""), enabled: true },
-            { layer: new WorldWind.WmsLayer(wmsConfigNames, ""), enabled: names },
+            { layer: new WorldWind.WmsLayer(wmsConfigNames, "Names"), enabled: names },
             { layer: starFieldLayer, enabled: starfield },
             { layer: atmosphereLayer, enabled: atmosphere },
             { layer: quicklookLayer, enabled: true }

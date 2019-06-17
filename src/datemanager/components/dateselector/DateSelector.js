@@ -36,9 +36,7 @@ function DateSelector({startdate, onDateChange, onFinalDateChange}) {
     const [{ xy }, set] = useSpring(() => ({ xy: [0,0] }))
     // console.log('just defined spring: '+ offset.current)
     if(!refscaledate.current) {
-        console.log('reset refscaledate')
         refscaledate.current = startdate
-
     }
 
     const bind = useGesture({
