@@ -12,6 +12,7 @@ import "./styles.css"
 import TimeSelector from "./timeselector2";
 import TimeLabel from "./timelabel";
 import MapStateLabel from "./mapstatelabel";
+import DateManager from './datemanager'
 
 import Debug from "./debug";
 import SlidePanel from "./slidepanel";
@@ -24,6 +25,16 @@ const App = () => {
   //const [count, setCount] = useState(1000);
   const [hasFetched, setFetch] = useState(false)
 
+  let initdate = new Date()
+  const [startdate, ] = useState(initdate)
+  // const [searching, ] = useState(false)
+  const [ searching, ] = useGlobal('searching')
+
+
+  const [ appdate, setAppdate ] = useGlobal('appdate')
+  const [, setSearchdate] = useGlobal('searchepoch')
+
+
 
   
   const [ mission, setMission ] = useGlobal('mission');
@@ -31,11 +42,16 @@ const App = () => {
         console.log('Mission changed to: '+ mission)
     }, [mission]);
  
+    const changeDate = (newdate) => {
+      // console.log('App changeDate callback: ' + newdate.toJSON())
+      setAppdate(newdate.getTime())
+    }
+    const changeFinalDate = (newdate) => {
+      // console.log('App final changeDate callback: ' + newdate.toJSON())
+      setSearchdate(newdate.getTime())
+    }
+    
 
-
-  // Set boundaries and zoom factor of the time scale
-  const [min, setMin] = useState((new Date("2014-10-01")).getTime())
-  const [max, setMax] = useState((new Date("2019-12-31")).getTime())
   
   const [vertical, setVertical] = useState(true)
   
@@ -79,25 +95,23 @@ const App = () => {
   
   //const [ appdate, setAppdate ] = useGlobal('appdate');
   // const [ myname,  ] = useGlobal('appnames');
-console.log('app renders')
   return (
     <div className="App">
       <Fullscreen enabled={isFull} onChange={() =>  {if(!isFull) setIsfull(false)} }>
+
       
-        <div className="DateTimeLabel" >
+        {/* <div className="DateTimeLabel" >
           <TimeLabel vertical={vertical} />
         </div>
         
         <div className="ClockController">
           <ClockController duration="600000"/>
-        </div> 
+        </div>  */}
 
         <div className="Globe">
           <Eww id="globe" starfield="true" atmosphere='true' clon='0.5' clat='40' names='true'/>
         </div>
-        <div className={vertical?"TimeSelectorv":"TimeSelectorh"}>
-          <TimeSelector min={min} max={max} vertical={vertical}/>
-        </div>
+        <DateManager startdate={startdate}  searching={searching} onDateChange={changeDate} onFinalDateChange={changeFinalDate} />
         
         <div className='MissionLabel'>{mission}</div>
         <MapStateLabel></MapStateLabel>

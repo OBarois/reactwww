@@ -123,6 +123,9 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         function shapeConfigurationCallback(geometry, properties) {
             let configuration = {};
             configuration.userProperties = properties
+
+            let name = properties.name || properties.Name || properties.NAME
+            if (name) configuration.name = name
     
             let placemarkAttributes = new WorldWind.PlacemarkAttributes(null);
             placemarkAttributes.imageScale = 10;
@@ -156,6 +159,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                 // configuration.attributes.outlineWidth = 0.3;
 
                 // configuration.attributes.applyLighting = true;
+                // configuration.attributes.enableLighting = true;
                 // configuration.attributes.imageSource = properties.quicklookUrl
 
             }
@@ -261,6 +265,17 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                         let renderableStartDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStartTime)).getTime()
                         let renderableStopDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStopTime)).getTime()
                         renderable.enabled = (renderableStartDate <= time+timeOffset/2 && renderableStopDate >= time-timeOffset/2) ? true : false   
+                        // console.log('enabling: '+ renderable.displayName  )
+                        // if(renderable.enabled) {
+                        //     let transparency = 1 - (Math.abs(renderableStartDate - time) / (timeOffset/2))
+                        //     renderable.attributes.interiorColor.set(
+                        //         renderable.attributes.interiorColor.red -transparency,
+                        //         renderable.attributes.interiorColor.green,
+                        //         transparency,
+                        //         renderable.attributes.interiorColor.alpha) 
+                                // renderable.render(eww.current.drawContext)
+
+                        // }
                     } else {
                         renderable.enabled = false
                     }         
@@ -308,6 +323,9 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         imageLoader(renderable.userProperties.quicklookUrl,true).then(image => {
             let quicklookLayer = getLayerByName('Quicklooks')
             removeQuicklooks()
+            console.log(renderable.boundaries)
+            console.log(renderable.boundingSector)
+            // 
             let footprint = [
                 renderable.boundaries[0][0],
                 renderable.boundaries[0][3],
@@ -317,12 +335,13 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
             // footprint[0].pop()
             console.log(footprint)
             let quicklook =  new TexturedSurfacePolygon(footprint,renderable.attributes)
-            quicklook.maxImageWidth = 64
-            quicklook.maxImageHeight = 64
+            quicklook.maxImageWidth = 128
+            quicklook.maxImageHeight = 128
             
             quicklook.image = image
+            removeQuicklooks()
             quicklookLayer.addRenderable(quicklook)
-            eww.current.addLayer(quicklookLayer)
+            // eww.current.addLayer(quicklookLayer)
             eww.current.redraw()
         })
     }
@@ -333,7 +352,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     }
 
     function setTime(epoch) {
-        getLayerByName('StarField').time = getLayerByName('Atmosphere').time = new Date(epoch)
+        getLayerByName('StarField').time =  new Date(epoch)
+        getLayerByName('Atmosphere').time = new Date(epoch)
         enableRenderables(epoch)
         // console.log('display name: ')
         // console.log(getLayerByName('StarField').displayName)
@@ -398,7 +418,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         if (pickList.terrainObject()) {
             // position = pickList.terrainObject().position;
             // store list of selected footprints in a string for later comparison
-            eww.current.removeLayer(getLayerByName('quicklook') )
+            // eww.current.removeLayer(getLayerByName('quicklook') )
             // de-highlight all rendereables
             for (let i = 0; i < eww.current.layers.length; i++) {
                 if (eww.current.layers[i].displayName.includes('Products:')) {                    
@@ -416,6 +436,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                     pickedItems.push(pickList.objects[i].userObject) 
                     pickList.objects[i].userObject.highlighted = !pickList.objects[i].userObject.highlighted
                     
+                    // addQuicklookWMS(pickList.objects[i].userObject)
+                    removeQuicklooks()
                     addQuicklookWMS(pickList.objects[i].userObject)
                 }
             }
@@ -424,6 +446,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
             eww.current.redraw()
         } else {
             console.log('No position !');
+            removeQuicklooks()
+
             return;
         }
 
@@ -542,6 +566,9 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
             layers[l].layer.enabled = layers[l].enabled;
             eww.current.addLayer(layers[l].layer);
         }
+
+        // quicklookLayer.maxActiveAltitude = 4000000
+
         //let date = new Date();
         starFieldLayer.time = new Date();
         atmosphereLayer.time = new Date();

@@ -24,8 +24,16 @@ export default function useDatahub() {
                 areaOff:  ' footprint:"Intersects({polygon})" AND'
             },
             {
-                code: 'S2',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND producttype:S2MSI1C)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                code: 'S2A',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2A_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                name: 'Sentinel-2 A/B Level 1C',
+                startIndexOrigin: 0,
+                dateOff: ' beginposition:[{start} TO {end}] AND',
+                areaOff:  ' footprint:"Intersects({polygon})" AND'
+            },
+            {
+                code: 'S2B',
+                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2B_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-2 A/B Level 1C',
                 startIndexOrigin: 0,
                 dateOff: ' beginposition:[{start} TO {end}] AND',

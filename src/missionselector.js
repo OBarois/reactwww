@@ -25,7 +25,8 @@ function MissionSelector() {
     return (
         <div className='MissionSelector'>
             <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s1_black.png' alt='' onClick={() => setMission('S1')} /></div>
-            <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s2_black.png' alt='' onClick={() => setMission('S2')} /></div>
+            <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s2_black.png' alt='' onClick={() => setMission('S2A')} /></div>
+            <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s2_black.png' alt='' onClick={() => setMission('S2B')} /></div>
             <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s3_black.png' alt='' onClick={() => setMission('S3')} /></div>
             <div className='Circle'><img className='MissionIcon' draggable="false" src='./images/s5p_black.png' alt='' onClick={() => setMission('S5P')} /></div>
            
