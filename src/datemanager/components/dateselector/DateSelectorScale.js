@@ -26,9 +26,11 @@ function DateSelectorScale({date, zoomfactor, immediate}) {
         let day, month, hour, year = 0
         let lastday =0
         let lastmonth = 0
+        let lastyear = 0
         let lasthour = 0
         let tics = []    
-        let putmonth = (_zoom < 1000*60*60*24*10)
+        let putyear = (_zoom < 1000*60*60*24*30*10)
+        let putmonth = (_zoom < 1000*60*60*24*5)
         let putday = (_zoom < 1000*60*60*2)
         let putevenhour = (_zoom < 1000*60*20)
         let puthour = (_zoom < 1000*60*8)
@@ -76,9 +78,20 @@ function DateSelectorScale({date, zoomfactor, immediate}) {
                     }
                 }
     
+            } else if (putyear) {
+                if(year !== lastyear && lastmonth !== 0 ) {
+                    if (month !== 'JAN') {
+                        tics.push({class:'MonthTic', pos: i, label: month})
+                    } else {
+                        // tics.push({class:'MonthTic', pos: i, label: month})
+                        tics.push({class:'YearTic', pos: i, label: year})
+                    }
+                }
+    
             }
 
             lastday = day
+            lastyear = year
             lastmonth = month
             lasthour = hour
         }

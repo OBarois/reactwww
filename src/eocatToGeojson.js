@@ -38,8 +38,8 @@ export default function eocatToGeojson(response) {
                                 operationalMode: item.properties.EarthObservation.procedure.EarthObservationEquipment.sensor.Sensor.operationalMode
                             },
                             acquisitionParameter: {
-                                acquisitionStartTime: item.properties.EarthObservation.phenomenonTime.TimePeriod.beginposition,
-                                acquisitionStopTime: item.properties.EarthObservation.phenomenonTime.TimePeriod.endposition,
+                                acquisitionStartTime: new Date(item.properties.EarthObservation.phenomenonTime.TimePeriod.beginPosition),
+                                acquisitionStopTime: new Date(item.properties.EarthObservation.phenomenonTime.TimePeriod.endPosition),
                                 relativePassNumber: null,
                                 orbitNumber: item.properties.EarthObservation.procedure.EarthObservationEquipment.acquisitionParameters.Acquisition.orbitNumber,
                                 startTimeFromAscendingNode: null,

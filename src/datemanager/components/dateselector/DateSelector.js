@@ -8,7 +8,9 @@ import './DateSelector.css';
 // import { start } from 'repl';
 
 function DateSelector({startdate, onDateChange, onFinalDateChange}) {
-    const STEPS = [ 1000*60*60 , 1000*60*10, 1000*60*1.8, 1000*27, 1000*60*60*24]
+    const STEPS_UP = [ 1000*60*60 ,  1000*60*60*24, 1000*60*60*24*15]
+    const STEPS_DOWN = [ 1000*60*60 , 1000*60*10, 1000*60*1.8, 1000*27, 1000*60*60*24]
+    
 
     const selector = useRef()
     const offset = useRef()
@@ -28,7 +30,7 @@ function DateSelector({startdate, onDateChange, onFinalDateChange}) {
     const [active, setActive ] = useState(false)
 
     // zoomfactor: how long is a pixel in ms
-    const [zoomfactor, setZoomfactor ] = useState(STEPS[0])
+    const [zoomfactor, setZoomfactor ] = useState(STEPS_UP[0])
     const [scalezoom, setScalezoom ] = useState(zoomfactor)
     const [immediate, setImmediate ] = useState(false)
 
@@ -48,25 +50,36 @@ function DateSelector({startdate, onDateChange, onFinalDateChange}) {
             }
         }) => {
             let Xoffset = selector.current.parentElement.offsetWidth - (event.pageX?event.pageX:selector.current.parentElement.offsetWidth)
-            // console.log(selector.current.parentElement.offsetWidth +'    '+event.pageX)
-            let steparea = Math.min(STEPS.length-1,Math.floor((Xoffset-selector.current.offsetWidth)/100+1))
-            // if (!steparea) { steparea = 0}
+            let Yoffset = (event.pageY?event.pageY:selector.current.parentElement.offsetHeight) - selector.current.offsetHeight/2
 
-            steparea = (steparea > STEPS.length-1)?STEPS.length:steparea
-            steparea = (steparea < 0)?0:steparea
+            let steparea
+            let zoom
+
+            if(Yoffset > 0) {
+                steparea = Math.min(STEPS_UP.length-1,Math.floor((Xoffset-selector.current.offsetWidth)/60+1))
+                steparea = (steparea > STEPS_UP.length-1)?STEPS_UP.length:steparea
+                steparea = (steparea < 0)?0:steparea
+                zoom = STEPS_UP[steparea]
+            } else {
+                steparea = Math.min(STEPS_DOWN.length-1,Math.floor((Xoffset-selector.current.offsetWidth)/60+1))
+                steparea = (steparea > STEPS_DOWN.length-1)?STEPS_DOWN.length:steparea
+                steparea = (steparea < 0)?0:steparea
+                zoom = STEPS_DOWN[steparea]
+            }
+
             // console.log(steparea)
             let step = 1
             // console.log(offset.current)
             // if (Xoffset > selector.current.offsetWidth) steparea = 1
             // if (Xoffset > selector.current.offsetWidth + 100) steparea = 2
             
-            for ( let i = 0 ; i < STEPS.length ; i++ ) {
+            // for ( let i = 0 ; i < STEPS.length ; i++ ) {
 
-            }
+            // }
             
             if (steparea !== temp.laststeparea) {
                 
-                setZoomfactor(STEPS[steparea])
+                setZoomfactor(zoom)
                 setNewstart(scaledate)
                 temp.laststeparea = steparea
                 temp.xy = [0,0]
