@@ -61,7 +61,7 @@ export default function SearchManager() {
         console.log("cleaning searches: " + replacemode)
         // setReplace(replacemode)
         if(replacemode) {
-            setReplace(count => count+=1)
+            setReplace(true)
             setSearchList([])
             setGosearch(Math.random)
         }
@@ -82,7 +82,7 @@ export default function SearchManager() {
 
         let newSearchList = searchList
 
-        if (newSearchList.indexOf(_startdate) < 0) {
+        if (newSearchList.indexOf(_startdate) < 0 || true) {
             newSearchList.push(_startdate)
             if (newSearchList.length > 5) {
                 // newSearchList.shift()

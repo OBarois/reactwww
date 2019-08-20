@@ -51,6 +51,9 @@ export default function eocatToGeojson(response) {
                         productInformation: {
                             productType: item.properties.EarthObservation.metaDataProperty.EarthObservationMetaData.productType,
                             //timeliness: indexes["product"]["Timeliness Category"],
+                            downloadUrl: item.link[0]['@'],
+                            quicklookUrl: (item.link.length >= 2) ? item.link[2]['@']: null,
+        
                             size: null
                         }
                     }

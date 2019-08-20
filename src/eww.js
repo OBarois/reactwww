@@ -33,19 +33,20 @@ const {
   useHotkeys("s",toggleStarfield)  
   useHotkeys("n",toggleNames)  
   useHotkeys("c",removeGeojson)
+  useHotkeys("z",(state)=>setReplace(!state))
   
 
-  const { geojsonResults, loading} = useDatahub();
+  const { geojsonResults, loading, firstpage} = useDatahub();
   const [ searchepoch,  ] = useGlobal('searchepoch');
   const [ startend,  ] = useGlobal('startend');
-  const [ replace,  ] = useGlobal('replace');
+  // const [ replace, setReplace ] = useGlobal('replace');
 
-  const [ mission,  ] = useGlobal('mission');
+  const [ replace,  setReplace] = useGlobal('replace');
   const [ appdate,  ] = useGlobal('appdate')
   const [ appstarfield,  setAppstarfield] = useGlobal('appstarfield')
   const [ appatmosphere,  setAppatmosphere] = useGlobal('appatmosphere')
   const [ appnames,  setAppnames] = useGlobal('appnames')
-  const [ , setSearching ] = useGlobal('searching')
+  // const [ , setSearching ] = useGlobal('searching')
   const [ , setAppaltitude ] = useGlobal('appaltitude')
   const [ , setApplatitude ] = useGlobal('applatitude')
   const [ , setApplongitude ] = useGlobal('applongitude')
@@ -57,6 +58,7 @@ const {
 
   useEffect(() => {
     if(geojsonResults) {
+      if(firstpage) removeGeojson()
       console.log('datahub in use')
         console.log(geojsonResults)
         try {
@@ -67,11 +69,10 @@ const {
         }
       }
       
-  },[geojsonResults]);
+  },[geojsonResults, firstpage]);
 
   useEffect(() => {
     console.log('replace: ' + replace)
-    removeGeojson()
   },[replace]);
 
   useEffect(() => {
@@ -89,7 +90,7 @@ const {
 
 
   useEffect(() => {
-    setSearching(loading)
+    setReplace(loading)
   },[loading]);
 
   useEffect(() => {

@@ -46,22 +46,30 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     const [geojsonlayers, setGeojsonlayers] = useState([])
     const [quicklooklayers, setQuicklooklayers] = useState([])
     const [ewwstate, setEwwState] = useState({latitude: clat, longitude: clon, altitude: alt, aoi:'', pickedItems: []})
-    const [features, setFeatures] = useState([])
+    // const [features, setFeatures] = useState([])
+    const features = useRef([])
+
     const [enabledfeatures, setEnabledfeatures] = useState([])
+    const [starfieldlayer, setstarfieldlayer] = useState([])
+    const [atmospherelayer, setatmospherelayer] = useState([])
+
 
     //toggle atmosphere
     function toggleAtmosphere() {
         console.log('toggleAtmosphere')
-        let _layer = getLayerByName('Atmosphere')
-        _layer.enabled = !_layer.enabled
+        // let _layer = getLayerByName('Atmosphere')
+        // _layer.enabled = !_layer.enabled
+        atmospherelayer.enabled = !atmospherelayer.enabled
+
         eww.current.redraw();
     }
 
     //toggle starField
     function toggleStarfield() {
         console.log('toggleStarfield')
-        let _layer = getLayerByName('StarField')
-        _layer.enabled = !_layer.enabled
+        // let _layer = getLayerByName('StarField')
+        // _layer.enabled = !_layer.enabled
+        starfieldlayer.enabled = !starfieldlayer.enabled
         eww.current.redraw();
     }
 
@@ -177,7 +185,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         function loadCompleteCallback() {
             console.log(renderableLayer)
             setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
-            let newfeatures = features
+            let newfeatures = features.current
             for(let i = 0; i< renderableLayer.renderables.length; i++) {
                 
                 newfeatures.push({
@@ -185,12 +193,14 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                     stop: renderableLayer.renderables[i].userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStopTime.getTime(), 
                     renderable: renderableLayer.renderables[i]
                 })
-                renderableLayer.renderables[i].enabled = false
+                renderableLayer.renderables[i].enabled = true
             }
             newfeatures.sort( (a,b) => a.start - b.start )
-            setFeatures(newfeatures)
+            // setFeatures(newfeatures)
+            features.current = newfeatures
             console.log(newfeatures)
-            enableRenderables(epoch) // uncomment to disable renderables
+            //console.log(new Date(epoch).getTime())
+            //enableRenderables(epoch) // uncomment to disable renderables
             eww.current.redraw();
         }
     
@@ -207,15 +217,18 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     }
 
     function removeGeojson() {
+        console.log('removing geojson layers:')
         for(let i=0;i<geojsonlayers.length;i++) {
-          eww.current.removeLayer(geojsonlayers[i])
-        //   console.log('removing json layers: ')
-        //   console.log(geojsonlayers[i])
+            geojsonlayers[i].removeAllRenderables()
+            eww.current.removeLayer(geojsonlayers[i])
+            console.log(geojsonlayers[i])
         }
-        setGeojsonlayers((geojsonlayers)=>[])
-        setFeatures([])
+        setGeojsonlayers([])
+        // setFeatures([])
+        features.current = []
         setEnabledfeatures([])
         // console.log(geojsonlayers)
+        eww.current.removeLayer(getLayerByName('quicklook') )
         eww.current.redraw();
       }
 
@@ -269,7 +282,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     function getLayerByName(name) {
         // console.log('Searching layer: '+ name)
         for (let i = 0; i < eww.current.layers.length; i++) {
-            // console.log('display name: '+eww.current.layers[i].displayName)
+            console.log('display name: '+eww.current.layers[i].displayName)
             if (eww.current.layers[i].displayName === name) return eww.current.layers[i]
         }
         return null
@@ -283,6 +296,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         // disable all enabled features
         for(let i = 0; i < enabledfeatures.length; i++) {
             enabledfeatures[i].renderable.enabled = false
+            console.log(' disabling features')
         }
         setEnabledfeatures([])
 
@@ -296,6 +310,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
 
         while ( first < features.length && features[first].start <= (time + timeOffset/2)) {
             // console.log(features[first])
+            console.log(' enabling features')
             features[first].renderable.enabled = true
             newenabledfeatures.push(features[first])
             first += 1
@@ -412,9 +427,11 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     }
 
     function setTime(epoch) {
-        getLayerByName('StarField').time =  new Date(epoch)
-        getLayerByName('Atmosphere').time = new Date(epoch)
-        enableRenderables(epoch)
+        // getLayerByName('StarField').time =  new Date(epoch)
+        // getLayerByName('Atmosphere').time = new Date(epoch)
+        starfieldlayer.time = new Date(epoch)
+        atmospherelayer.time = new Date(epoch)
+        // enableRenderables(epoch)
         // console.log('display name: ')
         // console.log(getLayerByName('StarField').displayName)
         eww.current.redraw();
@@ -630,6 +647,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         // quicklookLayer.maxActiveAltitude = 4000000
 
         //let date = new Date();
+        setstarfieldlayer(starFieldLayer)
+        setatmospherelayer(atmosphereLayer)
         starFieldLayer.time = new Date();
         atmosphereLayer.time = new Date();
         setTimeout(() => {

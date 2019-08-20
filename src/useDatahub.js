@@ -62,12 +62,12 @@ export default function useDatahub() {
 
     const [geojsonResults, setGeojsonResults] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [firstpage, setFirstpage] = useState(false)
     
     const [ searchepoch,  ] = useGlobal('searchepoch');
     const [ startend,  ] = useGlobal('startend');
     const [ mission,  ] = useGlobal('mission');
     const [ apppolygon,  ] = useGlobal('apppolygon');
-    const [gosearch, setGosearch] = useGlobal('gosearch')
 
 
     const [se] = SearchManager();
@@ -108,6 +108,7 @@ export default function useDatahub() {
 
                     if (paging.startindex + paging.itemsperpage < Math.min(paging.totalresults,MAX_ITEMS) ) {
                         console.log("There's More...")  
+                        setFirstpage(false)
                         fetchURL(url,(paging.startindex + paging.itemsperpage))
                     } else {
                         setLoading(false)  
@@ -137,7 +138,8 @@ export default function useDatahub() {
         let _collections = [
             {
                 code: 'S1',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-1 AND producttype:GRD)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                //templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-1 AND producttype:GRD)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                templateUrl: 'https://scihub.copernicus.eu/apihub/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-1 AND producttype:GRD)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-1 A/B GRD' ,
                 startIndexOrigin: 0,
                 dateOff: ' beginposition:[{start} TO {end}] AND',
@@ -145,7 +147,7 @@ export default function useDatahub() {
             },
             {
                 code: 'S2A',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2A_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                templateUrl: 'https://scihub.copernicus.eu/apihub/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2A_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-2 A/B Level 1C',
                 startIndexOrigin: 0,
                 dateOff: ' beginposition:[{start} TO {end}] AND',
@@ -153,7 +155,7 @@ export default function useDatahub() {
             },
             {
                 code: 'S2B',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2B_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                templateUrl: 'https://scihub.copernicus.eu/apihub/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-2 AND filename:S2B_MSIL1C*)&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-2 A/B Level 1C',
                 startIndexOrigin: 0,
                 dateOff: ' beginposition:[{start} TO {end}] AND',
@@ -161,7 +163,7 @@ export default function useDatahub() {
             },
             {
                 code: 'S3',
-                templateUrl: 'https://131.176.236.55/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-3 AND (producttype:OL_1_ERR___ OR producttype:SL_1_RBT___ OR producttype:SR_1_SRA___))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                templateUrl: 'https://scihub.copernicus.eu/apihub/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-3 AND (producttype:OL_1_ERR___ OR producttype:SL_1_RBT___ OR producttype:SR_1_SRA___))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-3 A/B, OLCI/SLSTR/SRAL' ,
                 startIndexOrigin: 0,
                 dateOff: ' beginposition:[{start} TO {end}] AND',
@@ -169,7 +171,7 @@ export default function useDatahub() {
             },
             {
                 code: 'S5P',
-                templateUrl: 'https://s5phub.copernicus.eu/dhus/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
+                templateUrl: 'https://scihub.copernicus.eu/apihub/search?q=( footprint:"Intersects({polygon})" AND beginposition:[{start} TO {end}] AND platformname:Sentinel-5 precursor AND (producttype:L1B_RA_BD1 OR (producttype:L2__NO2___ AND processingmode:Near real time)))&start={startindex}&rows=100&sortedby=beginposition&order=desc&format=json',
                 name: 'Sentinel-1 A/B',
                 startIndexOrigin: 0,
                 dateOff: ' beginposition:[{start} TO {end}] AND',
@@ -211,6 +213,7 @@ export default function useDatahub() {
 
                     // setLoading(true)
                     // console.log('start: '+collections[mission].startIndexOrigin)
+                    setFirstpage(true)
                     setSearchurl(url)
             
                 } catch(e) {
@@ -223,7 +226,7 @@ export default function useDatahub() {
             
         }
         
-    }, [gosearch, mission, apppolygon, startend.start]);
+    }, [mission, apppolygon, startend.start]);
 
-    return {geojsonResults, loading}
+    return {geojsonResults, loading, firstpage}
 }
