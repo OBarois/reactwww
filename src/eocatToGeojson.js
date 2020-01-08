@@ -6,6 +6,12 @@ export default function eocatToGeojson(response) {
     function mapFromHubOpenSearch(item) {    
 
         try {
+            var downloadurl = null
+            var quicklookurl = null
+            for (let i = 0; i < item.properties.link.length; i++) {
+                if (item.properties.link[i]['@']['title'] == 'Download') downloadurl = item.properties.link[i]['@']['href']
+                if (item.properties.link[i]['@']['title'] == 'Quicklook') quicklookurl = item.properties.link[i]['@']['href']
+            }
             
 
             var newItem = {
@@ -18,8 +24,8 @@ export default function eocatToGeojson(response) {
                     name: item.title,
                     uuid: item.properties.identifier,
                     date: item.properties.date,
-                    downloadUrl: null,
-                    quicklookUrl: null,
+                    downloadUrl: downloadurl,
+                    quicklookUrl: quicklookurl,
                     // links: {
                     //     data: [{
                     //         href: item.link[0].href,
@@ -51,8 +57,8 @@ export default function eocatToGeojson(response) {
                         productInformation: {
                             productType: item.properties.EarthObservation.metaDataProperty.EarthObservationMetaData.productType,
                             //timeliness: indexes["product"]["Timeliness Category"],
-                            downloadUrl: item.link[0]['@'],
-                            quicklookUrl: (item.link.length >= 2) ? item.link[2]['@']: null,
+                            downloadUrl: downloadurl,
+                            quicklookUrl: quicklookurl,
         
                             size: null
                         }

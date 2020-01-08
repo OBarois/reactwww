@@ -11,6 +11,7 @@ const {
     ewwstate,
     addGeojson,
     removeGeojson,
+    removeQuicklooks,
     addWMS,
     toggleProjection,
     toggleAtmosphere,
@@ -58,6 +59,7 @@ const {
 
   useEffect(() => {
     if(geojsonResults) {
+      removeQuicklooks()
       if(firstpage) removeGeojson()
       console.log('datahub in use')
         console.log(geojsonResults)

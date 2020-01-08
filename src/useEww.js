@@ -43,13 +43,15 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     const [projection, setProjection] = useState("3D")
     // const [aoi, setAoi] = useState({type: null, value: null})
     const [aoi, setAoi] = useState('')
-    const [geojsonlayers, setGeojsonlayers] = useState([])
-    const [quicklooklayers, setQuicklooklayers] = useState([])
+    //const [geojsonlayers, setGeojsonlayers] = useState([])
+    //const [quicklooklayers, setQuicklooklayers] = useState([])
     const [ewwstate, setEwwState] = useState({latitude: clat, longitude: clon, altitude: alt, aoi:'', pickedItems: []})
     // const [features, setFeatures] = useState([])
     const features = useRef([])
+    const enabledfeatures = useRef([])
+    const geojsonlayers = useRef([])
 
-    const [enabledfeatures, setEnabledfeatures] = useState([])
+    // const [enabledfeatures, setEnabledfeatures] = useState([])
     const [starfieldlayer, setstarfieldlayer] = useState([])
     const [atmospherelayer, setatmospherelayer] = useState([])
 
@@ -184,7 +186,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         
         function loadCompleteCallback() {
             console.log(renderableLayer)
-            setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+            // setGeojsonlayers((geojsonlayers)=>[...geojsonlayers,renderableLayer])
+            geojsonlayers.current.push(renderableLayer)
             let newfeatures = features.current
             for(let i = 0; i< renderableLayer.renderables.length; i++) {
                 
@@ -200,7 +203,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
             features.current = newfeatures
             console.log(newfeatures)
             //console.log(new Date(epoch).getTime())
-            //enableRenderables(epoch) // uncomment to disable renderables
+            enableRenderables(epoch) // uncomment to disable renderables
             eww.current.redraw();
         }
     
@@ -218,15 +221,16 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
 
     function removeGeojson() {
         console.log('removing geojson layers:')
-        for(let i=0;i<geojsonlayers.length;i++) {
-            geojsonlayers[i].removeAllRenderables()
-            eww.current.removeLayer(geojsonlayers[i])
-            console.log(geojsonlayers[i])
+        for(let i=0;i<geojsonlayers.current.length;i++) {
+            geojsonlayers.current[i].removeAllRenderables()
+            eww.current.removeLayer(geojsonlayers.current[i])
+            console.log(geojsonlayers.current[i])
         }
-        setGeojsonlayers([])
+        //setGeojsonlayers([])
+        geojsonlayers.current = []
         // setFeatures([])
         features.current = []
-        setEnabledfeatures([])
+        enabledfeatures.current = []
         // console.log(geojsonlayers)
         eww.current.removeLayer(getLayerByName('quicklook') )
         eww.current.redraw();
@@ -295,76 +299,9 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     }
 
     function enableRenderables(time) {
-
-        if(features.length <= 0 ) return
         let timeOffset = 1000 * 60 * 60 * 3 // 3 hours
-
-        // disable all enabled features
-        for(let i = 0; i < enabledfeatures.length; i++) {
-            enabledfeatures[i].renderable.enabled = false
-            console.log(' disabling features')
-        }
-        setEnabledfeatures([])
-
-        // enable features within view time window (current time +/- timeOffset/2)
-        let newenabledfeatures = []
-        // console.log(time - timeOffset/2)
-        let first = features.findIndex( (a) => a.start >= (time - timeOffset/2) )
-        // console.log(features)
-        // console.log(first)
-        if(first < 0) return
-
-        while ( first < features.length && features[first].start <= (time + timeOffset/2)) {
-            // console.log(features[first])
-            console.log(' enabling features')
-            features[first].renderable.enabled = true
-            newenabledfeatures.push(features[first])
-            first += 1
-        }
-
-        // for(let i = first; i < features.length; i++) {
-        //     features[i].renderable.enabled = true
-        //     newenabledfeatures.push(features[i])
-        // }
-        setEnabledfeatures(newenabledfeatures)
-
-
-
-    }
-
-
-
-    function enableRenderables_slow(time) {
-        let timeOffset = 1000 * 60 * 60 * 3 // 3 hours
-        for (let i = 0; i < eww.current.layers.length; i++) {
-            if (eww.current.layers[i].displayName.includes('Products:')) {
-                
-                for (let j = 0; j < eww.current.layers[i].renderables.length; j++) {
-                    let renderable = eww.current.layers[i].renderables[j]
-                    console.log('enabling')
-                    if (time != 0) {
-                        let renderableStartDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStartTime)).getTime()
-                        let renderableStopDate = (new Date(renderable.userProperties.earthObservation.acquisitionInformation[0].acquisitionParameter.acquisitionStopTime)).getTime()
-                        renderable.enabled = (renderableStartDate <= time+timeOffset/2 && renderableStopDate >= time-timeOffset/2) ? true : false   
-                        // console.log('enabling: '+ renderable.displayName  )
-                        // if(renderable.enabled) {
-                        //     let transparency = 1 - (Math.abs(renderableStartDate - time) / (timeOffset/2))
-                        //     renderable.attributes.interiorColor.set(
-                        //         renderable.attributes.interiorColor.red -transparency,
-                        //         renderable.attributes.interiorColor.green,
-                        //         transparency,
-                        //         renderable.attributes.interiorColor.alpha) 
-                                // renderable.render(eww.current.drawContext)
-
-                        // }
-                    } else {
-                        renderable.enabled = false
-                    }         
-                }
-            }
-            if (eww.current.layers[i].displayName === 'quicklook') {
-                // eww.current.layers[i].enabled = 
-            }
+        for(let i = 0; i < features.current.length; i++) {
+            features.current[i].renderable.enabled = (features.current[i].start >= (time - timeOffset/2) && features.current[i].start <= (time + timeOffset/2))?true:false
         }
 
     }
@@ -437,7 +374,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         // getLayerByName('Atmosphere').time = new Date(epoch)
         starfieldlayer.time = new Date(epoch)
         atmospherelayer.time = new Date(epoch)
-        // enableRenderables(epoch)
+        enableRenderables(epoch)
         // console.log('display name: ')
         // console.log(getLayerByName('StarField').displayName)
         eww.current.redraw();
@@ -670,5 +607,5 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     }, []); // effect runs only once
         
   
-  return { ewwstate, removeGeojson, addGeojson, addWMS, toggleStarfield, toggleAtmosphere, setTime, toggleProjection, toggleNames };
+  return { ewwstate, removeGeojson, removeQuicklooks, addGeojson, addWMS, toggleStarfield, toggleAtmosphere, setTime, toggleProjection, toggleNames };
 }

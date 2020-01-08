@@ -181,7 +181,7 @@ export default function useDatahub() {
                 code: 'ENVISAT',
                 templateUrl: 'https://eocat.esa.int/api/catalogue/EOCAT-ENVISAT.ASA.IMP_1P/search?start={start}&stop={end}&format=json&count=50&startIndex={startindex}',
                 startIndexOrigin: 1,
-                name: 'Sentinel-1 A/B',
+                name: 'Envisat',
                 dateOff: ' beginposition:[{start} TO {end}]',
                 areaOff:  ' footprint:"Intersects({polygon})"'
             }
