@@ -236,9 +236,15 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
     }
 
     function addQuicklookWMS(renderable) {
-
+        console.log(renderable.userProperties.earthObservation.productInformation.productType)
         console.log(renderable.computeSectors(eww.current.drawContext))
         console.log(WorldWind.Sector.FULL_SPHERE)
+
+        let QL_LUT = {
+            'GRD':'S1_IW_GRDH_FullResolution',
+            'S2MSI1C':'S2L1C_TRUE_COLOR',
+
+        }
 
         // for S2:  
         // https://view.onda-dias.eu/instance00/ows?&service=WMS&request=GetMap&layers=S2L1C_TRUE_COLOR&styles=&format=image/png&transparent=true&version=1.1.1&width=1500&height=1000&srs=EPSG:4326&bbox=12.357903,41.800495,12.625694,41.984760
@@ -249,8 +255,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
             service: "https://view.onda-dias.eu/instance00/ows",
             // layerNames: renderable.userProperties.title,
             // layerNames: 'S2L1C_TRUE_COLOR',
-            layerNames: 'S1_IW_GRDH_FullResolution',
-            
+            // layerNames: 'S1_IW_GRDH_FullResolution',
+            layerNames: QL_LUT[renderable.userProperties.earthObservation.productInformation.productType],
             // title: renderable.userProperties.title,
             title: 'quicklook',
             numLevels: 19,
@@ -272,7 +278,7 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
         //     sector: WorldWind.Sector.FULL_SPHERE,
         //     levelZeroDelta: new WorldWind.Location(90, 90)
         // }
-        // eww.current.removeLayer(getLayerByName('quicklook') )
+        eww.current.removeLayer(getLayerByName('quicklook') )
         let qllayer =  new WorldWind.WmsLayer(wmsConfigQL, renderable.userProperties.date)
         eww.current.addLayer(qllayer)
         eww.current.redraw()
@@ -410,8 +416,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
             // footprint[0].pop()
             console.log(footprint)
             let quicklook =  new TexturedSurfacePolygon(footprint,renderable.attributes)
-            quicklook.maxImageWidth = 128
-            quicklook.maxImageHeight = 128
+            quicklook.maxImageWidth = 256
+            quicklook.maxImageHeight = 256
             
             quicklook.image = image
             removeQuicklooks()
@@ -515,7 +521,8 @@ export function useEww({ id, clon, clat, alt, starfield, atmosphere, names }) {
                     
                     // addQuicklookWMS(pickList.objects[i].userObject)
                     removeQuicklooks()
-                    addQuicklookWMS(pickList.objects[i].userObject)
+                    // addQuicklookWMS(pickList.objects[i].userObject)
+                    addQuicklook(pickList.objects[i].userObject)
                 }
             }
             console.log(pickedItems)
